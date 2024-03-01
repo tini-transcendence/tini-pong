@@ -8,8 +8,6 @@ services:
         - DEV=true #개발 단계에서만 사용하는 requirements.dev.txt를 사용할 수 있음
     ports:
       - "8000:8000"
-    volumes:
-      - ./server:/server
     command: >
       sh -c "python manage.py wait_for_db &&
              python manage.py migrate &&
