@@ -5,8 +5,8 @@ ENV PYTHONUNBUFFERED 1
 
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
-COPY ./app /app
-WORKDIR /app
+COPY ./server /server
+WORKDIR /server
 EXPOSE 8000
 
 ARG DEV=false
@@ -24,7 +24,8 @@ RUN python -m venv /py && \
     adduser \
         --disabled-password \
         --no-create-home \
-        django-user
+        django-user && \
+    chown -R django-user /server
 
 ENV PATH="/py/bin:$PATH"
 
