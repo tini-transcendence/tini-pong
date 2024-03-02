@@ -10,9 +10,9 @@ WORKDIR /server
 EXPOSE 8000
 
 ARG DEV=false
-RUN pip install pipenv && \
+RUN apk add --update --no-cache postgresql-client postgresql-dev gcc musl-dev && \
+    pip install pipenv && \
     pipenv install --system --deploy --ignore-pipfile && \
-    apk add --update --no-cache postgresql-client && \
     adduser \
         --disabled-password \
         --no-create-home \
