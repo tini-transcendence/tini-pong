@@ -3,9 +3,8 @@ LABEL maintainer="tini-pong"
 
 ENV PYTHONUNBUFFERED 1
 
-COPY ./Pipfile /Pipfile
-COPY ./Pipfile.lock /Pipfile.lock
-COPY ./server /server
+COPY ./Pipfile /server/Pipfile
+COPY ./Pipfile.lock /server/Pipfile.lock
 WORKDIR /server
 EXPOSE 8000
 
@@ -17,6 +16,8 @@ RUN apk add --update --no-cache postgresql-client postgresql-dev gcc musl-dev &&
         --disabled-password \
         --no-create-home \
         django-user
+
+COPY ./ /server
 
 ENV PATH="/py/bin:$PATH"
 
