@@ -1,5 +1,7 @@
 from django.urls import path
 
-from . import views
+from .views import LoginOauthView
 
-urlpatterns = []
+urlpatterns = [
+    path("login/oauth/", LoginOauthView.as_view(), name="oauth"),
+]
