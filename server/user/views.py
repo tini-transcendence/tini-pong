@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 from django.views import View
 from django.urls import reverse
 
-from util.jwt import create_jwt
+from util.jwt import create
 
 
 class LoginOauthView(View):
@@ -33,4 +33,4 @@ class LoginOauthView(View):
         if profile_response.status_code != 200:
             return HttpResponseBadRequest()
         user_42_logged_in = profile_response.json().get("login")
-        return HttpResponse(create_jwt())
+        return HttpResponse(create({"test": "test"}, "secret", 0))
