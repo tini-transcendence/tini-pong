@@ -1,5 +1,5 @@
-from base64 import urlsafe_b64encode
-from json import dumps
+from base64 import urlsafe_b64encode, urlsafe_b64decode
+from json import dumps, loads
 from hmac import digest
 from hashlib import sha256
 
@@ -20,6 +20,21 @@ class __JWT:
 
         token = ".".join([header, payload, signature])
         return token
+
+    def validate_jwt(self, token: str, secret: str) -> bool:
+        parts = token.split(".")
+        if len(parts) != 3:
+            return False
+        header, payload, signature = parts
+        try:
+            decoded_header = self.__decode_header(header)
+            self.__validate_header(decoded_header)
+            self.__decode_payload(payload)
+        except HeaderNotSupportError as error:
+            raise error
+        except:
+            return False
+        return self.__validate_signature(header, payload, signature, secret)
 
     def __validate_create_jwt_args(
         self, payload: dict, secret: str, expire_time: int | None
@@ -48,6 +63,28 @@ class __JWT:
         signature = str(urlsafe_b64encode(signature_digest), "utf-8").rstrip("=")
         return signature
 
+    def __decode_header(self, header: str) -> dict:
+        padded_header = header + "=" * (4 - len(header) % 4)
+        decoded_header = loads(urlsafe_b64decode(padded_header))
+        return decoded_header
+
+    def __decode_payload(self, payload: str) -> dict:
+        padded_payload = payload + "=" * (4 - len(payload) % 4)
+        decoded_payload = loads(urlsafe_b64decode(padded_payload))
+        return decoded_payload
+
+    def __validate_header(self, header: dict):
+        alg = header.get("alg")
+        typ = header.get("typ")
+        if alg != "HS256" or typ != "JWT":
+            raise HeaderNotSupportError(alg, typ)
+
+    def __validate_signature(
+        self, header: str, payload: str, signature: str, secret: str
+    ) -> bool:
+        valid_signature = self.__make_signature(secret, header, payload)
+        return signature == valid_signature
+
 
 class PayloadError(Exception):
     def __init__(self):
@@ -64,5 +101,11 @@ class ExpireTimeError(Exception):
         super().__init__("argument 'expire_time' should be integer type")
 
 
+class HeaderNotSupportError(Exception):
+    def __init__(self, alg, typ):
+        super().__init__("alg '%s' or typ '%s' not supported" % (alg, typ))
+
+
 __jwt = __JWT()
 create = __jwt.create_jwt
+validate = __jwt.validate_jwt
