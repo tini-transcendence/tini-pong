@@ -21,6 +21,11 @@ class __JWT:
         token = ".".join([header, payload, signature])
         return token
 
+    def decode_jwt(self, token: str) -> dict:
+        payload = token.split(".")[1]
+        decoded_payload = self.__decode_payload(payload)
+        return decoded_payload
+
     def validate_jwt(self, token: str, secret: str) -> bool:
         parts = token.split(".")
         if len(parts) != 3:
@@ -108,4 +113,5 @@ class HeaderNotSupportError(Exception):
 
 __jwt = __JWT()
 create = __jwt.create_jwt
+decode = __jwt.decode_jwt
 validate = __jwt.validate_jwt
