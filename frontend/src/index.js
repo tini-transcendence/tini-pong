@@ -1,3 +1,5 @@
+import "../node_modules/bootstrap/dist/js/bootstrap.js"
+
 import Navbar from "./components/Navbar.js";
 import Main from "./components/Main.js";
 import Login from "./components/Login.js";
