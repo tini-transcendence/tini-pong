@@ -12,7 +12,6 @@ export default class extends AbstractComponent {
 
 	async getHtml() {
 		return `
-		<!-- Modal -->
 		<div class="modal fade" id="openGameRoomModal" tabindex="-1" aria-labelledby="openGameRoomModalLabel" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -80,22 +79,20 @@ export default class extends AbstractComponent {
 					<path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
 					</svg>
 				</button>
-				<div class="list-group" id="list-tab" role="tablist">
-					<!-- list item example -->
-					<a class="list-group-item list-group-item-action" id="list-home-list" data-bs-toggle="list" href="#list-home" role="tab" aria-controls="list-home">Home</a>
-					<a class="list-group-item list-group-item-action" id="list-profile-list" data-bs-toggle="list" href="#list-profile" role="tab" aria-controls="list-profile">Profile</a>
-					<a class="list-group-item list-group-item-action" id="list-messages-list" data-bs-toggle="list" href="#list-messages" role="tab" aria-controls="list-messages">Messages</a>
-					<a class="list-group-item list-group-item-action" id="list-settings-list" data-bs-toggle="list" href="#list-settings" role="tab" aria-controls="list-settings">Settings</a>
-				</div>
+				<div class="list-group" id="gameroom-list" role="tablist"></div>
+				<template id="template-gameroom-list">
+					<a class="list-group-item list-group-item-action" id="gameroom-example-list" data-bs-toggle="list" href="#gameroom-example" role="tab" aria-controls="gameroom-example">example</a>
+				</template>
 			</div>
 			<div class="col">
-				<div class="tab-content" id="nav-tabContent">
-					<!-- list item example -->
-					<div class="tab-pane fade" id="list-home" role="tabpanel" aria-labelledby="list-home-list">homehomehome</div>
-					<div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">profileprofileprofile</div>
-					<div class="tab-pane fade" id="list-messages" role="tabpanel" aria-labelledby="list-messages-list">messagesmessagesmessages</div>
-					<div class="tab-pane fade" id="list-settings" role="tabpanel" aria-labelledby="list-settings-list">settingssettingssettings</div>
-				</div>
+				<div class="tab-content" id="gameroom-content"></div>
+				<template id="template-gameroom-content">
+					<div class="tab-pane fade" id="gameroom-example" role="tabpanel" aria-labelledby="gameroom-example-list">
+						<h3></h3>
+						<p></p>
+						<p></p>
+					</div>
+				</template>
 				<button type="button" class="btn btn-outline-dark" id="gameroom-enter">방 참가</button>
 				<button type="button" class="btn btn-outline-dark" id="gameroom-open" data-bs-toggle="modal" data-bs-target="#openGameRoomModal">방 만들기</button>
 			</div>
@@ -110,58 +107,48 @@ export default class extends AbstractComponent {
 		player:
 	} */
 
-	setTabList(tabContent) {
-		const tabID = tabContent.id;
+	setGameRoomList(gameRoomData) {
+		const gameRoomID = gameRoomData.id;
+	
+		const gameRoomListNode = document.querySelector("#template-gameroom-list").content.children[0];
+		const newGameRoomListNode = gameRoomListNode.cloneNode(true);
+		newGameRoomListNode.setAttribute("id", `gameroom-${gameRoomID}-list`);
+		newGameRoomListNode.setAttribute("href", `#gameroom-${gameRoomID}`);
+		newGameRoomListNode.setAttribute("aria-controls", `gameroom-${gameRoomID}`);
+		newGameRoomListNode.innerText = gameRoomData.name;
+		document.querySelector('#gameroom-list').appendChild(newGameRoomListNode);
 
-		const tabItem = document.createElement("a");
-		tabItem.setAttribute("class", "list-group-item list-group-item-action");
-		tabItem.setAttribute("id", `list-${tabID}-list`);
-		tabItem.setAttribute("data-bs-toggle", "list");
-		tabItem.setAttribute("href", `#list-${tabID}`);
-		tabItem.setAttribute("role", "tab");
-		tabItem.setAttribute("aria-controls", `list-${tabID}`);
-		tabItem.innerText = tabContent.name;
-		const tabPane = document.createElement("div");
-		tabPane.setAttribute("class", "tab-pane fade");
-		tabPane.setAttribute("id", `list-${tabID}`);
-		tabPane.setAttribute("role", "tabpanel");
-		tabPane.setAttribute("aria-labelledby", `list-${tabID}-list`);
-
-		const tabPaneName = document.createElement("h3");
-		tabPaneName.innerText = tabContent.name;
-		const tabPaneMode = document.createElement("p");
-		tabPaneMode.innerText = `Mode: ${tabContent.mode}`;
-		const tabPanePlayer = document.createElement("p");
-		tabPanePlayer.innerText = `Player: ${tabContent.player} player`;
-		tabPane.appendChild(tabPaneName);
-		tabPane.appendChild(tabPaneMode);
-		tabPane.appendChild(tabPanePlayer);
-
-		document.querySelector('#list-tab').appendChild(tabItem);
-		document.querySelector('#nav-tabContent').appendChild(tabPane);
+		const gameRoomContentNode = document.querySelector("#template-gameroom-content").content.children[0];
+		const newGameRoomContentNode = gameRoomContentNode.cloneNode(true);
+		newGameRoomContentNode.setAttribute("id", `gameroom-${gameRoomID}`);	
+		newGameRoomContentNode.setAttribute("aria-labelledby", `gameroom-${gameRoomID}-list`);
+		const newGameRoomContentNodeName = newGameRoomContentNode.querySelector("h3");
+		newGameRoomContentNodeName.innerText = gameRoomData.name;
+		const newGameRoomContentNodeAttr = newGameRoomContentNode.querySelectorAll("p");
+		newGameRoomContentNodeAttr[0].innerText = `Mode: ${gameRoomData.mode}`;
+		newGameRoomContentNodeAttr[1].innerText = `Player: ${gameRoomData.player} player`;
+		document.querySelector('#gameroom-content').appendChild(newGameRoomContentNode);
 	}
 
-	reloadTabList() {
-		document.querySelector('#list-tab').innerHTML = "";
-		document.querySelector('#nav-tabContent').innerHTML = "";
+	reloadGameRoomList() {
+		document.querySelector('#gameroom-list').innerHTML = "";
+		document.querySelector('#gameroom-content').innerHTML = "";
 		
-		const saveTabList = localStorage.getItem(GAMEROOM_KEY);
+		const saveGameRoomList = localStorage.getItem(GAMEROOM_KEY);
 		
-		if (saveTabList !== null) {
-			const parsedTabList = JSON.parse(saveTabList);
-			gameRooms = parsedTabList;
-			parsedTabList.forEach(this.setTabList);
+		if (saveGameRoomList !== null) {
+			const parsedGameRoomList = JSON.parse(saveGameRoomList);
+			gameRooms = parsedGameRoomList;
+			parsedGameRoomList.forEach(this.setGameRoomList);
 		}
 	}
 
 	handleRoute() {
-		console.log("lobby handle");
-		this.reloadTabList();
+		this.reloadGameRoomList();
 
 		const tabReloadBtn = document.querySelector("#tab-reload");
 		tabReloadBtn.addEventListener("click", event => {
-			this.reloadTabList();
-			console.log("reload btn click");
+			this.reloadGameRoomList();
 		})
 
 		const gameRoomEnterBtn = document.querySelector("#gameroom-enter");
@@ -181,8 +168,7 @@ export default class extends AbstractComponent {
 			}
 			gameRooms.push(newGameRoom);
 			localStorage.setItem(GAMEROOM_KEY, JSON.stringify(gameRooms));
-			this.reloadTabList();
-			console.log("add GameRoom!");
+			this.reloadGameRoomList();
 		})
 	}
 }

@@ -8,8 +8,8 @@ import Users from "./components/Users.js";
 import Lobby from "./components/Lobby.js";
 import NotFound from "./components/NotFound.js";
 
-const ROUTE_PARAMETER_REGEX = "/:(\w+)/g";
-const URL_FRAGMENT_REGEX = '([^\\/]+)';
+const ROUTE_PARAMETER_REGEX = /:(\w+)/g;
+const URL_FRAGMENT_REGEX = /\//g;
 
 const routes = [
 	{ path: "/", component: [Main, Navbar]},
@@ -32,7 +32,7 @@ const router = async () => {
 		if (!match.result)
 			return ;
 		const values = match.result.slice(1);
-		const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(
+		const keys = Array.from(match.route.path.matchAll(ROUTE_PARAMETER_REGEX)).map(
 			(result) => result[1]
 		);
 		return Object.fromEntries(
@@ -72,7 +72,7 @@ const navigateTo = url => {
 };
 
 const pathToRegex = (path) => {
-	return new RegExp('^' + path.replace(/\//g, '\\/').replace(/:\w+/g,'(.+)') + '$');
+	return new RegExp('^' + path.replace(URL_FRAGMENT_REGEX, '\\/').replace(ROUTE_PARAMETER_REGEX,'(.+)') + '$');
 }
 
 window.addEventListener("popstate", router);

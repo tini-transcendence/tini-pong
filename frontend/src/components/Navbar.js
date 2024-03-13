@@ -41,7 +41,7 @@ export default class extends AbstractComponent {
 					</div>
 					<div id="resultSearchUser"></div>
 				</div>
-				<template id="friend-list-item">
+				<template id="template-friend-list">
 					<li class="list-group-item">
 						<a href="#" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">example1</a>
 						<button class="btn btn-outline-secondary" type="button">
@@ -60,7 +60,7 @@ export default class extends AbstractComponent {
 
 	addFriendList(element) {
 		const friendList = document.querySelector("#friend-list");
-		const friendListTemplate = document.querySelector("#friend-list-item");
+		const friendListTemplate = document.querySelector("#template-friend-list");
 		const friendListNode = friendListTemplate.content.children[0];
 		const newFriendListNode = friendListNode.cloneNode(true);
 		const newFriendListNodeA = newFriendListNode.querySelector("a");
