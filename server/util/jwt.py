@@ -3,6 +3,8 @@ from json import dumps, loads
 from hmac import digest
 from hashlib import sha256
 
+from .timestamp import get_timestamp
+
 
 class __JWT:
     alg = "HS256"
@@ -34,7 +36,9 @@ class __JWT:
         try:
             decoded_header = self.__decode_data(header)
             self.__validate_header(decoded_header)
-            self.__decode_data(payload)
+            decoded_payload = self.__decode_data(payload)
+            if "exp" in decoded_payload:
+                return decoded_payload["exp"] > get_timestamp()
         except HeaderNotSupportError as error:
             raise error
         except:
@@ -56,8 +60,11 @@ class __JWT:
         header = self.__encode_data(header_data)
         return header
 
-    def __make_payload(self, data: dict, expire_time: int) -> str:
-        payload = self.__encode_data(data)
+    def __make_payload(self, data: dict, expire_time: int | None) -> str:
+        payload_data = dict(data)
+        if expire_time:
+            payload_data["exp"] = expire_time
+        payload = self.__encode_data(payload_data)
         return payload
 
     def __make_signature(self, secret: str, header: str, payload: str) -> str:
