@@ -23,7 +23,7 @@ class __JWT:
 
     def decode_jwt(self, token: str) -> dict:
         payload = token.split(".")[1]
-        decoded_payload = self.__decode_payload(payload)
+        decoded_payload = self.__decode_data(payload)
         return decoded_payload
 
     def validate_jwt(self, token: str, secret: str) -> bool:
@@ -32,9 +32,9 @@ class __JWT:
             return False
         header, payload, signature = parts
         try:
-            decoded_header = self.__decode_header(header)
+            decoded_header = self.__decode_data(header)
             self.__validate_header(decoded_header)
-            self.__decode_payload(payload)
+            self.__decode_data(payload)
         except HeaderNotSupportError as error:
             raise error
         except:
@@ -52,13 +52,12 @@ class __JWT:
             raise ExpireTimeError()
 
     def __make_header(self) -> str:
-        header_json = dumps({"alg": self.alg, "typ": self.typ}).encode("utf-8")
-        header = str(urlsafe_b64encode(header_json), "utf-8").rstrip("=")
+        header_data = {"alg": self.alg, "typ": self.typ}
+        header = self.__encode_data(header_data)
         return header
 
     def __make_payload(self, data: dict, expire_time: int) -> str:
-        payload_json = dumps(data).encode("utf-8")
-        payload = str(urlsafe_b64encode(payload_json), "utf-8").rstrip("=")
+        payload = self.__encode_data(data)
         return payload
 
     def __make_signature(self, secret: str, header: str, payload: str) -> str:
@@ -67,16 +66,6 @@ class __JWT:
         )
         signature = str(urlsafe_b64encode(signature_digest), "utf-8").rstrip("=")
         return signature
-
-    def __decode_header(self, header: str) -> dict:
-        padded_header = header + "=" * (4 - len(header) % 4)
-        decoded_header = loads(urlsafe_b64decode(padded_header))
-        return decoded_header
-
-    def __decode_payload(self, payload: str) -> dict:
-        padded_payload = payload + "=" * (4 - len(payload) % 4)
-        decoded_payload = loads(urlsafe_b64decode(padded_payload))
-        return decoded_payload
 
     def __validate_header(self, header: dict):
         alg = header.get("alg")
@@ -89,6 +78,16 @@ class __JWT:
     ) -> bool:
         valid_signature = self.__make_signature(secret, header, payload)
         return signature == valid_signature
+
+    def __encode_data(self, data: dict) -> str:
+        data_json = dumps(data).encode("utf-8")
+        encoded_data = str(urlsafe_b64encode(data_json), "utf-8").rstrip("=")
+        return encoded_data
+
+    def __decode_data(self, data: dict) -> dict:
+        padded_data = data + "=" * (4 - len(data) % 4)
+        decoded_data = loads(urlsafe_b64decode(padded_data))
+        return decoded_data
 
 
 class PayloadError(Exception):
