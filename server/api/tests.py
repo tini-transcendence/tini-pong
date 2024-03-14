@@ -29,6 +29,8 @@ class RoomTestCase(APITestCase):
             difficulty=1,
             owner_uuid=self.user1,
         )
+        # 생성된 방의 uuid를 저장
+        self.room_uuid = self.room.uuid
 
     def test_create_room(self):
         # 방이 정상적으로 생성되었는지 확인
@@ -65,8 +67,10 @@ class MatchTestCase(APITestCase):
             play_time=timezone.now(),
             user1=self.user1,
             user2=self.user2,
-            win_user=self.user1,
+            win_user=self.user1.uuid,
         )
+        # 생성된 매치의 uuid를 저장
+        self.match_uuid = self.match.uuid
 
     def test_create_match(self):
         # 매치가 정상적으로 생성되었는지 확인
