@@ -1,8 +1,9 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from .models import User, Room, OneVsOneHistory
 from django.utils import timezone
 import uuid
 from django.urls import reverse
+
 
 class RoomTestCase(TestCase):
     def setUp(self):
@@ -89,37 +90,48 @@ class MatchTestCase(TestCase):
         self.assertEqual(str(updated_match.win_user), str(self.user2.uuid))
 
 
+from django.test import TestCase, Client
+from django.urls import reverse
+from .models import Room, User
+
+
 class RoomListTestCase(TestCase):
     def setUp(self):
-        # 테스트를 위한 사용자와 방 생성
-        self.user1_uuid = uuid.uuid4()
-        self.user1 = User.objects.create(
-            uuid=self.user1_uuid,
-            id_42="user1",
-            otp_secret="secret1",
+        owner1 = User.objects.create(
+            id_42="owner1",
+            otp_secret="owner1",
             nickname="nickname1",
+            avatar="avatar_url1",
+        )
+        owner2 = User.objects.create(
+            id_42="owner2",
+            otp_secret="owner2",
+            nickname="nickname2",
+            avatar="avatar_url2",
         )
 
-        Room.objects.create(
-            uuid=uuid.uuid4(),
-            name="Test Room 1",
-            type=1,
-            difficulty=1,
-            owner_uuid=self.user1,
-        )
+        Room.objects.create(name="Room 1", type=1, difficulty=1, owner_uuid=owner1)
+        Room.objects.create(name="Room 2", type=2, difficulty=2, owner_uuid=owner2)
 
-        Room.objects.create(
-            uuid=uuid.uuid4(),
-            name="Test Room 2",
-            type=2,
-            difficulty=3,
-            owner_uuid=self.user1,
-        )
+        # Django 테스트 클라이언트 인스턴스 생성
+        self.client = Client()
 
     def test_room_list(self):
-        # 방 리스트 API 엔드포인트 호출
+        # 룸 리스트 뷰에 대한 GET 요청
         response = self.client.get(reverse("rooms_list"))
+
+        # 응답이 성공적인지 (HTTP 200) 확인
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()["rooms"]), 2)
-        self.assertIn("Test Room 1", str(response.content))
-        self.assertIn("Test Room 2", str(response.content))
+
+        # 사용된 템플릿이 올바른지 확인
+        self.assertTemplateUsed(response, "rooms_list.html")
+
+        # 응답 컨텍스트에 룸 객체 리스트가 포함되어 있는지 확인
+        self.assertTrue("rooms" in response.context)
+
+        # 컨텍스트에 포함된 룸 객체의 수가 올바른지 확인
+        self.assertEqual(len(response.context["rooms"]), 2)
+
+        rooms_in_context = response.context["rooms"]
+        self.assertEqual(rooms_in_context[0].name, "Room 1")
+        self.assertEqual(rooms_in_context[1].name, "Room 2")
