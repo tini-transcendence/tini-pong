@@ -1,11 +1,9 @@
-from django.contrib import admin
 from django.urls import path
-from . import views
-from .views import RoomListView
+from .views import RoomListView, CreateRoomView, DeleteRoomView, CreateMatchView
 
 urlpatterns = [
     path("rooms/", RoomListView.as_view(), name="rooms_list"),
-    path("create_room/", views.create_room, name="create_room"),
-    path("delete_room/<uuid:uuid>/", views.delete_room, name="delete_room"),
-    path("create_match/", views.create_match, name="create_match"),
+    path("create_room/", CreateRoomView.as_view(), name="create_room"),
+    path("delete_room/<uuid:uuid>/", DeleteRoomView.as_view(), name="delete_room"),
+    path("create_match/", CreateMatchView.as_view(), name="create_match"),
 ]
