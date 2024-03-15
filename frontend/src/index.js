@@ -6,18 +6,20 @@ import Login from "./components/Login.js";
 import MyPage from "./components/Mypage.js";
 import Users from "./components/Users.js";
 import Lobby from "./components/Lobby.js";
+import Tdata from "./components/tournamentData.js";
 import NotFound from "./components/NotFound.js";
 
 const ROUTE_PARAMETER_REGEX = /:(\w+)/g;
 const URL_FRAGMENT_REGEX = /\//g;
 
 const routes = [
-	{ path: "/", component: [Main, Navbar]},
-	{ path: "/login", component: [Login]},
-	{ path: "/mypage", component: [MyPage, Navbar]},
-	{ path: "/users/:username", component: [Users, Navbar]},
-	{ path: "/lobby", component: [Lobby, Navbar]},
-	{ path: "/404", component: [NotFound]},
+	{ path: "/", component: [Main, Navbar] },
+	{ path: "/login", component: [Login] },
+	{ path: "/mypage", component: [MyPage, Navbar] },
+	{ path: "/users/:username", component: [Users, Navbar] },
+	{ path: "/lobby", component: [Lobby, Navbar] },
+	{ path: "/tdata", component: [Tdata] },
+	{ path: "/404", component: [NotFound] },
 ];
 
 const router = async () => {
@@ -30,14 +32,14 @@ const router = async () => {
 
 	const getParams = (match) => {
 		if (!match.result)
-			return ;
+			return;
 		const values = match.result.slice(1);
 		const keys = Array.from(match.route.path.matchAll(ROUTE_PARAMETER_REGEX)).map(
 			(result) => result[1]
 		);
 		return Object.fromEntries(
 			keys.map((key, i) => {
-			  return [key, values[i]];
+				return [key, values[i]];
 			})
 		);
 	}
@@ -54,8 +56,7 @@ const router = async () => {
 	document.querySelector("#app").innerHTML = await component.getHtml(getParams(match));
 	if (match.route.component[1]) {
 		const navbar = new match.route.component[1]();
-		if (navbar)
-		{
+		if (navbar) {
 			document.querySelector("#nav").innerHTML = await navbar.getHtml();
 			navbar.handleRoute();
 		}
@@ -72,7 +73,7 @@ const navigateTo = url => {
 };
 
 const pathToRegex = (path) => {
-	return new RegExp('^' + path.replace(URL_FRAGMENT_REGEX, '\\/').replace(ROUTE_PARAMETER_REGEX,'(.+)') + '$');
+	return new RegExp('^' + path.replace(URL_FRAGMENT_REGEX, '\\/').replace(ROUTE_PARAMETER_REGEX, '(.+)') + '$');
 }
 
 window.addEventListener("popstate", router);
