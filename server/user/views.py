@@ -7,6 +7,8 @@ from django.urls import reverse
 
 from util.jwt import create
 
+from .models import User
+
 
 class LoginOauthView(View):
     def get(self, request: HttpRequest):
@@ -33,4 +35,8 @@ class LoginOauthView(View):
         if profile_response.status_code != 200:
             return HttpResponseBadRequest()
         user_42_logged_in = profile_response.json().get("login")
+        (user_logged_in,) = User.objects.get_or_create(
+            id_42=user_42_logged_in,
+            defaults={"otp_secret": "otp_secret", "nickname": user_42_logged_in},
+        )
         return HttpResponse(create({"test": "test"}, "secret", 0))
