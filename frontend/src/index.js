@@ -5,6 +5,7 @@ import Main from "./components/Main.js";
 import Login from "./components/Login.js";
 import MyPage from "./components/Mypage.js";
 import Users from "./components/Users.js";
+import UserEdit from "./components/UserEdit.js";
 import Lobby from "./components/Lobby.js";
 import NotFound from "./components/NotFound.js";
 
@@ -16,6 +17,7 @@ const routes = [
 	{ path: "/login", component: [Login]},
 	{ path: "/mypage", component: [MyPage, Navbar]},
 	{ path: "/users/:username", component: [Users, Navbar]},
+	{ path: "/edit", component: [UserEdit]},
 	{ path: "/lobby", component: [Lobby, Navbar]},
 	{ path: "/404", component: [NotFound]},
 ];
