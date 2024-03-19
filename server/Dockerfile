@@ -11,14 +11,16 @@ EXPOSE 8000
 ARG DEV=false
 RUN apk add --update --no-cache postgresql-client postgresql-dev gcc musl-dev && \
     pip install pipenv && \
-    pipenv install --system --deploy --ignore-pipfile && \
-    adduser \
+    pipenv install --system --deploy --ignore-pipfile
+
+
+EXPOSE 8000
+
+RUN adduser \
         --disabled-password \
         --no-create-home \
         django-user
 
-COPY ./ /server
-
-ENV PATH="/py/bin:$PATH"
+COPY --chown=django-user:django-user ./ /server
 
 USER django-user
