@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "user",
-    "api",
+    "room",
+    "dashboard",
 ]
 
 MIDDLEWARE = [
