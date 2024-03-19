@@ -73,26 +73,16 @@ export default class extends AbstractComponent {
 		</div>
 		<div class="row">
 			<div class="col">
-				<button type="button" class="btn btn-outline-dark" id="tab-reload">
+				<button type="button" class="btn btn-outline-dark" id="gameroom-list-reload">
 					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
 					<path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
 					<path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
 					</svg>
 				</button>
 				<div class="list-group" id="gameroom-list" role="tablist"></div>
-				<template id="template-gameroom-list">
-					<a class="list-group-item list-group-item-action" id="gameroom-example-list" data-bs-toggle="list" href="#gameroom-example" role="tab" aria-controls="gameroom-example">example</a>
-				</template>
 			</div>
 			<div class="col">
 				<div class="tab-content" id="gameroom-content"></div>
-				<template id="template-gameroom-content">
-					<div class="tab-pane fade" id="gameroom-example" role="tabpanel" aria-labelledby="gameroom-example-list">
-						<h3></h3>
-						<p></p>
-						<p></p>
-					</div>
-				</template>
 				<button type="button" class="btn btn-outline-dark" id="gameroom-enter">방 참가</button>
 				<button type="button" class="btn btn-outline-dark" id="gameroom-open" data-bs-toggle="modal" data-bs-target="#openGameRoomModal">방 만들기</button>
 			</div>
@@ -107,47 +97,38 @@ export default class extends AbstractComponent {
 		player:
 	} */
 
-	setGameRoomList(gameRoomData) {
-		const gameRoomID = gameRoomData.id;
-	
-		const gameRoomListNode = document.querySelector("#template-gameroom-list").content.children[0];
-		const newGameRoomListNode = gameRoomListNode.cloneNode(true);
-		newGameRoomListNode.setAttribute("id", `gameroom-${gameRoomID}-list`);
-		newGameRoomListNode.setAttribute("href", `#gameroom-${gameRoomID}`);
-		newGameRoomListNode.setAttribute("aria-controls", `gameroom-${gameRoomID}`);
-		newGameRoomListNode.innerText = gameRoomData.name;
-		document.querySelector('#gameroom-list').appendChild(newGameRoomListNode);
-
-		const gameRoomContentNode = document.querySelector("#template-gameroom-content").content.children[0];
-		const newGameRoomContentNode = gameRoomContentNode.cloneNode(true);
-		newGameRoomContentNode.setAttribute("id", `gameroom-${gameRoomID}`);	
-		newGameRoomContentNode.setAttribute("aria-labelledby", `gameroom-${gameRoomID}-list`);
-		const newGameRoomContentNodeName = newGameRoomContentNode.querySelector("h3");
-		newGameRoomContentNodeName.innerText = gameRoomData.name;
-		const newGameRoomContentNodeAttr = newGameRoomContentNode.querySelectorAll("p");
-		newGameRoomContentNodeAttr[0].innerText = `Mode: ${gameRoomData.mode}`;
-		newGameRoomContentNodeAttr[1].innerText = `Player: ${gameRoomData.player} player`;
-		document.querySelector('#gameroom-content').appendChild(newGameRoomContentNode);
-	}
-
 	reloadGameRoomList() {
-		document.querySelector('#gameroom-list').innerHTML = "";
-		document.querySelector('#gameroom-content').innerHTML = "";
+		const gameRoomList = document.querySelector('#gameroom-list');
+		const gameRoomContent = document.querySelector('#gameroom-content');
+		gameRoomList.replaceChildren();
+		gameRoomContent.replaceChildren();
 		
 		const saveGameRoomList = localStorage.getItem(GAMEROOM_KEY);
 		
 		if (saveGameRoomList !== null) {
 			const parsedGameRoomList = JSON.parse(saveGameRoomList);
 			gameRooms = parsedGameRoomList;
-			parsedGameRoomList.forEach(this.setGameRoomList);
+			parsedGameRoomList.forEach(gameRoomData => {
+				const gameRoomID = gameRoomData.id;
+				gameRoomList.insertAdjacentHTML("beforeend",`
+				<a class="list-group-item list-group-item-action" id="gameroom-${gameRoomID}-list" data-bs-toggle="list" href="#gameroom-${gameRoomID}" role="tab" aria-controls="gameroom-${gameRoomID}">${gameRoomData.name}</a>
+				`);
+				gameRoomContent.insertAdjacentHTML("beforeend", `
+				<div class="tab-pane fade" id="gameroom-${gameRoomID}" role="tabpanel" aria-labelledby="gameroom-${gameRoomID}-list">
+					<h3>${gameRoomData.name}</h3>
+					<p>Mode: ${gameRoomData.mode}</p>
+					<p>Player: ${gameRoomData.player} player</p>
+				</div>
+				`);
+			});
 		}
 	}
 
 	handleRoute() {
 		this.reloadGameRoomList();
 
-		const tabReloadBtn = document.querySelector("#tab-reload");
-		tabReloadBtn.addEventListener("click", event => {
+		const gameRoomListReloadBtn = document.querySelector("#gameroom-list-reload");
+		gameRoomListReloadBtn.addEventListener("click", event => {
 			this.reloadGameRoomList();
 		})
 

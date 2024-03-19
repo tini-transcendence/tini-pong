@@ -5,6 +5,7 @@ import Main from "./components/Main.js";
 import Login from "./components/Login.js";
 import MyPage from "./components/MyPage.js";
 import Users from "./components/Users.js";
+import UserEdit from "./components/UserEdit.js";
 import Lobby from "./components/Lobby.js";
 import Tdata from "./components/tournamentData.js";
 import NotFound from "./components/NotFound.js";
@@ -13,13 +14,14 @@ const ROUTE_PARAMETER_REGEX = /:(\w+)/g;
 const URL_FRAGMENT_REGEX = /\//g;
 
 const routes = [
-	{ path: "/", component: [Main, Navbar] },
-	{ path: "/login", component: [Login] },
-	{ path: "/mypage", component: [MyPage, Navbar] },
-	{ path: "/users/:username", component: [Users, Navbar] },
-	{ path: "/lobby", component: [Lobby, Navbar] },
-	{ path: "/tdata", component: [Tdata] },
-	{ path: "/404", component: [NotFound] },
+	{ path: "/", component: [Main, Navbar]},
+	{ path: "/login", component: [Login]},
+	{ path: "/mypage", component: [MyPage, Navbar]},
+	{ path: "/users/:username", component: [Users, Navbar]},
+	{ path: "/edit", component: [UserEdit]},
+	{ path: "/lobby", component: [Lobby, Navbar]},
+  { path: "/tdata", component: [Tdata] },
+	{ path: "/404", component: [NotFound]},
 ];
 
 const router = async () => {
