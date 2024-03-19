@@ -3,7 +3,7 @@ import "../node_modules/bootstrap/dist/js/bootstrap.js"
 import Navbar from "./components/Navbar.js";
 import Main from "./components/Main.js";
 import Login from "./components/Login.js";
-import MyPage from "./components/Mypage.js";
+import MyPage from "./components/MyPage.js";
 import Users from "./components/Users.js";
 import Lobby from "./components/Lobby.js";
 import Tdata from "./components/tournamentData.js";
