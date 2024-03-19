@@ -29,6 +29,16 @@ services:
       - POSTGRES_USER=ponguser
       - POSTGRES_PASSWORD=changeme
 
+  frontend:
+    image: nginx
+    container_name: frontend
+    ports:
+      - "443:443"
+    build:
+      context: ./frontend
+    restart: always
+    depends_on:
+      - server
 
 volumes:
   pong-db-data:
