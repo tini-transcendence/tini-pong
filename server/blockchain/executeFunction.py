@@ -1,17 +1,17 @@
 import os, json
 from web3 import Web3
 from dotenv import load_dotenv
-from compile_sol import compile_solidity
+from .compile_sol import compile_solidity
 
 # Input files
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# OUTPUTS_DIR = os.path.join(BASE_DIR, "./deploy_aritifacts/")
+# OUTPUTS_DIR = os.path.join(BASE_DIR, "blockchain/deploy_aritifacts/")
 # ABI_FILE = os.path.join(OUTPUTS_DIR, "abi.json")
 # CONTRACT_ADDRESS = os.path.join(OUTPUTS_DIR, "contract_address.json")
 
 load_dotenv()
 
-DEPLOY_ARTIFACTS_DIR = "./deploy_artifacts/"
+DEPLOY_ARTIFACTS_DIR = "/server/blockchain/deploy_artifacts/"
 ABI_FILE = os.path.join(DEPLOY_ARTIFACTS_DIR, "abi.json")
 CONTRACT_ADDRESS = os.path.join(DEPLOY_ARTIFACTS_DIR, "contract_address.json")
 
