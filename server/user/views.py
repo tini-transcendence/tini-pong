@@ -50,6 +50,6 @@ class LoginOauthView(View):
             os.environ.get("REFRESH_SECRET"),
             get_timestamp(days=14),
         )
-        return JsonResponse(
-            {"access_token": access_token, "refresh_token": refresh_token}
-        )
+        response = JsonResponse({"refresh_token": refresh_token})
+        response.set_cookie(key="access_token", value=access_token)
+        return response
