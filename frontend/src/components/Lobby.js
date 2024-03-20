@@ -103,25 +103,30 @@ export default class extends AbstractComponent {
 		gameRoomList.replaceChildren();
 		gameRoomContent.replaceChildren();
 		
-		const saveGameRoomList = localStorage.getItem(GAMEROOM_KEY);
-		
-		if (saveGameRoomList !== null) {
-			const parsedGameRoomList = JSON.parse(saveGameRoomList);
-			gameRooms = parsedGameRoomList;
-			parsedGameRoomList.forEach(gameRoomData => {
-				const gameRoomID = gameRoomData.id;
-				gameRoomList.insertAdjacentHTML("beforeend",`
-				<a class="list-group-item list-group-item-action" id="gameroom-${gameRoomID}-list" data-bs-toggle="list" href="#gameroom-${gameRoomID}" role="tab" aria-controls="gameroom-${gameRoomID}">${gameRoomData.name}</a>
-				`);
-				gameRoomContent.insertAdjacentHTML("beforeend", `
-				<div class="tab-pane fade" id="gameroom-${gameRoomID}" role="tabpanel" aria-labelledby="gameroom-${gameRoomID}-list">
-					<h3>${gameRoomData.name}</h3>
-					<p>Mode: ${gameRoomData.mode}</p>
-					<p>Player: ${gameRoomData.player} player</p>
-				</div>
-				`);
+		(function () {
+			fetch('http://localhost:8000/room/list/', {
+				method: 'GET',
+			})
+			.then(response => {
+				return response.json();
+			})
+			.then(data => {
+				console.log(data);
+				data.rooms.forEach(gameRoomData => {
+					const gameRoomID = gameRoomData.uuid;
+					gameRoomList.insertAdjacentHTML("beforeend",`
+					<a class="list-group-item list-group-item-action" id="gameroom-${gameRoomID}-list" data-bs-toggle="list" href="#gameroom-${gameRoomID}" role="tab" aria-controls="gameroom-${gameRoomID}">${gameRoomData.name}</a>
+					`);
+					gameRoomContent.insertAdjacentHTML("beforeend", `
+					<div class="tab-pane fade" id="gameroom-${gameRoomID}" role="tabpanel" aria-labelledby="gameroom-${gameRoomID}-list">
+						<h3>${gameRoomData.name}</h3>
+						<p>Mode: ${gameRoomData.difficulty}</p>
+						<p>Player: ${gameRoomData.type} player</p>
+					</div>
+					`);
+				})
 			});
-		}
+		})();
 	}
 
 	handleRoute() {
