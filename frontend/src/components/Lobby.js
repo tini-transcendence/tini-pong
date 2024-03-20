@@ -1,9 +1,5 @@
 import AbstractComponent from "./AbstractComponent.js";
 
-const GAMEROOM_KEY = "gameroom";
-
-let gameRooms = [];
-
 export default class extends AbstractComponent {
 	constructor() {
 		super();
@@ -29,19 +25,19 @@ export default class extends AbstractComponent {
 								<div class="col">
 									<label class="col-form-label">MODE</label>
 										<div class="form-check">
-											<input class="form-check-input" type="radio" name="flexRadioMode" id="flexRadioMode1" value="easy" checked>
+											<input class="form-check-input" type="radio" name="flexRadioMode" id="flexRadioMode1" value="1" checked>
 											<label class="form-check-label" for="flexRadioMode1">
 												EASY
 											</label>
 										</div>
 										<div class="form-check">
-											<input class="form-check-input" type="radio" name="flexRadioMode" id="flexRadioMode2" value="normal">
+											<input class="form-check-input" type="radio" name="flexRadioMode" id="flexRadioMode2" value="2">
 											<label class="form-check-label" for="flexRadioMode2">
 												NORMAL
 											</label>
 										</div>
 										<div class="form-check">
-											<input class="form-check-input" type="radio" name="flexRadioMode" id="flexRadioMode3" value="hard">
+											<input class="form-check-input" type="radio" name="flexRadioMode" id="flexRadioMode3" value="3">
 											<label class="form-check-label" for="flexRadioMode3">
 												HARD
 											</label>
@@ -103,25 +99,29 @@ export default class extends AbstractComponent {
 		gameRoomList.replaceChildren();
 		gameRoomContent.replaceChildren();
 		
-		const saveGameRoomList = localStorage.getItem(GAMEROOM_KEY);
-		
-		if (saveGameRoomList !== null) {
-			const parsedGameRoomList = JSON.parse(saveGameRoomList);
-			gameRooms = parsedGameRoomList;
-			parsedGameRoomList.forEach(gameRoomData => {
-				const gameRoomID = gameRoomData.id;
-				gameRoomList.insertAdjacentHTML("beforeend",`
-				<a class="list-group-item list-group-item-action" id="gameroom-${gameRoomID}-list" data-bs-toggle="list" href="#gameroom-${gameRoomID}" role="tab" aria-controls="gameroom-${gameRoomID}">${gameRoomData.name}</a>
-				`);
-				gameRoomContent.insertAdjacentHTML("beforeend", `
-				<div class="tab-pane fade" id="gameroom-${gameRoomID}" role="tabpanel" aria-labelledby="gameroom-${gameRoomID}-list">
-					<h3>${gameRoomData.name}</h3>
-					<p>Mode: ${gameRoomData.mode}</p>
-					<p>Player: ${gameRoomData.player} player</p>
-				</div>
-				`);
+		(function () {
+			fetch('http://localhost:8000/room/list/', {
+				method: 'GET',
+			})
+			.then(response => {
+				return response.json();
+			})
+			.then(data => {
+				data.rooms.forEach(gameRoomData => {
+					const gameRoomID = gameRoomData.uuid;
+					gameRoomList.insertAdjacentHTML("beforeend",`
+					<a class="list-group-item list-group-item-action" id="gameroom-${gameRoomID}-list" data-bs-toggle="list" href="#gameroom-${gameRoomID}" role="tab" aria-controls="gameroom-${gameRoomID}">${gameRoomData.name}</a>
+					`);
+					gameRoomContent.insertAdjacentHTML("beforeend", `
+					<div class="tab-pane fade" id="gameroom-${gameRoomID}" role="tabpanel" aria-labelledby="gameroom-${gameRoomID}-list">
+						<h3>${gameRoomData.name}</h3>
+						<p>Mode: ${gameRoomData.type}</p>
+						<p>Player: ${gameRoomData.difficulty} player</p>
+					</div>
+					`);
+				})
 			});
-		}
+		})();
 	}
 
 	handleRoute() {
@@ -141,15 +141,27 @@ export default class extends AbstractComponent {
 		const gameRoomSaveBtn = document.querySelector("#gameroom-save");
 		gameRoomSaveBtn.addEventListener("click", event => {
 			event.preventDefault();
-			const newGameRoom = {
-				id: Date.now(),
-				name: document.querySelector("#title-name").value,
-				mode: document.querySelector("input[name='flexRadioMode']:checked").value,
-				player: document.querySelector("input[name='flexRadioHC']:checked").value,
-			}
-			gameRooms.push(newGameRoom);
-			localStorage.setItem(GAMEROOM_KEY, JSON.stringify(gameRooms));
-			this.reloadGameRoomList();
+			const openGameRoomModalBody = document.querySelector("#openGameRoomModal .modal-body");
+			fetch('http://localhost:8000/room/create/', {
+				method: 'POST',
+				headers: {
+					"Content-Type": "application/json", 
+				},
+				body: JSON.stringify({
+					name: openGameRoomModalBody.querySelector("#title-name").value,
+					type: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
+					difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
+					owner_uuid: "9184e8d1-7117-419d-9c40-aeff071b8649"
+				}),
+			})
+			.then(response => {
+				if (response.status === 201)
+					this.reloadGameRoomList();
+				return response.json();
+			})
+			.then(data => {
+				console.log(data.message);
+			});
 		})
 	}
 }

@@ -5,6 +5,7 @@ from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .models import Room
+from user.models import User
 from .serializers import RoomSerializer
 import json
 from django.utils import timezone
