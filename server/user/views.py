@@ -36,7 +36,7 @@ class LoginOauthView(View):
         if profile_response.status_code != 200:
             return HttpResponseBadRequest()
         user_42_logged_in = profile_response.json().get("login")
-        (user_logged_in,) = User.objects.get_or_create(
+        (user_logged_in, created) = User.objects.get_or_create(
             id_42=user_42_logged_in,
             defaults={"otp_secret": "otp_secret", "nickname": user_42_logged_in},
         )
@@ -50,6 +50,6 @@ class LoginOauthView(View):
             os.environ.get("REFRESH_SECRET"),
             get_timestamp(days=14),
         )
-        return JsonResponse(
-            {"access_token": access_token, "refresh_token": refresh_token}
-        )
+        response = JsonResponse({"refresh_token": refresh_token})
+        response.set_cookie(key="access_token", value=access_token)
+        return response

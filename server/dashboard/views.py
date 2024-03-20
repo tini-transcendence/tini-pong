@@ -11,32 +11,39 @@ from .serializers import (
 )
 import json
 from django.utils import timezone
+from blockchain.executeFunction import retrieve_transaction
 
 
 class DashBoardView(APIView):
-    def get(self, request, uuid, format=None):
-        user = User.objects.get(uuid=uuid)
-        user_data = UserSerializer(user).data
+    def get(self, request):
 
-        tournament_histories = (
-            TournamentHistory.objects.filter(user1=user)
-            | TournamentHistory.objects.filter(user2=user)
-            | TournamentHistory.objects.filter(user3=user)
-            | TournamentHistory.objects.filter(user4=user)
-        )
-        win_lose_histories = WinLoseHistory.objects.filter(user_uuid=user)
-        one_vs_one_histories = OneVsOneHistory.objects.filter(
-            user1=user
-        ) | OneVsOneHistory.objects.filter(user2=user)
+        json_data = retrieve_transaction()
 
-        user_data["tournament_histories"] = TournamentHistorySerializer(
-            tournament_histories, many=True
-        ).data
-        user_data["win_lose_histories"] = WinLoseHistorySerializer(
-            win_lose_histories, many=True
-        ).data
-        user_data["one_vs_one_histories"] = OneVsOneHistorySerializer(
-            one_vs_one_histories, many=True
-        ).data
+        return Response(json_data)
 
-        return Response(user_data)
+    # def get(self, request, uuid, format=None):
+    #    user = User.objects.get(uuid=uuid)
+    #    user_data = UserSerializer(user).data
+
+    #    tournament_histories = (
+    #        TournamentHistory.objects.filter(user1=user)
+    #        | TournamentHistory.objects.filter(user2=user)
+    #        | TournamentHistory.objects.filter(user3=user)
+    #        | TournamentHistory.objects.filter(user4=user)
+    #    )
+    #    win_lose_histories = WinLoseHistory.objects.filter(user_uuid=user)
+    #    one_vs_one_histories = OneVsOneHistory.objects.filter(
+    #        user1=user
+    #    ) | OneVsOneHistory.objects.filter(user2=user)
+
+    #    user_data["tournament_histories"] = TournamentHistorySerializer(
+    #        tournament_histories, many=True
+    #    ).data
+    #    user_data["win_lose_histories"] = WinLoseHistorySerializer(
+    #        win_lose_histories, many=True
+    #    ).data
+    #    user_data["one_vs_one_histories"] = OneVsOneHistorySerializer(
+    #        one_vs_one_histories, many=True
+    #    ).data
+
+    #    return Response(user_data)

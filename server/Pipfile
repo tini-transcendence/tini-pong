@@ -12,6 +12,9 @@ flake8 = "*"
 python-dotenv = "*"
 requests = "*"
 django-cors-headers = "*"
+web3 = "*"
+py-solc-x = "*"
+solc = "*"
 
 [dev-packages]
 

@@ -1,1 +1,4 @@
 node_modules/
+.flake8
+.env
+__pycache__/

@@ -145,4 +145,9 @@ REST_FRAMEWORK = {
 
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
-CORS_ALLOWED_ORIGINS = ["https://localhost:443","https://localhost", "https://127.0.0.1","https://127.0.0.1:443"]
+CORS_ALLOWED_ORIGINS = [
+    "https://localhost",
+    "https://localhost:443",
+    "https://127.0.0.1",
+    "https://127.0.0.1:443",
+]
