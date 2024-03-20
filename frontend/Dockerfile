@@ -7,14 +7,13 @@ RUN apt-get update && \
 COPY ./conf/default.conf /etc/nginx/conf.d/default.conf
 COPY tools/entrypoint.sh /entrypoint.sh
 COPY ./index.html /var/www/html/index.html
-COPY ./src /var/www/html/src
 COPY ./package-lock.json /var/www/html/package-lock.json
 COPY ./package.json /var/www/html/package.json
 
-
 RUN cd /var/www/html && npm install
-## 도커 파일에서는 보안상의 이유 때문에 상위 디렉토리에 대한 참조가 허용되지 않는다. 
-# COPY ./dist /var/www/html/dist/
+
+# 개발단계에서 코드 수정 시 docker compose 속도 올리기 위해서 이동
+COPY ./src /var/www/html/src
 
 RUN chmod +x /entrypoint.sh
 

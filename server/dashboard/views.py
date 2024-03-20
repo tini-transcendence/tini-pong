@@ -16,8 +16,7 @@ from blockchain.executeFunction import retrieve_transaction
 
 class DashBoardView(APIView):
     def get(self, request):
-
-        json_data = retrieve_transaction()
+        json_data = json.loads(retrieve_transaction())
 
         return Response(json_data)
 
