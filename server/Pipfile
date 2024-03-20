@@ -11,6 +11,7 @@ djangorestframework = "*"
 flake8 = "*"
 python-dotenv = "*"
 requests = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
