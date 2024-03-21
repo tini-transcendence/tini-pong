@@ -23,8 +23,8 @@ export default class extends AbstractComponent {
 			return response.json();
 		})
 		.then(data => {
-			console.log(data.refresh_token);
 			localStorage.setItem("refresh_token", data.refresh_token);
+			location.href = "/";
 		});
 	}
 }
