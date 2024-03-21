@@ -20,9 +20,7 @@ class LoginOauthView(View):
                 "client_id": os.environ.get("OAUTH_UID"),
                 "client_secret": os.environ.get("OAUTH_SECRET"),
                 "code": request.GET.get("code"),
-                "redirect_uri": (
-                    os.environ.get("DOMAIN_NAME") + reverse("oauth").rstrip("/")
-                ),
+                "redirect_uri": os.environ.get("OAUTH_REDIRECT_URI"),
             },
         )
         if oauth_response.status_code != 200:
