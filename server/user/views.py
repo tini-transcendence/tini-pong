@@ -20,12 +20,11 @@ class LoginOauthView(View):
                 "client_id": os.environ.get("OAUTH_UID"),
                 "client_secret": os.environ.get("OAUTH_SECRET"),
                 "code": request.GET.get("code"),
-                "redirect_uri": (
-                    os.environ.get("DOMAIN_NAME") + reverse("oauth").rstrip("/")
-                ),
+                "redirect_uri": "https://localhost/login/oauth",
             },
         )
         if oauth_response.status_code != 200:
+            print("error 1")
             return HttpResponseBadRequest()
         profile_response = requests.get(
             "https://api.intra.42.fr/v2/me",
@@ -34,6 +33,7 @@ class LoginOauthView(View):
             },
         )
         if profile_response.status_code != 200:
+            print("error 2")
             return HttpResponseBadRequest()
         user_42_logged_in = profile_response.json().get("login")
         (user_logged_in, created) = User.objects.get_or_create(
