@@ -9,8 +9,8 @@ class AuthMiddleware:
         self.get_response = get_response
 
     def __call__(self, request: HttpRequest):
-        access_token = request.COOKIES["access_token"]
         try:
+            access_token = request.COOKIES["access_token"]
             request.is_logged_in = validate(
                 access_token, os.environ.get("ACCESS_SECRET")
             )
