@@ -47,16 +47,17 @@ export default class {
 	// 토큰이 만료되었을 때 토큰 재발급 후 re-fetch
 	async handleExpiredAccesstoken(requestInit) {
 		try {
+			let reIssuedAccessToken;
 			if (!this.isRefreshing) {
 				this.isRefreshing = true;
 				this.refreshTokenPromise = this.getReIssuedAccessToken(localStorage.getItem("refresh_token"));
 
-				const reIssuedAccessToken = await this.refreshTokenPromise;
+				reIssuedAccessToken = await this.refreshTokenPromise;
 
 				this.isRefreshing = false;
 			}
 			else if (this.refreshTokenPromise) {
-				const reIssuedAccessToken = await this.refreshTokenPromise;
+				reIssuedAccessToken = await this.refreshTokenPromise;
 			}
 
 			requestInit.headers.Authorization = reIssuedAccessToken;
