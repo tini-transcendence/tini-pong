@@ -37,8 +37,8 @@ class __JWT:
             decoded_header = self.__decode_data(header)
             self.__validate_header(decoded_header)
             decoded_payload = self.__decode_data(payload)
-            if "exp" in decoded_payload:
-                return decoded_payload["exp"] > get_timestamp()
+            if "exp" in decoded_payload and decoded_payload["exp"] < get_timestamp():
+                return False
         except HeaderNotSupportError as error:
             raise error
         except:
