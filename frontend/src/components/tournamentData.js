@@ -5,7 +5,7 @@ import AbstractComponent from "./AbstractComponent.js";
 export default class extends AbstractComponent {
     constructor() {
         super();
-        this.setTitle("Main");
+        this.setTitle("Tournament Data");
     }
 
     async getHtml() {

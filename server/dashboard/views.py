@@ -11,7 +11,8 @@ from .serializers import (
 )
 import json
 from django.utils import timezone
-from blockchain.executeFunction import retrieve_transaction
+from blockchain.executeFunction import retrieve_transaction, store_transaction
+import time
 
 
 class DashBoardView(APIView):
@@ -46,3 +47,35 @@ class DashBoardView(APIView):
     #    ).data
 
     #    return Response(user_data)
+
+
+class Tournament:
+    def __init__(self):
+        self.tournament = []
+
+    @staticmethod
+    def make_player(name, score):
+        return {"name": name, "score": score}
+
+    def add_game_log(self, playerA, playerB, index):
+        self.tournament.append({"index": index, "playerA": playerA, "playerB": playerB})
+
+    def add_timestamp(self):
+        self.tournament.append(int(time.time()))
+
+
+# retrieve_transaction()
+def test():
+    t = Tournament()
+    t.add_timestamp()
+    t.add_game_log(t.make_player("asdf", 1), t.make_player("b", 0), 1)
+    t.add_game_log(t.make_player("ffffffff", 2), t.make_player("b", 1), 2)
+    t.add_game_log(t.make_player("asdf", 3), t.make_player("b", 2), 3)
+
+
+    store_transaction(t.tournament)
+
+class StoreTransactionView(APIView):
+    def get(self, request):
+        test()
+        return Response("Data Saved")
