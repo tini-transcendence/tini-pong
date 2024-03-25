@@ -15,6 +15,7 @@ django-cors-headers = "*"
 web3 = "*"
 py-solc-x = "*"
 solc = "*"
+channels = "*"
 
 [dev-packages]
 
