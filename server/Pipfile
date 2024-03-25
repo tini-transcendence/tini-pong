@@ -16,6 +16,7 @@ web3 = "*"
 py-solc-x = "*"
 solc = "*"
 channels = "*"
+channels-redis = "*"
 
 [dev-packages]
 
