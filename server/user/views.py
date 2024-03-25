@@ -3,7 +3,6 @@ import os
 
 from django.http import JsonResponse, HttpRequest, HttpResponseBadRequest
 from django.views import View
-from django.urls import reverse
 
 from util.jwt import create
 from util.timestamp import get_timestamp
