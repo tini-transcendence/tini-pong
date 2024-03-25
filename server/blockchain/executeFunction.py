@@ -11,7 +11,7 @@ from .compile_sol import compile_solidity
 
 load_dotenv()
 
-DEPLOY_ARTIFACTS_DIR = "/server/blockchain/deploy_artifacts/"
+DEPLOY_ARTIFACTS_DIR = "blockchain/deploy_artifacts/"
 ABI_FILE = os.path.join(DEPLOY_ARTIFACTS_DIR, "abi.json")
 CONTRACT_ADDRESS = os.path.join(DEPLOY_ARTIFACTS_DIR, "contract_address.json")
 
