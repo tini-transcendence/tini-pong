@@ -35,5 +35,10 @@ services:
     depends_on:
       - server
 
+  redis:
+    image: "redis:7.2.3-alpine"
+    container_name: "redis"
+    command: ["redis-server", "--bind", "redis", "--port", "6379"]
+
 volumes:
   pong-db-data:
