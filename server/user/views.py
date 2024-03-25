@@ -3,12 +3,12 @@ import os
 
 from django.http import JsonResponse, HttpRequest, HttpResponseBadRequest
 from django.views import View
-from django.urls import reverse
 
 from util.jwt import create
 from util.timestamp import get_timestamp
 
 from .models import User
+from auth.models import RefreshToken
 
 
 class LoginOauthView(View):
@@ -43,10 +43,16 @@ class LoginOauthView(View):
             os.environ.get("ACCESS_SECRET"),
             get_timestamp(minutes=30),
         )
+        refresh_token_exp = get_timestamp(days=14)
         refresh_token = create(
-            {"uuid": str(user_logged_in.uuid)},
+            {},
             os.environ.get("REFRESH_SECRET"),
-            get_timestamp(days=14),
+            refresh_token_exp,
+        )
+        RefreshToken.objects.create(
+            user_uuid=user_logged_in.uuid,
+            token=refresh_token,
+            expiration_time=refresh_token_exp,
         )
         response = JsonResponse({"refresh_token": refresh_token})
         response.set_cookie(key="access_token", value=access_token)
