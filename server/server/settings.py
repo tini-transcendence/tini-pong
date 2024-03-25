@@ -50,8 +50,9 @@ INSTALLED_APPS = [
     "dashboard",
     "channels",
     "websocket",
+    "auth",
 ]
-
+  
 ASGI_APPLICATION = "server.asgi.application"
 CHANNEL_LAYERS = {
     "default": {

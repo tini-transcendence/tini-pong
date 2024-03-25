@@ -33,4 +33,5 @@ urlpatterns = [
     path("room/", include("room.urls")),
     path("dashboard/", include("dashboard.urls")),
     path("user/", include("user.urls")),
+    path("auth/", include("auth.urls")),
 ]
