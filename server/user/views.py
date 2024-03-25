@@ -44,7 +44,7 @@ class LoginOauthView(View):
             get_timestamp(minutes=30),
         )
         refresh_token = create(
-            {"uuid": str(user_logged_in.uuid)},
+            {},
             os.environ.get("REFRESH_SECRET"),
             get_timestamp(days=14),
         )
