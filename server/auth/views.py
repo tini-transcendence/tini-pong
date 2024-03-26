@@ -9,13 +9,14 @@ from util.jwt import create, validate
 from util.timestamp import get_timestamp
 
 from .models import RefreshToken
+import json
 
 
 class RefreshTokenView(View):
     def post(self, request: HttpRequest):
         user = None
         try:
-            received_token = request.POST["refresh_token"]
+            received_token = json.loads(request.body)["refresh_token"]
             searched_token = RefreshToken.objects.get(token=received_token)
             if validate(received_token, os.environ.get("REFRESH_SECRET")) != True:
                 searched_token.delete()
@@ -29,5 +30,5 @@ class RefreshTokenView(View):
             get_timestamp(minutes=30),
         )
         response = HttpResponse()
-        response.set_cookie(key="access_token", value=access_token)
+        response.set_cookie(key="access_token", value=access_token, secure=True, samesite='None')
         return response
