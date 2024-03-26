@@ -10,6 +10,7 @@ EXPOSE 8000
 
 ARG DEV=false
 RUN apk add --update --no-cache postgresql-client postgresql-dev gcc musl-dev && \
+    apk add libffi-dev && \
     pip install pipenv && \
     pipenv install --system --deploy --ignore-pipfile
 
