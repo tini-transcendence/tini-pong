@@ -8,6 +8,7 @@ import MyPage from "./components/MyPage.js";
 import Users from "./components/Users.js";
 import UserEdit from "./components/UserEdit.js";
 import Lobby from "./components/Lobby.js";
+import Local from "./components/Local.js";
 import Tdata from "./components/tournamentData.js";
 import NotFound from "./components/NotFound.js";
 
@@ -22,6 +23,7 @@ const routes = [
 	{ path: "/users/:username", component: [Users, Navbar]},
 	{ path: "/edit", component: [UserEdit]},
 	{ path: "/lobby", component: [Lobby, Navbar]},
+	{ path: "/local", component: [Local]},
   { path: "/tdata", component: [Tdata] },
 	{ path: "/404", component: [NotFound]},
 ];
