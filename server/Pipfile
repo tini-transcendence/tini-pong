@@ -17,6 +17,7 @@ py-solc-x = "*"
 solc = "*"
 channels = "*"
 channels-redis = "*"
+daphne = "*"
 
 [dev-packages]
 
