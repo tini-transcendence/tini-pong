@@ -9,7 +9,7 @@ export default class {
 		{
 			try {
 				const fetchModule = new FetchModule();
-				fetchModule.getReIssuedAccessToken(refreshToken);
+				await fetchModule.getReIssuedAccessToken(refreshToken);
 			} catch (error) {
 				this.notLogined();
 			}
