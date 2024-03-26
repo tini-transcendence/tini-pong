@@ -18,6 +18,7 @@ export default class extends AbstractComponent {
 		const queryString = location.search;
 		fetch(`http://localhost:8000/user/login/oauth${queryString}`, {
 				method: 'GET',
+				credentials: "include"
 		})
 		.then(response => {
 			return response.json();

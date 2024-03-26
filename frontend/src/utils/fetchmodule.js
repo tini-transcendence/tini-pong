@@ -86,7 +86,7 @@ export default class {
 			})
 			if (!response.ok)
 				throw new Error(response.statusText);
-			return response.json();
+			return response;
 		} catch (error) {
 			throw new Error(error.message);
 		}
