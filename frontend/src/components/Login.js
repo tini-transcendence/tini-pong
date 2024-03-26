@@ -19,13 +19,13 @@ export default class extends AbstractComponent {
 	handleRoute() {
 		const appNode = document.querySelector("#app");
 		const loginBtn = appNode.querySelector(".btn");
-		loginBtn.addEventListener("click", event => {
+		loginBtn.addEventListener("click", async event => {
 			const refreshToken = localStorage.getItem("refresh_token");
 			if (refreshToken) // refresh token이 존재, accecc token 유무 구분해야함
 			{
 				try {
 					const fetchModule = new FetchModule();
-					fetchModule.getReIssuedAccessToken(refreshToken);
+					await fetchModule.getReIssuedAccessToken(refreshToken);
 					location.href = "/";
 				} catch (error) {
 					location.href = "https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-a44af88cc4ff0433fc32ca3cc93bc26a96ced1a9b0a7c5293de5fb6418ab5707&redirect_uri=https%3A%2F%2Flocalhost%2Flogin%2Foauth&response_type=code";
