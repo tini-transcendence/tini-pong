@@ -1,4 +1,5 @@
 import AbstractComponent from "./AbstractComponent.js";
+import LoginModule from "../utils/loginmodule.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -7,6 +8,8 @@ export default class extends AbstractComponent {
 	}
 
 	async getHtml() {
+		const loginModule = new LoginModule();
+		loginModule.isLogin();
 		return `
 		<h1>Welcome!</h1>
 		<p>This is Main page.</p>
