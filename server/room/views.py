@@ -93,3 +93,50 @@ class JoinRoomView(APIView):
             return Response(
                 {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class LeaveRoomView(APIView):
+    def post(self, request, *args, **kwargs):
+        room_uuid = request.data.get("room_uuid")
+        user_uuid = request.data.get("user_uuid")
+        try:
+            room = Room.objects.get(uuid=room_uuid)
+            user = User.objects.get(uuid=user_uuid)
+
+            # 사용자가 방에 있는지 확인
+            room_user = RoomUser.objects.filter(room_uuid=room, user_uuid=user).first()
+            if not room_user:
+                return Response(
+                    {"error": "User is not in the room."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # 사용자를 방에서 제거
+            room_user.delete()
+
+            # 채널 레이어에서 사용자를 그룹에서 제거
+            channel_layer = get_channel_layer()
+            group_name = f"room_{room_uuid}"
+
+            # 임시!
+            async_to_sync(channel_layer.group_discard)(group_name, user_uuid)
+
+            if not RoomUser.objects.filter(room_uuid=room).exists():
+                room.delete()
+                return Response(
+                    {"message": "Left room and room deleted successfully"},
+                    status=status.HTTP_200_OK,
+                )
+
+            return Response(
+                {"message": "Left room successfully"}, status=status.HTTP_200_OK
+            )
+        except Room.DoesNotExist:
+            return Response(
+                {"error": "Room not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
