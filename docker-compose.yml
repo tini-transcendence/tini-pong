@@ -1,7 +1,8 @@
 version: "3.9"
 
 services:
-  server:
+  backend:
+    container_name: backend
     build:
       context: ./server
       args:
@@ -17,23 +18,25 @@ services:
     depends_on:
       - db
 
-  db:
-    image: postgres:13-alpine
-    volumes:
-      - pong-db-data:/var/lib/postgresql/data
-    env_file:
-      - .env
-
   frontend:
-    image: nginx
     container_name: frontend
+    image: nginx
     ports:
       - "443:443"
     build:
       context: ./frontend
     restart: always
     depends_on:
-      - server
+      - backend
+
+  db:
+    container_name: db
+    image: postgres:13-alpine
+    volumes:
+      - data:/var/lib/postgresql/data
+    env_file:
+      - .env
+
 
 volumes:
-  pong-db-data:
+  data:
