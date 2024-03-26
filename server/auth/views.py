@@ -29,5 +29,5 @@ class RefreshTokenView(View):
             get_timestamp(minutes=30),
         )
         response = HttpResponse()
-        response.set_cookie(key="access_token", value=access_token)
+        response.set_cookie(key="access_token", value=access_token, secure=True, samesite='None')
         return response
