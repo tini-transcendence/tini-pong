@@ -27,6 +27,8 @@ class AddFriendView(View):
     def post(self, request: HttpRequest):
         try:
             user_to = json.loads(request.body)["target_uuid"]
+            if request.user_uuid == str(user_to):
+                return HttpResponseBadRequest()
             Friend.objects.create(user_from=request.user_uuid, user_to_id=user_to)
             return HttpResponse(status=HTTPStatus.CREATED)
         except IntegrityError:
@@ -39,6 +41,8 @@ class DeleteFriendView(View):
     def delete(self, request: HttpRequest):
         try:
             user_to = json.loads(request.body)["target_uuid"]
+            if request.user_uuid == str(user_to):
+                return HttpResponseBadRequest()
             Friend.objects.get(user_from=request.user_uuid, user_to_id=user_to).delete()
             return HttpResponse()
         except Friend.DoesNotExist:
