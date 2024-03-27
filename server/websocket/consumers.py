@@ -55,40 +55,40 @@ class RoomConsumer(AsyncWebsocketConsumer):
         room = Room.objects.get(uuid=room_uuid)
         return room.owner_uuid == user
 
-    @database_sync_to_async
-    async def set_ready_status(self, user, ready):
-        room_user = RoomUser.objects.get(user_uuid=user, room_uuid__uuid=self.room_uuid)
-        room_user.is_ready = ready
-        room_user.save()
-        # 준비 상태 변경을 모든 클라이언트에게 전송
+    #@database_sync_to_async
+    #async def set_ready_status(self, user, ready):
+    #    room_user = RoomUser.objects.get(user_uuid=user, room_uuid__uuid=self.room_uuid)
+    #    room_user.is_ready = ready
+    #    room_user.save()
+    #    # 준비 상태 변경을 모든 클라이언트에게 전송
 
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "room_message",
-                "message": {
-                    "action": "user_ready",
-                    "user_uuid": user.uuid,
-                    "ready": ready,
-                },
-            },
-        )
+    #    await self.channel_layer.group_send(
+    #        self.room_group_name,
+    #        {
+    #            "type": "room_message",
+    #            "message": {
+    #                "action": "user_ready",
+    #                "user_uuid": user.uuid,
+    #                "ready": ready,
+    #            },
+    #        },
+    #    )
 
-    @database_sync_to_async
-    async def start_game(self):
-        room = Room.objects.get(uuid=self.room_uuid)
-        # 모든 유저가 준비되었는지 확인
+    #@database_sync_to_async
+    #async def start_game(self):
+    #    room = Room.objects.get(uuid=self.room_uuid)
+    #    # 모든 유저가 준비되었는지 확인
 
-        if all(user.is_ready for user in room.room_users.all()):
-            room.is_active = True
-            room.save()
-            # 게임 시작을 모든 클라이언트에게 전송
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "room_message",
-                    "message": {
-                        "action": "start_game",
-                    },
-                },
-            )
+    #    if all(user.is_ready for user in room.room_users.all()):
+    #        room.is_active = True
+    #        room.save()
+    #        # 게임 시작을 모든 클라이언트에게 전송
+    #        await self.channel_layer.group_send(
+    #            self.room_group_name,
+    #            {
+    #                "type": "room_message",
+    #                "message": {
+    #                    "action": "start_game",
+    #                },
+    #            },
+    #        )

@@ -35,7 +35,7 @@ class CreateRoomView(APIView):
             # 웹소켓 그룹 생성
             channel_layer = get_channel_layer()
             group_name = f"room_{room.uuid}"
-            async_to_sync(channel_layer.group_add)(group_name, owner.uuid)
+            async_to_sync(channel_layer.group_add)(group_name, str(owner.uuid))
 
             return Response(
                 {"message": "Room created successfully", "room_uuid": str(room.uuid)},

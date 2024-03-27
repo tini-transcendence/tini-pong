@@ -27,3 +27,4 @@ class RoomUser(models.Model):
     room_uuid = models.ForeignKey(
         Room, on_delete=models.CASCADE, related_name="room_users"
     )
+    is_ready = models.BooleanField(default=False)
