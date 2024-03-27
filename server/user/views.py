@@ -55,5 +55,7 @@ class LoginOauthView(View):
             expiration_time=refresh_token_exp,
         )
         response = JsonResponse({"refresh_token": refresh_token})
-        response.set_cookie(key="access_token", value=access_token, secure=True, samesite='None')
+        response.set_cookie(
+            key="access_token", value=access_token, secure=True, samesite="None"
+        )
         return response
