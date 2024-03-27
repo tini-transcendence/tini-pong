@@ -38,7 +38,8 @@ class CreateRoomView(APIView):
             async_to_sync(channel_layer.group_add)(group_name, owner.uuid)
 
             return Response(
-                {"message": "Room created successfully"}, status=status.HTTP_201_CREATED
+                {"message": "Room created successfully", "room_uuid": str(room.uuid)},
+                status=status.HTTP_201_CREATED,
             )
         except User.DoesNotExist:
             return Response(
