@@ -152,6 +152,8 @@ export default class extends AbstractComponent {
 						}),
 					})
 					.then(response => {
+						if (response.ok)
+							location.href = `room/${roomuuid[1]}`;
 						return response.json();
 					})
 					.then(data => {
