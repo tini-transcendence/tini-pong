@@ -1,4 +1,5 @@
 import AbstractComponent from "./AbstractComponent.js";
+import FetchModule from "../utils/fetchmodule.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -86,42 +87,40 @@ export default class extends AbstractComponent {
 		`;
 	}
 
-	/* gameroom {
-		id: Date.now();
-		name:
-		mode:
-		player:
-	} */
-
 	reloadGameRoomList() {
 		const gameRoomList = document.querySelector('#gameroom-list');
 		const gameRoomContent = document.querySelector('#gameroom-content');
 		gameRoomList.replaceChildren();
 		gameRoomContent.replaceChildren();
 
-		(function () {
-			fetch('http://localhost:8000/room/list/', {
-				method: 'GET',
-				credentials: "include",
-			})
-			.then(response => {
-				return response.json();
-			})
-			.then(data => {
-				data.rooms.forEach(gameRoomData => {
-					const gameRoomID = gameRoomData.uuid;
-					gameRoomList.insertAdjacentHTML("beforeend",`
-					<a class="list-group-item list-group-item-action" id="gameroom-${gameRoomID}-list" data-bs-toggle="list" href="#gameroom-${gameRoomID}" role="tab" aria-controls="gameroom-${gameRoomID}">${gameRoomData.name}</a>
-					`);
-					gameRoomContent.insertAdjacentHTML("beforeend", `
-					<div class="tab-pane fade" id="gameroom-${gameRoomID}" role="tabpanel" aria-labelledby="gameroom-${gameRoomID}-list">
-						<h3>${gameRoomData.name}</h3>
-						<p>Mode: ${gameRoomData.type}</p>
-						<p>Player: ${gameRoomData.difficulty} player</p>
-					</div>
-					`);
-				})
-			});
+		(async function () {
+			try {
+				const fetchModule = new FetchModule();
+				const response = await fetchModule.request(new Request("http://localhost:8000/room/list/", {
+					method: 'GET',
+					credentials: "include",
+				}));
+				if (response.ok) {
+					const data = await response.json();
+					data.rooms.forEach(gameRoomData => {
+						const gameRoomID = gameRoomData.uuid;
+						gameRoomList.insertAdjacentHTML("beforeend",`
+						<a class="list-group-item list-group-item-action" id="gameroom-${gameRoomID}-list" data-bs-toggle="list" href="#gameroom-${gameRoomID}" role="tab" aria-controls="gameroom-${gameRoomID}">${gameRoomData.name}</a>
+						`);
+						gameRoomContent.insertAdjacentHTML("beforeend", `
+						<div class="tab-pane fade" id="gameroom-${gameRoomID}" role="tabpanel" aria-labelledby="gameroom-${gameRoomID}-list">
+							<h3>${gameRoomData.name}</h3>
+							<p>Mode: ${gameRoomData.type}</p>
+							<p>Player: ${gameRoomData.difficulty} player</p>
+						</div>
+						`);
+					})
+				}
+				else
+					throw new Error(response.statusText);
+			} catch (error) {
+				console.log(error.message);
+			}
 		})();
 	}
 
@@ -141,25 +140,28 @@ export default class extends AbstractComponent {
 				const roomuuid = selectGameRoom.href.match(/#gameroom-(.*)/);
 				if (roomuuid && roomuuid[1])
 				{
-					console.log(roomuuid[1]);
-					fetch('http://localhost:8000/room/join/', {
-						method: 'POST',
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({
-							room_uuid: roomuuid[1],
-						}),
-						credentials:"include",
-					})
-					.then(response => {
-						if (response.ok)
-							location.href = `room/${roomuuid[1]}`;
-						return response.json();
-					})
-					.then(data => {
-						console.log(data.message);
-					});
+					(async function() {
+						try {
+							const fetchModule = new FetchModule();
+							const response = await fetchModule.request(new Request("http://localhost:8000/room/join/", {
+								method: 'POST',
+								credentials: "include",
+								headers: {
+									"Content-Type": "application/json",
+								},
+								body: JSON.stringify({
+									room_uuid: roomuuid[1],
+								}),
+							}));
+							if (response.ok) {
+								location.href = `room/${roomuuid[1]}`;
+							}
+							else
+								throw new Error(response.statusText);
+						} catch (error) {
+							console.log(error.message);
+						}
+					})();
 				}
 			}
 		})
@@ -168,30 +170,31 @@ export default class extends AbstractComponent {
 		gameRoomSaveBtn.addEventListener("click", event => {
 			event.preventDefault();
 			const openGameRoomModalBody = document.querySelector("#openGameRoomModal .modal-body");
-			try {
-				fetch('http://localhost:8000/room/create/', {
-					method: 'POST',
-					headers: {
-						"Content-Type": "application/json",
-					},
-					credentials: "include",
-					body: JSON.stringify({
-						name: openGameRoomModalBody.querySelector("#title-name").value,
-						type: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
-						difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
-					}),
-				})
-				.then(response => {
-					if (!response.ok)
+			(async function() {
+				try {
+					const fetchModule = new FetchModule();
+					const response = await fetchModule.request(new Request("http://localhost:8000/room/create/", {
+						method: 'POST',
+						credentials: "include",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							name: openGameRoomModalBody.querySelector("#title-name").value,
+							type: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
+							difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
+						}),
+					}));
+					if (response.ok) {
+						const data = await response.json();
+						location.href = `room/${data.room_uuid}`;
+					}
+					else
 						throw new Error(response.statusText);
-					return response.json();
-				})
-				.then(data => {
-					location.href = `room/${data.room_uuid}`;
-				});
-			} catch (error) {
-				console.log(error.message);
-			}
+				} catch (error) {
+					console.log(error.message);
+				}
+			})();
 		})
 	}
 }

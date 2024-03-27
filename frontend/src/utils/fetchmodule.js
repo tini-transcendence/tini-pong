@@ -34,11 +34,10 @@ export default class {
 		try {
 			const response = await fetch(requestInit);
 
-			if (response.ok)
-				return response.json();
 			if (response.status === 401) {
 				return this.handleExpiredAccesstoken(requestInit);
 			}
+			return response;
 		} catch (error) {
 			throw new Error(error.message);
 		}
@@ -64,9 +63,9 @@ export default class {
 
 			const retryResponse = await fetch(requestInit);
 
-			if (!retryResponse.ok)
+			if (retryResponse.status === 401)
 				throw new Error(retryResponse.statusText)
-			return retryResponse.json();
+			return retryResponse;
 		} catch (error) {
 			throw new Error(error.message);
 		}
@@ -77,6 +76,7 @@ export default class {
 		try {
 			const response = await fetch('http://localhost:8000/auth/refresh/', {
 				method: 'POST',
+				credentials: "include",
 				headers: {
 					"Content-Type": "application/json",
 				},
