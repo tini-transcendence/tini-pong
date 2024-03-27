@@ -19,23 +19,22 @@ class RoomListView(APIView):
         return Response({"rooms": serializer.data})
 
 
-@method_decorator(csrf_exempt, name="dispatch")
+# @method_decorator(csrf_exempt, name="dispatch")
 class CreateRoomView(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            owner = User.objects.get(uuid=request.data.get("owner_uuid"))
             room = Room.objects.create(
                 name=request.data.get("name"),
                 type=request.data.get("type"),
                 difficulty=request.data.get("difficulty"),
-                owner_uuid=owner,
+                owner_uuid_id=request.user_uuid,
             )
             # 방장을 방에 추가
-            RoomUser.objects.create(room_uuid=room, user_uuid=owner)
+            RoomUser.objects.create(room_uuid=room, user_uuid_id=request.user_uuid)
             # 웹소켓 그룹 생성
             channel_layer = get_channel_layer()
             group_name = f"room_{room.uuid}"
-            async_to_sync(channel_layer.group_add)(group_name, str(owner.uuid))
+            async_to_sync(channel_layer.group_add)(group_name, request.user_uuid)
 
             return Response(
                 {"message": "Room created successfully", "room_uuid": str(room.uuid)},
@@ -66,10 +65,10 @@ class DeleteRoomView(APIView):
 class JoinRoomView(APIView):
     def post(self, request, *args, **kwargs):
         room_uuid = request.data.get("room_uuid")
-        user_uuid = request.data.get("user_uuid")
+        user_uuid_id = request.user_uuid
         try:
             room = Room.objects.get(uuid=room_uuid)
-            user = User.objects.get(uuid=user_uuid)
+            user = User.objects.get(uuid=user_uuid_id)
 
             # 방이 이미 게임을 시작했는지 확인
             if room.is_active:
@@ -89,7 +88,7 @@ class JoinRoomView(APIView):
             channel_layer = get_channel_layer()
             group_name = f"room_{room_uuid}"
 
-            async_to_sync(channel_layer.group_add)(group_name, user_uuid)
+            async_to_sync(channel_layer.group_add)(group_name, user_uuid_id)
             return Response(
                 {"message": "Joined room successfully"}, status=status.HTTP_200_OK
             )
@@ -107,10 +106,10 @@ class JoinRoomView(APIView):
 class LeaveRoomView(APIView):
     def post(self, request, *args, **kwargs):
         room_uuid = request.data.get("room_uuid")
-        user_uuid = request.data.get("user_uuid")
+        user_uuid_id = request.user_uuid_id
         try:
             room = Room.objects.get(uuid=room_uuid)
-            user = User.objects.get(uuid=user_uuid)
+            user = User.objects.get(uuid=user_uuid_id)
 
             # 사용자가 방에 있는지 확인
             room_user = RoomUser.objects.filter(room_uuid=room, user_uuid=user).first()
@@ -125,7 +124,7 @@ class LeaveRoomView(APIView):
             group_name = f"room_{room_uuid}"
 
             # 방장이 방을 나가는 경우 모든 사용자를 내보내고 방을 삭제
-            if room.owner_uuid == user_uuid:
+            if room.owner_uuid == user_uuid_id:
                 room_users = RoomUser.objects.filter(room_uuid=room)
                 for member in room_users:
                     async_to_sync(channel_layer.group_discard)(

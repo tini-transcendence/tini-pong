@@ -102,6 +102,7 @@ export default class extends AbstractComponent {
 		(function () {
 			fetch('http://localhost:8000/room/list/', {
 				method: 'GET',
+				credentials: "include",
 			})
 			.then(response => {
 				return response.json();
@@ -148,8 +149,8 @@ export default class extends AbstractComponent {
 						},
 						body: JSON.stringify({
 							room_uuid: roomuuid[1],
-							user_uuid: "99adbe43-fa17-4a72-a716-8992b5e0fa62"
 						}),
+						credentials:"include",
 					})
 					.then(response => {
 						if (response.ok)
@@ -173,11 +174,11 @@ export default class extends AbstractComponent {
 					headers: {
 						"Content-Type": "application/json",
 					},
+					credentials: "include",
 					body: JSON.stringify({
 						name: openGameRoomModalBody.querySelector("#title-name").value,
 						type: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
 						difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
-						owner_uuid: "99adbe43-fa17-4a72-a716-8992b5e0fa62"
 					}),
 				})
 				.then(response => {
