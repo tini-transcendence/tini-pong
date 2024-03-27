@@ -18,9 +18,8 @@ class FriendListView(View):
         ).select_related()
         friend_list_response = []
         for friend in friend_list:
-            friend_list_response.append(
-                {"uuid": friend.user_to.uuid, "nickname": friend.user_to.nickname}
-            )
+            uuid, nickname = attrgetter("uuid", "nickname")(friend.user_to)
+            friend_list_response.append({"uuid": uuid, "nickname": nickname})
         return JsonResponse(friend_list_response, safe=False)
 
 
