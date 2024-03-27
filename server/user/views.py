@@ -1,7 +1,7 @@
 import requests
 import os
 
-from django.http import JsonResponse, HttpRequest, HttpResponseBadRequest
+from django.http import JsonResponse, HttpRequest, HttpResponseBadRequest, HttpResponse
 from django.views import View
 
 from util.jwt import create
@@ -9,6 +9,12 @@ from util.timestamp import get_timestamp
 
 from .models import User
 from auth.models import RefreshToken
+
+
+class StatusUpdateView(View):
+    def post(self, request: HttpRequest):
+        User.objects.get(pk=request.user_uuid).save()
+        return HttpResponse()
 
 
 class LoginOauthView(View):
