@@ -5,19 +5,11 @@ import AbstractComponent from "./AbstractComponent.js";
 export default class extends AbstractComponent {
     constructor() {
         super();
-        this.setTitle("Main");
+        this.setTitle("Tournament Data");
     }
 
     async getHtml() {
         return `
-        <!DOCTYPE html>
-        <html lang="en">
-        
-        <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Pong Tournament Data</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
         <style>
         .b {
             /* border: solid 1px black; */
@@ -33,7 +25,6 @@ export default class extends AbstractComponent {
             margin-bottom: 10px;
         }
         </style>
-        </head>
         
         <body>
         
@@ -61,41 +52,33 @@ export default class extends AbstractComponent {
         <script src="tournamentData.js"></script>
         </div>
         
-        
-        <!-- 부트스트랩 JavaScript 추가 (선택 사항) -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-        
         </body>
-        
-        </html>
 		`;
     }
     // 토너먼트 데이터를 표에 채우는 함수
     populateTable(data) {
-
-        var tbody = document.getElementById("tournamentData");
+        let tbody = document.getElementById("tournamentData");
         data.tournamentLog.forEach(function (tournament) {
-            var tr = document.createElement("tr");
+            let tr = document.createElement("tr");
             // Timestamp 추가
-            var tdTimestamp = document.createElement("td");
-            var timestamp = new Date(tournament.tournament[0].timestamp * 1000);
-            var options = {
+            let tdTimestamp = document.createElement("td");
+            let timestamp = new Date(tournament.tournament[0].timestamp * 1000);
+            let options = {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
                 hour: '2-digit',
                 minute: '2-digit'
             };
-            var formattedTimestamp = timestamp.toLocaleDateString('en-GB', options).replace(/\//g, '.').replace(",", "");
-            // var formattedTimestamp = timestamp.toLocaleDateString('en-GB', { day: 'numeric', month: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' }).replace(",", "");;
+            let formattedTimestamp = timestamp.toLocaleDateString('en-GB', options).replace(/\//g, '.').replace(",", "");
             tdTimestamp.textContent = formattedTimestamp;
             tr.appendChild(tdTimestamp);
 
             // 플레이어 데이터 추가
-            for (var i = 1; i < tournament.tournament.length; i++) {
-                var tdPlayer = document.createElement("td");
-                var playerA = tournament.tournament[i].playerA.name + " " + tournament.tournament[i].playerA.score + " " + (tournament.tournament[i].playerA.score > tournament.tournament[i].playerB.score ? "W" : "L");
-                var playerB = tournament.tournament[i].playerB.name + " " + tournament.tournament[i].playerB.score + " " + (tournament.tournament[i].playerB.score > tournament.tournament[i].playerA.score ? "W" : "L");
+            for (let i = 1; i < tournament.tournament.length; i++) {
+                let tdPlayer = document.createElement("td");
+                let playerA = tournament.tournament[i].playerA.name + " " + tournament.tournament[i].playerA.score + " " + (tournament.tournament[i].playerA.score > tournament.tournament[i].playerB.score ? "W" : "L");
+                let playerB = tournament.tournament[i].playerB.name + " " + tournament.tournament[i].playerB.score + " " + (tournament.tournament[i].playerB.score > tournament.tournament[i].playerA.score ? "W" : "L");
                 tdPlayer.innerHTML = `${playerA}<br>${playerB}`;
                 tr.appendChild(tdPlayer);
             }
