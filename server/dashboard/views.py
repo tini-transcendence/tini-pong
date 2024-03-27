@@ -68,12 +68,12 @@ class Tournament:
 def test():
     t = Tournament()
     t.add_timestamp()
-    t.add_game_log(t.make_player("asdf", 1), t.make_player("b", 0), 1)
-    t.add_game_log(t.make_player("ffffffff", 2), t.make_player("b", 1), 2)
-    t.add_game_log(t.make_player("asdf", 3), t.make_player("b", 2), 3)
-
+    t.add_game_log(t.make_player("test player A", 1), t.make_player("b", 0), 1)
+    t.add_game_log(t.make_player("test player B", 2), t.make_player("b", 1), 2)
+    t.add_game_log(t.make_player("test player A", 3), t.make_player("b", 2), 3)
 
     store_transaction(t.tournament)
+
 
 class StoreTransactionView(APIView):
     def get(self, request):
