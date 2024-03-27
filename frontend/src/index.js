@@ -10,6 +10,7 @@ import UserEdit from "./components/UserEdit.js";
 import Lobby from "./components/Lobby.js";
 import Local from "./components/Local.js";
 import Tdata from "./components/tournamentData.js";
+import Room from "./components/Room.js";
 import NotFound from "./components/NotFound.js";
 
 const ROUTE_PARAMETER_REGEX = /:(\w+)/g;
@@ -24,7 +25,8 @@ const routes = [
 	{ path: "/edit", component: [UserEdit]},
 	{ path: "/lobby", component: [Lobby, Navbar]},
 	{ path: "/local", component: [Local]},
-  { path: "/tdata", component: [Tdata] },
+	{ path: "/tdata", component: [Tdata] },
+	{ path: "/room/:roomuuid", component: [Room] },
 	{ path: "/404", component: [NotFound]},
 ];
 
