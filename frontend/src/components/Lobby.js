@@ -135,7 +135,30 @@ export default class extends AbstractComponent {
 		const gameRoomEnterBtn = document.querySelector("#gameroom-enter");
 		gameRoomEnterBtn.addEventListener("click", event => {
 			const selectGameRoom = document.querySelector("[aria-selected='true']");
-			console.log(selectGameRoom);
+			if (selectGameRoom)
+			{
+				const roomuuid = selectGameRoom.href.match(/#gameroom-(.*)/);
+				if (roomuuid && roomuuid[1])
+				{
+					console.log(roomuuid[1]);
+					fetch('http://localhost:8000/room/join/', {
+						method: 'POST',
+						headers: {
+							"Content-Type": "application/json", 
+						},
+						body: JSON.stringify({
+							room_uuid: roomuuid[1],
+							user_uuid: "39e96fd3-6e52-4ab2-8234-08f41e383934"
+						}),
+					})
+					.then(response => {
+						return response.json();
+					})
+					.then(data => {
+						console.log(data.message);
+					});
+				}
+			}
 		})
 
 		const gameRoomSaveBtn = document.querySelector("#gameroom-save");
@@ -151,7 +174,7 @@ export default class extends AbstractComponent {
 					name: openGameRoomModalBody.querySelector("#title-name").value,
 					type: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
 					difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
-					owner_uuid: "9184e8d1-7117-419d-9c40-aeff071b8649"
+					owner_uuid: "39e96fd3-6e52-4ab2-8234-08f41e383934"
 				}),
 			})
 			.then(response => {
