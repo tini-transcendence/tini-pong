@@ -98,7 +98,7 @@ export default class extends AbstractComponent {
 		const gameRoomContent = document.querySelector('#gameroom-content');
 		gameRoomList.replaceChildren();
 		gameRoomContent.replaceChildren();
-		
+
 		(function () {
 			fetch('http://localhost:8000/room/list/', {
 				method: 'GET',
@@ -144,11 +144,11 @@ export default class extends AbstractComponent {
 					fetch('http://localhost:8000/room/join/', {
 						method: 'POST',
 						headers: {
-							"Content-Type": "application/json", 
+							"Content-Type": "application/json",
 						},
 						body: JSON.stringify({
 							room_uuid: roomuuid[1],
-							user_uuid: "39e96fd3-6e52-4ab2-8234-08f41e383934"
+							user_uuid: "99adbe43-fa17-4a72-a716-8992b5e0fa62"
 						}),
 					})
 					.then(response => {
@@ -171,13 +171,13 @@ export default class extends AbstractComponent {
 				fetch('http://localhost:8000/room/create/', {
 					method: 'POST',
 					headers: {
-						"Content-Type": "application/json", 
+						"Content-Type": "application/json",
 					},
 					body: JSON.stringify({
 						name: openGameRoomModalBody.querySelector("#title-name").value,
 						type: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
 						difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
-						owner_uuid: "39e96fd3-6e52-4ab2-8234-08f41e383934"
+						owner_uuid: "99adbe43-fa17-4a72-a716-8992b5e0fa62"
 					}),
 				})
 				.then(response => {
@@ -189,8 +189,8 @@ export default class extends AbstractComponent {
 					location.href = `room/${data.room_uuid}`;
 				});
 			} catch (error) {
-				console.log(error.message);	
-			}	
+				console.log(error.message);
+			}
 		})
 	}
 }
