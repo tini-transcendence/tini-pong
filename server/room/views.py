@@ -30,6 +30,13 @@ class CreateRoomView(APIView):
                 difficulty=request.data.get("difficulty"),
                 owner_uuid=owner,
             )
+            # 방장을 방에 추가
+            RoomUser.objects.create(room_uuid=room, user_uuid=owner)
+            # 웹소켓 그룹 생성
+            channel_layer = get_channel_layer()
+            group_name = f"room_{room.uuid}"
+            async_to_sync(channel_layer.group_add)(group_name, owner.uuid)
+
             return Response(
                 {"message": "Room created successfully"}, status=status.HTTP_201_CREATED
             )
@@ -76,7 +83,7 @@ class JoinRoomView(APIView):
                     {"error": "The room is full."}, status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # 사용자를 방에 추가합니다.
+            # 사용자를 방에 추가
             RoomUser.objects.create(room_uuid=room, user_uuid=user)
             channel_layer = get_channel_layer()
             group_name = f"room_{room_uuid}"
@@ -112,26 +119,34 @@ class LeaveRoomView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            # 사용자를 방에서 제거
-            room_user.delete()
-
             # 채널 레이어에서 사용자를 그룹에서 제거
             channel_layer = get_channel_layer()
             group_name = f"room_{room_uuid}"
 
-            # 임시!
-            async_to_sync(channel_layer.group_discard)(group_name, user_uuid)
+            # 방장이 방을 나가는 경우 모든 사용자를 내보내고 방을 삭제
+            if room.owner_uuid == user_uuid:
+                room_users = RoomUser.objects.filter(room_uuid=room)
+                for member in room_users:
+                    async_to_sync(channel_layer.group_discard)(
+                        group_name, member.user_uuid
+                    )
+                    member.delete()
 
-            if not RoomUser.objects.filter(room_uuid=room).exists():
                 room.delete()
                 return Response(
-                    {"message": "Left room and room deleted successfully"},
+                    {"message": "Room closed and all users removed by owner"},
                     status=status.HTTP_200_OK,
                 )
+            else:
+                # 방장이 아닌 경우 해당 사용자만 제거
+                async_to_sync(channel_layer.group_discard)(
+                    group_name, user.channel_name
+                )
+                room_user.delete()
 
-            return Response(
-                {"message": "Left room successfully"}, status=status.HTTP_200_OK
-            )
+                return Response(
+                    {"message": "Left room successfully"}, status=status.HTTP_200_OK
+                )
         except Room.DoesNotExist:
             return Response(
                 {"error": "Room not found"}, status=status.HTTP_404_NOT_FOUND
