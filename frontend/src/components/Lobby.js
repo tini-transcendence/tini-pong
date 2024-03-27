@@ -167,26 +167,30 @@ export default class extends AbstractComponent {
 		gameRoomSaveBtn.addEventListener("click", event => {
 			event.preventDefault();
 			const openGameRoomModalBody = document.querySelector("#openGameRoomModal .modal-body");
-			fetch('http://localhost:8000/room/create/', {
-				method: 'POST',
-				headers: {
-					"Content-Type": "application/json", 
-				},
-				body: JSON.stringify({
-					name: openGameRoomModalBody.querySelector("#title-name").value,
-					type: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
-					difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
-					owner_uuid: "39e96fd3-6e52-4ab2-8234-08f41e383934"
-				}),
-			})
-			.then(response => {
-				if (response.status === 201)
-					this.reloadGameRoomList();
-				return response.json();
-			})
-			.then(data => {
-				console.log(data.message);
-			});
+			try {
+				fetch('http://localhost:8000/room/create/', {
+					method: 'POST',
+					headers: {
+						"Content-Type": "application/json", 
+					},
+					body: JSON.stringify({
+						name: openGameRoomModalBody.querySelector("#title-name").value,
+						type: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
+						difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
+						owner_uuid: "39e96fd3-6e52-4ab2-8234-08f41e383934"
+					}),
+				})
+				.then(response => {
+					if (!response.ok)
+						throw new Error(response.statusText);
+					return response.json();
+				})
+				.then(data => {
+					location.href = `room/${data.room_uuid}`;
+				});
+			} catch (error) {
+				console.log(error.message);	
+			}	
 		})
 	}
 }
