@@ -30,6 +30,8 @@ class AddFriendView(View):
             return HttpResponse(status=HTTPStatus.CREATED)
         except IntegrityError:
             return HttpResponse(status=HTTPStatus.CONFLICT)
+        except ValidationError:
+            return HttpResponseBadRequest()
 
 
 class DeleteFriendView(View):
