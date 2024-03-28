@@ -56,6 +56,7 @@ INSTALLED_APPS = [
 ]
 
 ASGI_APPLICATION = "server.asgi.application"
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
