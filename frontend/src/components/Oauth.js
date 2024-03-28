@@ -1,4 +1,5 @@
 import AbstractComponent from "./AbstractComponent.js";
+import FetchModule from "../utils/fetchmodule.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -16,16 +17,24 @@ export default class extends AbstractComponent {
 
 	handleRoute() {
 		const queryString = location.search;
-		fetch(`http://localhost:8000/user/login/oauth${queryString}`, {
-				method: 'GET',
-				credentials: "include"
-		})
-		.then(response => {
-			return response.json();
-		})
-		.then(data => {
-			localStorage.setItem("refresh_token", data.refresh_token);
-			location.href = "/";
-		});
+
+		(async function() {
+			try {
+				const fetchModule = new FetchModule();
+				const response = await fetchModule.request(new Request(`http://localhost:8000/user/login/oauth${queryString}`, {
+					method: 'GET',
+					credentials: "include"
+				}));
+				if (response.ok) {
+					const data = await response.json();
+					localStorage.setItem("refresh_token", data.refresh_token);
+					location.href = "/";
+				}
+				else
+					throw new Error(response.statusText);
+			} catch (error) {
+				console.log(error.message);
+			}
+		})();
 	}
 }
