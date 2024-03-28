@@ -8,3 +8,4 @@ class User(models.Model):
     otp_secret = models.CharField()
     nickname = models.CharField(max_length=20)
     avatar = models.CharField(null=True)
+    online_status = models.DateTimeField(auto_now=True)

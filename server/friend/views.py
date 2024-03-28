@@ -1,6 +1,7 @@
 import json
 from http import HTTPStatus
 from operator import attrgetter
+from datetime import datetime, timedelta, timezone
 
 from django.http import HttpRequest, JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.views import View
@@ -16,11 +17,12 @@ class FriendListView(View):
         friend_list = Friend.objects.filter(
             user_from=request.user_uuid
         ).select_related()
-        friend_list_response = []
+        response_list = []
         for friend in friend_list:
             uuid, nickname = attrgetter("uuid", "nickname")(friend.user_to)
-            friend_list_response.append({"uuid": uuid, "nickname": nickname})
-        return JsonResponse(friend_list_response, safe=False)
+            status = calculate_online_status(friend.user_to.online_status)
+            response_list.append({"uuid": uuid, "nickname": nickname, "status": status})
+        return JsonResponse(response_list, safe=False)
 
 
 class AddFriendView(View):
@@ -59,6 +61,11 @@ class SearchFriendView(View):
             uuid, nickname = attrgetter("uuid", "nickname")(searched_user)
             if request.user_uuid == str(uuid):
                 return HttpResponseBadRequest()
-            return JsonResponse({"uuid": uuid, "nickname": nickname})
+            status = calculate_online_status(searched_user.online_status)
+            return JsonResponse({"uuid": uuid, "nickname": nickname, "status": status})
         except User.DoesNotExist:
             return JsonResponse({})
+
+
+def calculate_online_status(online_status: datetime):
+    return online_status + timedelta(seconds=5) > datetime.now(tz=timezone.utc)

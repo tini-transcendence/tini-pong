@@ -1,12 +1,14 @@
 from channels.middleware import BaseMiddleware
 from channels.db import database_sync_to_async
-from django.http import HttpRequest
 from django.contrib.auth.models import AnonymousUser
 from django.db import close_old_connections
 from user.models import User
 from util.jwt import validate, decode, BaseJWTError
+from django.http import HttpRequest, HttpResponse
+from django.conf import settings
 
 import os
+from http import HTTPStatus
 
 
 class AuthMiddleware:
@@ -23,8 +25,11 @@ class AuthMiddleware:
                 request.user_uuid = decode(access_token).get("uuid")
         except:
             request.is_logged_in = False
+        if not request.is_logged_in and not check_whitelist(request.path):
+            return HttpResponse(status=HTTPStatus.UNAUTHORIZED)
         response = self.get_response(request)
         return response
+
 
 
 class TokenAuthMiddleware(BaseMiddleware):
@@ -56,3 +61,11 @@ class TokenAuthMiddleware(BaseMiddleware):
             return User.objects.get(uuid=user_uuid)
         except User.DoesNotExist:
             return AnonymousUser()
+
+
+def check_whitelist(request_path):
+    for path in settings.AUTH_WHITELIST:
+        if request_path.startswith(path):
+            return True
+    return False
+
