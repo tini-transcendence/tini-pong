@@ -136,11 +136,9 @@ export default class extends AbstractComponent {
 		const gameRoomEnterBtn = document.querySelector("#gameroom-enter");
 		gameRoomEnterBtn.addEventListener("click", event => {
 			const selectGameRoom = document.querySelector("[aria-selected='true']");
-			if (selectGameRoom)
-			{
+			if (selectGameRoom) {
 				const roomuuid = selectGameRoom.href.match(/#gameroom-(.*)/);
-				if (roomuuid && roomuuid[1])
-				{
+				if (roomuuid && roomuuid[1]) {
 					console.log(roomuuid[1]);
 					fetch('http://localhost:8000/room/join/', {
 						method: 'POST',
@@ -154,7 +152,8 @@ export default class extends AbstractComponent {
 					})
 					.then(response => {
 						if (response.ok)
-							location.href = `room/${roomuuid[1]}`;
+							console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+							this.connectToWebSocket(roomuuid[1]);
 						return response.json();
 					})
 					.then(data => {
@@ -193,5 +192,26 @@ export default class extends AbstractComponent {
 				console.log(error.message);
 			}
 		})
+	}
+
+	connectToWebSocket(roomUuid) {
+		const webSocket = new WebSocket(`ws://localhost:8000/ws/room/${roomUuid}/`);
+
+		webSocket.onopen = function(event) {
+			console.log('WebSocket is connected.');
+		};
+
+		webSocket.onmessage = function(event) {
+			const data = JSON.parse(event.data);
+			console.log('Message from server ', data);
+		};
+
+		webSocket.onclose = function(event) {
+			console.log('WebSocket is closed now.');
+		};
+
+		webSocket.onerror = function(event) {
+			console.error('WebSocket error observed:', event);
+		};
 	}
 }

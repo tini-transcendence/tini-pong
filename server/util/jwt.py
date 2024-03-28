@@ -97,22 +97,26 @@ class __JWT:
         return decoded_data
 
 
-class PayloadError(Exception):
+class BaseJWTError(Exception):
+    pass
+
+
+class PayloadError(BaseJWTError):
     def __init__(self):
         super().__init__("argument 'payload' should be dictionary type")
 
 
-class SecretError(Exception):
+class SecretError(BaseJWTError):
     def __init__(self):
         super().__init__("argument 'secret' should be string type")
 
 
-class ExpireTimeError(Exception):
+class ExpireTimeError(BaseJWTError):
     def __init__(self):
         super().__init__("argument 'expire_time' should be integer type")
 
 
-class HeaderNotSupportError(Exception):
+class HeaderNotSupportError(BaseJWTError):
     def __init__(self, alg, typ):
         super().__init__("alg '%s' or typ '%s' not supported" % (alg, typ))
 
