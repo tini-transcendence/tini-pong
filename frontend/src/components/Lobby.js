@@ -152,7 +152,6 @@ export default class extends AbstractComponent {
 					})
 					.then(response => {
 						if (response.ok)
-							console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 							this.connectToWebSocket(roomuuid[1]);
 						return response.json();
 					})
@@ -195,7 +194,8 @@ export default class extends AbstractComponent {
 	}
 
 	connectToWebSocket(roomUuid) {
-		const webSocket = new WebSocket(`ws://localhost:8000/ws/room/${roomUuid}/`);
+		const token = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
+		const webSocket = new WebSocket(`ws://localhost:8000/ws/room/${roomUuid}/?access_token=${token}`);
 
 		webSocket.onopen = function(event) {
 			console.log('WebSocket is connected.');
