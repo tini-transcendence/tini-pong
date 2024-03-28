@@ -137,8 +137,7 @@ export default class extends AbstractComponent {
 		const gameRoomEnterBtn = document.querySelector("#gameroom-enter");
 		gameRoomEnterBtn.addEventListener("click", event => {
 			const selectGameRoom = document.querySelector("[aria-selected='true']");
-			if (selectGameRoom)
-			{
+			if (selectGameRoom) {
 				const roomuuid = selectGameRoom.href.match(/#gameroom-(.*)/);
 				if (roomuuid && roomuuid[1])
 				{
@@ -156,7 +155,9 @@ export default class extends AbstractComponent {
 								}),
 							}));
 							if (response.ok) {
-								location.href = `room/${roomuuid[1]}`;
+// 								location.href = `room/${roomuuid[1]}`;
+                console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+							  this.connectToWebSocket(roomuuid[1]);
 							}
 							else if (response.status === 404)
 								throw new Error(response.error);
@@ -202,5 +203,26 @@ export default class extends AbstractComponent {
 				}
 			})();
 		})
+	}
+
+	connectToWebSocket(roomUuid) {
+		const webSocket = new WebSocket(`ws://localhost:8000/ws/room/${roomUuid}/`);
+
+		webSocket.onopen = function(event) {
+			console.log('WebSocket is connected.');
+		};
+
+		webSocket.onmessage = function(event) {
+			const data = JSON.parse(event.data);
+			console.log('Message from server ', data);
+		};
+
+		webSocket.onclose = function(event) {
+			console.log('WebSocket is closed now.');
+		};
+
+		webSocket.onerror = function(event) {
+			console.error('WebSocket error observed:', event);
+		};
 	}
 }
