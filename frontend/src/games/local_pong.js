@@ -407,7 +407,7 @@ function updateScoreBoard()
   if (score.player1 === 5)
     scoreBoard.innerHTML = 'Player 1 Win! [r] to regame';
   else if (score.player2 === 5)
-    scoreBoard.innerHTML = 'Player 2 Win! [r] to regmae';
+    scoreBoard.innerHTML = 'Player 2 Win! [r] to regame';
   else
   {
     scoreBoard.innerHTML = 'Player 1: ' + score.player1 + ' Player 2: ' + score.player2;
