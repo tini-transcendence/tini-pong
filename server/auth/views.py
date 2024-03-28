@@ -1,15 +1,14 @@
 import os
+import json
+from http import HTTPStatus
 
 from django.http import HttpRequest, HttpResponse
 from django.views import View
 
-from http import HTTPStatus
+from .models import RefreshToken
 
 from util.jwt import create, validate
 from util.timestamp import get_timestamp
-
-from .models import RefreshToken
-import json
 
 
 class RefreshTokenView(View):
