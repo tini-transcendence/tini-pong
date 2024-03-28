@@ -1,28 +1,3 @@
-/* refetch module use
-const reqGet = new Request("link", {
-	method: 'GET',
-})
-const reqPost = new Request("link", {
-	method: 'POST',
-	headers: {
-		"Content-Type": "application/json"
-	},
-	body: JSON.stringify({
-
-	}),
-})
-
-try {
-	const req = new fetchModule;
-	const data = await req.request(reqGet);
-	// 정상적으로 fetch가 되었을 때 하고싶은 행동
-	this.reloadGameRoomList();
-	console.log(data.message);
-} catch (error) {
-	console.log(error.message);
-}
-*/
-
 export default class {
 	constructor() {
 		this.isRefreshing = false;
