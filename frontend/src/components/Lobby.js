@@ -141,7 +141,7 @@ export default class extends AbstractComponent {
 				const roomuuid = selectGameRoom.href.match(/#gameroom-(.*)/);
 				if (roomuuid && roomuuid[1])
 				{
-					(async function() {
+					(async function(callback) {
 						try {
 							const fetchModule = new FetchModule();
 							const response = await fetchModule.request(new Request("http://localhost:8000/room/join/", {
@@ -156,7 +156,7 @@ export default class extends AbstractComponent {
 							}));
 							if (response.ok) {
 // 								location.href = `room/${roomuuid[1]}`;
-							  this.connectToWebSocket(roomuuid[1]);
+								callback(roomuuid[1]);
 							}
 							else if (response.status === 404)
 								throw new Error(response.error);
@@ -165,7 +165,7 @@ export default class extends AbstractComponent {
 						} catch (error) {
 							console.log(error.message);
 						}
-					})();
+					})(this.connectToWebSocket);
 				}
 			}
 		})
@@ -174,7 +174,7 @@ export default class extends AbstractComponent {
 		gameRoomSaveBtn.addEventListener("click", event => {
 			event.preventDefault();
 			const openGameRoomModalBody = document.querySelector("#openGameRoomModal .modal-body");
-			(async function() {
+			(async function(callback) {
 				try {
 					const fetchModule = new FetchModule();
 					const response = await fetchModule.request(new Request("http://localhost:8000/room/create/", {
@@ -191,7 +191,7 @@ export default class extends AbstractComponent {
 					}));
 					if (response.ok) {
 						const data = await response.json();
-						location.href = `room/${data.room_uuid}`;
+						callback(data.room_uuid);
 					}
 					else if (response.status === 404)
 						throw new Error(response.error);
@@ -200,11 +200,13 @@ export default class extends AbstractComponent {
 				} catch (error) {
 					console.log(error.message);
 				}
-			})();
+			})(this.connectToWebSocket);
 		})
 	}
 
 	connectToWebSocket(roomUuid) {
+		console.log(roomUuid);
+
 		const token = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
 		const webSocket = new WebSocket(`ws://localhost:8000/ws/room/${roomUuid}/?access_token=${token}`);
 
