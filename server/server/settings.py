@@ -165,3 +165,5 @@ CORS_ALLOWED_ORIGINS = [
     "https://127.0.0.1",
     "https://127.0.0.1:443",
 ]
+
+AUTH_WHITELIST = os.environ.get("AUTH_WHITELIST").split(",")
