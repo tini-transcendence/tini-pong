@@ -6,11 +6,14 @@ export default class extends AbstractComponent {
 		this.setTitle("Users");
 	}
 
-	async getHtml(params) {
-		const username = params.username;
+	async getHtml() {
 		return `
-		<h1>${username} Page</h1>
-		<p>This is ${username} Page.</p>
+		<h1>User Page</h1>
+		<p>This is User Page.</p>
 		`;
+	}
+
+	handleRoute() {
+
 	}
 }

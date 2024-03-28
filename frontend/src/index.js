@@ -13,6 +13,8 @@ import Tdata from "./components/tournamentData.js";
 import Room from "./components/Room.js";
 import NotFound from "./components/NotFound.js";
 
+import LoginModule from "./utils/loginmodule.js";
+
 const ROUTE_PARAMETER_REGEX = /:(\w+)/g;
 const URL_FRAGMENT_REGEX = /\//g;
 
@@ -25,8 +27,8 @@ const routes = [
 	{ path: "/edit", component: [UserEdit]},
 	{ path: "/lobby", component: [Lobby, Navbar]},
 	{ path: "/local", component: [Local]},
-	{ path: "/tdata", component: [Tdata] },
-	{ path: "/room/:roomuuid", component: [Room] },
+	{ path: "/tdata", component: [Tdata]},
+	{ path: "/room/:roomuuid", component: [Room]},
 	{ path: "/404", component: [NotFound]},
 ];
 
@@ -61,7 +63,7 @@ const router = async () => {
 	}
 
 	const component = new match.route.component[0]();
-	document.querySelector("#app").innerHTML = await component.getHtml(getParams(match));
+	document.querySelector("#app").innerHTML = await component.getHtml(loginModule);
 	if (match.route.component[1]) {
 		const navbar = new match.route.component[1]();
 		if (navbar) {
@@ -72,7 +74,7 @@ const router = async () => {
 	else {
 		document.querySelector("#nav").innerHTML = await ``;
 	}
-	component.handleRoute();
+	component.handleRoute(getParams(match));
 }
 
 const navigateTo = url => {
@@ -94,5 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	});
 });
+
+const loginModule = new LoginModule();
 
 router();
