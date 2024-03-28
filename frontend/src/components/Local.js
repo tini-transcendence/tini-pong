@@ -17,8 +17,8 @@ export default class extends AbstractComponent {
 	}
 
 	handleRoute() {
-		const gameRoomEnterBtn = document.querySelector("#goBackButton");
-		gameRoomEnterBtn.addEventListener("click", event => {
+		const goBackButton = document.querySelector("#goBackButton");
+		goBackButton.addEventListener("click", event => {
 			window.history.back();
 		});
 		init();
