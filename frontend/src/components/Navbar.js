@@ -79,7 +79,7 @@ export default class extends AbstractComponent {
 						throw new Error(response.statusText);
 					}
 					else if (response.status === 204) {
-						throw new Error(response.statusText);
+						throw new Error("Already deleted");
 					}
 				} catch (error) {
 					console.log(error.message);
@@ -143,25 +143,33 @@ export default class extends AbstractComponent {
 
 							const resultItemBtn = resultSearchUser.querySelector("button");
 							resultItemBtn.addEventListener("click", async event => {
-								const fetchModule2 = new FetchModule();
-								const response2 = await fetchModule2.request(new Request("http://localhost:8000/friend/add/", {
-									method: 'POST',
-									credentials: "include",
-									headers: {
-										"Content-Type": "application/json",
-									},
-									body: JSON.stringify({
-										target_uuid: data.uuid,
-									}),
-								}));
-								if (response2.ok) {
-									friends.push(data);
-									callback(data);
+								try {
+									const fetchModule2 = new FetchModule();
+									const response2 = await fetchModule2.request(new Request("http://localhost:8000/friend/add/", {
+										method: 'POST',
+										credentials: "include",
+										headers: {
+											"Content-Type": "application/json",
+										},
+										body: JSON.stringify({
+											target_uuid: data.uuid,
+										}),
+									}));
+									if (response2.ok) {
+										friends.push(data);
+										callback(data);
+									}
+									else if (response2.status === 409)
+									{
+										throw new Error("Already friend");
+									}
+									else if (response2.status === 400)
+										throw new Error("Cannot add myself");
+									else
+										throw new Error(response.statusText);
+								} catch (error) {
+									console.log(error.message);
 								}
-								else if (response2 === 409)
-									console.log("Already friend");
-								else if (response2 === 400)
-									console.log("Me");
 							})
 						}
 						else { // 유저가 없는 경우

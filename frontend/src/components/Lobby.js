@@ -116,6 +116,8 @@ export default class extends AbstractComponent {
 						`);
 					})
 				}
+				else if (response.status === 404)
+					throw new Error(response.error);
 				else
 					throw new Error(response.statusText);
 			} catch (error) {
@@ -156,6 +158,8 @@ export default class extends AbstractComponent {
 							if (response.ok) {
 								location.href = `room/${roomuuid[1]}`;
 							}
+							else if (response.status === 404)
+								throw new Error(response.error);
 							else
 								throw new Error(response.statusText);
 						} catch (error) {
@@ -189,6 +193,8 @@ export default class extends AbstractComponent {
 						const data = await response.json();
 						location.href = `room/${data.room_uuid}`;
 					}
+					else if (response.status === 404)
+						throw new Error(response.error);
 					else
 						throw new Error(response.statusText);
 				} catch (error) {
