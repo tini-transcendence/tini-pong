@@ -17,21 +17,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
 
-        player_number = await self.assign_player_number()
-        self.player_number = player_number
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "room_message",
-                "message": {
-                    "action": "player_joined",
-                    "user_uuid": str(self.user.uuid),
-                    "user_nickname": self.user.nickname,
-                    "player_number": player_number,
-                },
-            },
-        )
-
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
@@ -39,7 +24,22 @@ class RoomConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         action = text_data_json.get("action")
 
-        if action == "ready" and not await self.is_room_owner(
+        if action == "join":
+            player_number = await self.assign_player_number()
+            self.player_number = player_number
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "room_message",
+                    "message": {
+                        "action": "player_joined",
+                        "user_uuid": str(self.user.uuid),
+                        "user_nickname": self.user.nickname,
+                        "player_number": player_number,
+                    },
+                },
+            )
+        elif action == "ready" and not await self.is_room_owner(
             self.user, self.room_uuid
         ):
             await self.set_ready_status(self.user, text_data_json["ready"])
