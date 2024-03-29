@@ -104,7 +104,7 @@ export default class extends AbstractComponent {
 					const data = await response.json();
 					data.rooms.forEach(gameRoomData => {
 						const gameRoomID = gameRoomData.uuid;
-						gameRoomList.insertAdjacentHTML("beforeend",`
+						gameRoomList.insertAdjacentHTML("beforeend", `
 						<a class="list-group-item list-group-item-action" id="gameroom-${gameRoomID}-list" data-bs-toggle="list" href="#gameroom-${gameRoomID}" role="tab" aria-controls="gameroom-${gameRoomID}">${gameRoomData.name}</a>
 						`);
 						gameRoomContent.insertAdjacentHTML("beforeend", `
@@ -139,9 +139,8 @@ export default class extends AbstractComponent {
 			const selectGameRoom = document.querySelector("[aria-selected='true']");
 			if (selectGameRoom) {
 				const roomuuid = selectGameRoom.href.match(/#gameroom-(.*)/);
-				if (roomuuid && roomuuid[1])
-				{
-					(async function(callback) {
+				if (roomuuid && roomuuid[1]) {
+					(async function () {
 						try {
 							const fetchModule = new FetchModule();
 							const response = await fetchModule.request(new Request("http://localhost:8000/room/join/", {
@@ -155,8 +154,8 @@ export default class extends AbstractComponent {
 								}),
 							}));
 							if (response.ok) {
-// 								location.href = `room/${roomuuid[1]}`;
-								callback(roomuuid[1]);
+								location.href = `room/${roomuuid[1]}`;
+								// callback(roomuuid[1]);
 							}
 							else if (response.status === 404)
 								throw new Error(response.error);
@@ -165,7 +164,7 @@ export default class extends AbstractComponent {
 						} catch (error) {
 							console.log(error.message);
 						}
-					})(this.connectToWebSocket);
+					})();
 				}
 			}
 		})
@@ -174,7 +173,7 @@ export default class extends AbstractComponent {
 		gameRoomSaveBtn.addEventListener("click", event => {
 			event.preventDefault();
 			const openGameRoomModalBody = document.querySelector("#openGameRoomModal .modal-body");
-			(async function(callback) {
+			(async function () {
 				try {
 					const fetchModule = new FetchModule();
 					const response = await fetchModule.request(new Request("http://localhost:8000/room/create/", {
@@ -191,7 +190,8 @@ export default class extends AbstractComponent {
 					}));
 					if (response.ok) {
 						const data = await response.json();
-						callback(data.room_uuid);
+						// callback(data.room_uuid);
+						location.href = `room/` + data.room_uuid;
 					}
 					else if (response.status === 404)
 						throw new Error(response.error);
@@ -200,31 +200,31 @@ export default class extends AbstractComponent {
 				} catch (error) {
 					console.log(error.message);
 				}
-			})(this.connectToWebSocket);
+			})();
 		})
 	}
 
-	connectToWebSocket(roomUuid) {
-		console.log(roomUuid);
+	// connectToWebSocket(roomUuid) {
+	// 	console.log(roomUuid);
 
-		const token = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
-		const webSocket = new WebSocket(`ws://localhost:8000/ws/room/${roomUuid}/?access_token=${token}`);
+	// 	const token = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
+	// 	const webSocket = new WebSocket(`ws://localhost:8000/ws/room/${roomUuid}/?access_token=${token}`);
 
-		webSocket.onopen = function(event) {
-			console.log('WebSocket is connected.');
-		};
+	// 	webSocket.onopen = function (event) {
+	// 		console.log('WebSocket is connected.');
+	// 	};
 
-		webSocket.onmessage = function(event) {
-			const data = JSON.parse(event.data);
-			console.log('Message from server ', data);
-		};
+	// 	webSocket.onmessage = function (event) {
+	// 		const data = JSON.parse(event.data);
+	// 		console.log('Message from server ', data);
+	// 	};
 
-		webSocket.onclose = function(event) {
-			console.log('WebSocket is closed now.');
-		};
+	// 	webSocket.onclose = function (event) {
+	// 		console.log('WebSocket is closed now.');
+	// 	};
 
-		webSocket.onerror = function(event) {
-			console.error('WebSocket error observed:', event);
-		};
-	}
+	// 	webSocket.onerror = function (event) {
+	// 		console.error('WebSocket error observed:', event);
+	// 	};
+	// }
 }

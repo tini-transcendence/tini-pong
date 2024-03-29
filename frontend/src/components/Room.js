@@ -1,3 +1,5 @@
+
+
 import AbstractComponent from "./AbstractComponent.js";
 
 export default class extends AbstractComponent {
@@ -8,62 +10,195 @@ export default class extends AbstractComponent {
 
 	async getHtml() {
 		return `
-		<div class="container-md text-center">
-			<div class="row">
-				<div class="col-7 border p-2">
-					<div class="row row-cols-1 row-cols-md-2 g-4">
-						<div class="col">
-							<div class="card h-100 w-75 m-auto" style="max-width: 18rem;">
-								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
-								<div class="card-body">
-									<h5 class="card-title">Nickname</h5>
-									<p class="card-text">Win:0 Lose:0</p>
-								</div>
-								<div class="card-footer">Ready</div>
-							</div>
-						</div>
-						<div class="col">
-							<div class="card h-100 w-75 m-auto" style="max-width: 18rem;">
-								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
-								<div class="card-body">
-									<h5 class="card-title">Nickname</h5>
-									<p class="card-text">Win:0 Lose:0</p>
-								</div>
-								<div class="card-footer">Ready</div>
-							</div>
-						</div>
-						<div class="col">
-							<div class="card h-100 w-75 m-auto" style="max-width: 18rem;">
-								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
-								<div class="card-body">
-									<h5 class="card-title">Nickname</h5>
-									<p class="card-text">Win:0 Lose:0</p>
-								</div>
-								<div class="card-footer">Ready</div>
-							</div>
-						</div>
-						<div class="col">
-							<div class="card h-100 w-75 m-auto" style="max-width: 18rem;">
-								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
-								<div class="card-body">
-									<h5 class="card-title">Nickname</h5>
-									<p class="card-text">Win:0 Lose:0</p>
-								</div>
-								<div class="card-footer">Ready</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-5 border p-2">
-					<div class="m-auto" style="background-color: #ced4da;" spacing="2.4rem">
-						<h4>TITLE</h4>
-					</div>
-				</div>
-			</div>
-		</div>
-		`;
+        <div class="container-md text-center">
+            <div class="row">
+                <div class="col-7 border p-2">
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        <div class="col">
+                            <div class="card h-100 w-75 m-auto" id="player1" style="max-width: 18rem;">
+                                <img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+                                <div class="card-body">
+                                    <h5 class="card-title">Nickname</h5>
+                                    <p class="card-text">Win:0 Lose:0</p>
+                                </div>
+                                <div class="card-footer">Ready</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card h-100 w-75 m-auto" id="player2" style="max-width: 18rem;">
+                                <img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+                                <div class="card-body">
+                                    <h5 class="card-title">Nickname</h5>
+                                    <p class="card-text">Win:0 Lose:0</p>
+                                </div>
+                                <div class="card-footer">Ready</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card h-100 w-75 m-auto" id="player3" style="max-width: 18rem;">
+                                <img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+                                <div class="card-body">
+                                    <h5 class="card-title">Nickname</h5>
+                                    <p class="card-text">Win:0 Lose:0</p>
+                                </div>
+                                <div class="card-footer">Ready</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card h-100 w-75 m-auto" id="player4" style="max-width: 18rem;">
+                                <img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+                                <div class="card-body">
+                                    <h5 class="card-title">Nickname</h5>
+                                    <p class="card-text">Win:0 Lose:0</p>
+                                </div>
+                                <div class="card-footer">Ready</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-5 border p-2">
+                    <div class="m-auto" style="background-color: #ced4da;" spacing="2.4rem">
+                        <h4>TITLE</h4>
+                    </div>
+                </div>
+            </div>
+			<button type="button" class="btn btn-primary" id="readyBtn"">준비</button>
+			<button type="button" class="btn btn-primary" id="exitBtn">나가기</button>
+        </div>
+        `;
+	}
+
+	makeSocket() {
+
+	}
+
+	goBack() {
+		window.history.back();
 	}
 
 	handleRoute() {
+		// this.makeSocket();
+
+		let retryCount = 0;
+		const maxRetry = 3;
+		const retryDelay = 2000;
+		let is_ready = false;
+
+		// const webSocket = new WebSocket(`ws://localhost:8000/ws/room/${roomUuid}/?access_token=${token}`);
+
+		const token = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
+
+		// 현재 페이지의 URL 가져오기
+		const currentURL = window.location.href;
+		// 정규 표현식을 사용하여 "/"로 시작하고 끝나는 문자열 추출
+		const match = currentURL.match(/\/([^\/]+)\/?$/);
+		// 추출된 문자열 출력
+		const lastPart = match ? match[1] : null;
+		const websocketURL = 'ws://localhost:8000/ws/room/' + lastPart + '/?access_token=' + token;
+
+
+		// WebSocket 객체 생성
+		const websocket = new WebSocket(websocketURL);
+		console.log('웹 소켓 URL :', websocket);
+
+		websocket.onerror = function () {
+			if (retryCount < maxRetry) {
+				setTimeout(() => {
+					console.log(`연결 실패. ${retryCount + 1}번째 재연결 시도 중...`);
+					retryCount++;
+					connectWebSocket();
+				}, retryDelay);
+			} else {
+				console.log('WebSocket 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
+				this.goBack();
+			}
+		};
+
+		// WebSocket 연결이 열렸을 때 실행되는 이벤트 핸들러
+		websocket.onopen = function (event) {
+			console.log('WebSocket 연결이 열렸습니다.');
+			console.log('player 님이 방에 입장하셨습니다.');
+
+			const dataToSend = {
+				"action": "join",
+			}
+
+			websocket.send(JSON.stringify(dataToSend));
+		};
+
+		// WebSocket 연결이 닫혔을 때 실행되는 이벤트 핸들러
+		websocket.onclose = function (event) {
+			console.log('WebSocket 연결이 닫혔습니다.');
+			this.goBack();
+		};
+
+		// const player1Node = document.querySelector("#player1");
+		// const player1NickNode = player1Node.querySelector(".card-title");
+		// player1NickNode.innerText = "nick";
+		function dataUpdate(data) {
+			switch (data["player_number"]) {
+				case 1:
+					const player1Node = document.querySelector("#player1");
+					const player1NickNode = player1Node.querySelector(".card-title");
+					player1NickNode.innerText = data["user_nickname"];
+					break;
+				case 2:
+					const player2Node = document.querySelector("#player2");
+					const player2NickNode = player2Node.querySelector(".card-title");
+					player2NickNode.innerText = data["user_nickname"];
+					break;
+				case 3:
+					const player3Node = document.querySelector("#player3");
+					const player3NickNode = player3Node.querySelector(".card-title");
+					player3NickNode.innerText = data["user_nickname"];
+					break;
+				case 4:
+					const player4Node = document.querySelector("#player4");
+					const player4NickNode = player4Node.querySelector(".card-title");
+					player4NickNode.innerText = data["user_nickname"];
+					break;
+				default:
+					console.log("player number error\n");
+			}
+		}
+
+		function readyUpdate(data) {
+			const playerNode = document.querySelector("#player" + data["player_number"]);
+
+
+		}
+
+		// WebSocket으로 메시지가 수신되었을 때 실행되는 이벤트 핸들러
+		websocket.onmessage = function (event) {
+			console.log('메시지를 받았습니다:', event.data);
+			//유저들의 레디상태 변경 혹은 나간 상태를 반영하고 화면을 변화시킨다
+			const data = JSON.parse(event.data);
+
+			console.log();
+			if (data["action"] === "player_joined") {
+				dataUpdate(data);
+			} else if (data["type"] === "key_press") {
+				readyUpdate(data);
+			}
+		};
+
+		const readyBtn = document.querySelector("#readyBtn");
+		readyBtn.addEventListener("click", event => {
+			is_ready = is_ready ? false : true;
+			console.log('현재 상태 : 준비됨');
+			const dataToSend = {
+				"action": "ready",
+				"is_ready": is_ready
+			}
+			console.log(dataToSend);
+			websocket.send(JSON.stringify(dataToSend));
+		});
+
+		const goBackBtn = document.querySelector("#exitBtn");
+		goBackBtn.addEventListener("click", event => {
+			this.goBack();
+		});
 	}
 }
+
+
