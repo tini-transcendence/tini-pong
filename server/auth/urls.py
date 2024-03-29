@@ -1,5 +1,8 @@
 from django.urls import path
 
-from .views import RefreshTokenView
+from .views import OauthView, RefreshTokenView
 
-urlpatterns = [path("refresh/", RefreshTokenView.as_view())]
+urlpatterns = [
+    path("oauth/", OauthView.as_view(), name="oauth"),
+    path("refresh/", RefreshTokenView.as_view()),
+]
