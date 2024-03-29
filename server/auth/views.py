@@ -54,6 +54,20 @@ class OauthView(View):
 
 
 class OTPView(View):
+    def get(self, request: HttpRequest):
+        try:
+            oauth_token = request.COOKIES["oauth_token"]
+            if not validate(oauth_token, os.environ.get("FIRST_FACTOR_SECRET")):
+                return HttpResponse(status=HTTPStatus.UNAUTHORIZED)
+        except:
+            return HttpResponse(status=HTTPStatus.UNAUTHORIZED)
+        user_uuid = decode(oauth_token)["uuid"]
+        user = User.objects.get(pk=user_uuid)
+        totp_uri = totp.TOTP(user.otp_secret).provisioning_uri(
+            name=user.id_42, issuer_name="TINY_PONG"
+        )
+        return JsonResponse({"otp_uri": totp_uri})
+
     def post(self, request: HttpRequest):
         try:
             oauth_token = request.COOKIES["oauth_token"]
