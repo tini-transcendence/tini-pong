@@ -31,4 +31,4 @@ class RoomUser(models.Model):
     player_number = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
-        unique_together = [["room_uuid", "player_number"]]
+        unique_together = [["user_uuid", "room_uuid"]]

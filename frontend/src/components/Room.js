@@ -177,7 +177,7 @@ export default class extends AbstractComponent {
 			console.log();
 			if (data["action"] === "player_joined") {
 				dataUpdate(data);
-			} else if (data["type"] === "key_press") {
+			} else if (data["action"] === "ready") {
 				readyUpdate(data);
 			}
 		};
