@@ -70,7 +70,7 @@ export default class extends AbstractComponent {
 			}
 		}
 
-		const fetchAddFriend = async (data) => {
+		const fetchAddFriend = async (data, resultSearchUser) => {
 			try {
 				const fetchModule = new FetchModule();
 				const response = await fetchModule.request(new Request("http://localhost:8000/friend/add/", {
@@ -87,12 +87,26 @@ export default class extends AbstractComponent {
 					friends.push(data);
 					addFriendList(data);
 				}
-				else if (response.status === 409)
-				{
-					throw new Error("Already friend");
+				else if (response.status === 409) {
+					resultSearchUser.insertAdjacentHTML("beforeend", `
+					<div class="alert alert-danger d-flex align-items-center" role="alert" id="friend-search-alert">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+							<path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+						</svg>
+						<div>이미 친구입니다.</div>
+					</div>
+					`);
 				}
-				else if (response.status === 400)
-					throw new Error("Cannot add myself");
+				else if (response.status === 400) {
+					resultSearchUser.insertAdjacentHTML("beforeend", `
+					<div class="alert alert-primary d-flex align-items-center" role="alert" id="friend-search-alert">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+							<path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+						</svg>
+						<div>자기 자신은 추가할 수 없습니다.</div>
+					</div>
+					`);
+				}
 				else
 					throw new Error(response.statusText);
 			} catch (error) {
@@ -121,7 +135,7 @@ export default class extends AbstractComponent {
 			}
 		}
 
-		const fetchSearchFriend = async (foundUser) => {
+		const fetchSearchFriend = async (foundUser, resultSearchUser) => {
 			try {
 				const fetchModule = new FetchModule();
 				const response = await fetchModule.request(new Request(`http://localhost:8000/friend/search?nickname=${foundUser}`, {
@@ -133,24 +147,31 @@ export default class extends AbstractComponent {
 					if (Object.keys(data).length !== 0) { // 유저가 존재하는 경우
 						resultSearchUser.insertAdjacentHTML("beforeend", `
 						<div class="alert alert-light d-flex align-items-center" role="alert">
-							<a href="/users/${data.nickname}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${data.nickname}</a>
-							<button type="button" class="btn btn-outline-secondary">
-								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
-									<path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
-									<path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5"/>
-								</svg>
-							</button>
+							<div class="p-2 me-auto">
+								<a href="/users/${data.nickname}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${data.nickname}</a>
+							</div>
+							<div>
+								<button type="button" class="btn btn-outline-secondary">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-add" viewBox="0 0 16 16">
+										<path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+										<path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
+									</svg>
+								</button>
+							</div>
 						</div>
 						`);
 
 						const resultItemBtn = resultSearchUser.querySelector("button");
 						resultItemBtn.addEventListener("click", async event => {
-							fetchAddFriend(data);
+							const searchAlert = resultSearchUser.querySelector("#friend-search-alert");
+							if (searchAlert)
+								searchAlert.remove();
+							fetchAddFriend(data, resultSearchUser);
 						})
 					}
 					else { // 유저가 없는 경우
 						resultSearchUser.insertAdjacentHTML("beforeend", `
-						<div class="alert alert-danger d-flex align-items-center" role="alert">
+						<div class="alert alert-danger d-flex align-items-center" role="alert" id="friend-search-alert">
 							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
 								<path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
 							</svg>
@@ -161,13 +182,13 @@ export default class extends AbstractComponent {
 				}
 				else if (response.status === 400) {
 					resultSearchUser.insertAdjacentHTML("beforeend", `
-						<div class="alert alert-primary d-flex align-items-center" role="alert">
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
-								<path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-							</svg>
-							<div>자기 자신은 추가할 수 없습니다.</div>
-						</div>
-						`);
+					<div class="alert alert-primary d-flex align-items-center" role="alert" id="friend-search-alert">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+							<path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+						</svg>
+						<div>자기 자신은 추가할 수 없습니다.</div>
+					</div>
+					`);
 				}
 				else
 					throw new Error(response.statusText);
@@ -225,7 +246,7 @@ export default class extends AbstractComponent {
 			const foundUser = document.querySelector("input[aria-describedby='button-offcanvasSearchUser']").value;
 			const resultSearchUser = document.querySelector("#resultSearchUser");
 			resultSearchUser.replaceChildren();
-			fetchSearchFriend(foundUser);
+			fetchSearchFriend(foundUser, resultSearchUser);
 		})
 	}
 }
