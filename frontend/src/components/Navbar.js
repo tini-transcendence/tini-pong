@@ -10,15 +10,24 @@ export default class extends AbstractComponent {
 
 	async getHtml() {
 		return `
-		<nav class="navbar navbar-expand sticky-top" style="background-color: #e3f2fd;">
+		<nav class="navbar navbar-expand-md sticky-top" style="background-color: #e3f2fd;">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="/" data-href="/">TITLE</a>
-				<div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
-					<div class="navbar-nav">
-						<a class="nav-link" href="/tdata" data-href="/tdata">MatchLog</a>
-						<a class="nav-link" href="/mypage" data-href="/mypage">MyPage</a>
-						<button class="nav-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFriend" aria-controls="offcanvasFriend">Friend</button>
-					</div>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse justify-content-end" id="navbarToggler">
+					<ul class="navbar-nav mb-2 mb-md-0">
+						<li class="nav-item">
+							<a class="nav-link" href="/tdata" data-href="/tdata">MatchLog</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="/mypage" data-href="/mypage">MyPage</a>
+						</li>
+						<li class="nav-item">
+							<button class="nav-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFriend" aria-controls="offcanvasFriend">Friend</button>
+						</li>
+					</ul>
 				</div>
 			</div>
 		</nav>
