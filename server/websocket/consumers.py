@@ -156,24 +156,24 @@ class RoomConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def assign_player_number(self):
         with transaction.atomic():
-            # 현재 방에 있는 모든 RoomUser의 player_number를 가져옵니다.
+            room = Room.objects.get(uuid=self.room_uuid)
+
             occupied_numbers = (
-                RoomUser.objects.filter(room_uuid=self.room_uuid)
+                RoomUser.objects.filter(room_uuid=room)
+                .exclude(player_number__isnull=True)
                 .values_list("player_number", flat=True)
                 .order_by("player_number")
             )
 
-            # 사용 가능한 가장 작은 번호를 찾습니다.
             player_number = 1
             for occupied_number in occupied_numbers:
                 if player_number < occupied_number:
                     break
                 player_number += 1
 
-            # 새로운 플레이어에게 번호를 할당합니다.
             RoomUser.objects.create(
-                room_uuid=self.room_uuid,
-                user_uuid=self.user_uuid,
+                room_uuid=room,
+                user_uuid=self.user,
                 player_number=player_number,
             )
 
