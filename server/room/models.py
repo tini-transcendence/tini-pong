@@ -28,3 +28,7 @@ class RoomUser(models.Model):
         Room, on_delete=models.CASCADE, related_name="room_users"
     )
     is_ready = models.BooleanField(default=False)
+    player_number = models.PositiveIntegerField(null=True, blank=True)
+
+    class Meta:
+        unique_together = [["room_uuid", "player_number"]]
