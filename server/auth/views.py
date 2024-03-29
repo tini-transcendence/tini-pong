@@ -9,7 +9,7 @@ from django.views import View
 from .models import RefreshToken
 from user.models import User
 
-from util.jwt import create, validate
+from util.jwt import create, validate, decode
 from util.timestamp import get_timestamp
 from pyotp import random_base32, totp
 
@@ -41,21 +41,12 @@ class OauthView(View):
             id_42=user_42_logged_in,
             defaults={"otp_secret": random_base32(), "nickname": user_42_logged_in},
         )
-        access_token = create(
-            {"uuid": str(user_logged_in.uuid)},
-            os.environ.get("ACCESS_SECRET"),
-            get_timestamp(minutes=30),
-        )
-        refresh_token_exp = get_timestamp(days=14)
-        refresh_token = create(
-            {},
-            os.environ.get("REFRESH_SECRET"),
-            refresh_token_exp,
-        )
+        access_token = create_access_token(str(user_logged_in.uuid))
+        refresh_token = create_refresh_token()
         RefreshToken.objects.create(
             user_uuid=user_logged_in.uuid,
             token=refresh_token,
-            expiration_time=refresh_token_exp,
+            expiration_time=decode(refresh_token)["exp"],
         )
         response = JsonResponse({"refresh_token": refresh_token})
         response.set_cookie(
@@ -75,21 +66,12 @@ class OTPView(View):
             return HttpResponseBadRequest()
         if not totp.TOTP(user.otp_secret).verify(otp_code):
             return HttpResponseBadRequest()
-        access_token = create(
-            {"uuid": str(user.uuid)},
-            os.environ.get("ACCESS_SECRET"),
-            get_timestamp(minutes=30),
-        )
-        refresh_token_exp = get_timestamp(days=14)
-        refresh_token = create(
-            {},
-            os.environ.get("REFRESH_SECRET"),
-            refresh_token_exp,
-        )
+        access_token = create_access_token(str(user.uuid))
+        refresh_token = create_refresh_token()
         RefreshToken.objects.create(
             user_uuid=user.uuid,
             token=refresh_token,
-            expiration_time=refresh_token_exp,
+            expiration_time=decode(refresh_token)["exp"],
         )
         response = JsonResponse({"refresh_token": refresh_token})
         response.set_cookie(
@@ -110,13 +92,27 @@ class RefreshTokenView(View):
             user = searched_token.user_uuid
         except:
             return HttpResponse(status=HTTPStatus.UNAUTHORIZED)
-        access_token = create(
-            {"uuid": str(user)},
-            os.environ.get("ACCESS_SECRET"),
-            get_timestamp(minutes=30),
-        )
+        access_token = create_access_token(str(user))
         response = HttpResponse()
         response.set_cookie(
             key="access_token", value=access_token, secure=True, samesite="None"
         )
         return response
+
+
+def create_access_token(uuid: str):
+    access_token = create(
+        {"uuid": uuid},
+        os.environ.get("ACCESS_SECRET"),
+        get_timestamp(minutes=30),
+    )
+    return access_token
+
+
+def create_refresh_token():
+    refresh_token = create(
+        {},
+        os.environ.get("REFRESH_SECRET"),
+        get_timestamp(days=14),
+    )
+    return refresh_token
