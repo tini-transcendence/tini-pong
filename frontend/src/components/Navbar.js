@@ -48,14 +48,23 @@ export default class extends AbstractComponent {
 	addFriendList(element) {
 		const newFriendListNode = document.createElement("li");
 		newFriendListNode.setAttribute("class", "list-group-item");
+
+		const newStatusNode = document.createElement("span");
+		if (element.status === true) {
+			newStatusNode.setAttribute("class", "badge bg-success rounded-pill");
+			newStatusNode.innerText = "online";
+		}
+		else {
+			newStatusNode.setAttribute("class", "badge bg-secondary rounded-pill");
+			newStatusNode.innerText = "offline";
+		}
+
 		newFriendListNode.insertAdjacentHTML("beforeend", `
 		<div class="d-flex flex-wrap">
 			<div class="p-2 me-auto">
 				<a href="/users/${element.nickname}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.nickname}</a>
 			</div>
-			<div class="p-2">
-				online
-			</div>
+			<div class="p-2" id="online-status"></div>
 			<div>
 				<button class="btn btn-outline-secondary" type="button">
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-dash" viewBox="0 0 16 16">
@@ -66,6 +75,7 @@ export default class extends AbstractComponent {
 			</div>
 		</div>
 		`);
+		newFriendListNode.querySelector("#online-status").appendChild(newStatusNode);
 		document.querySelector("#friend-list").appendChild(newFriendListNode);
 
 		newFriendListNode.querySelector("button").addEventListener("click", event => {
