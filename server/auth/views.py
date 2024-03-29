@@ -73,30 +73,29 @@ class OTPView(View):
             user = User.objects.get(pk=user_uuid)
         except User.DoesNotExist:
             return HttpResponseBadRequest()
-        if totp.TOTP(user.otp_secret).verify(otp_code):
-            access_token = create(
-                {"uuid": str(user.uuid)},
-                os.environ.get("ACCESS_SECRET"),
-                get_timestamp(minutes=30),
-            )
-            refresh_token_exp = get_timestamp(days=14)
-            refresh_token = create(
-                {},
-                os.environ.get("REFRESH_SECRET"),
-                refresh_token_exp,
-            )
-            RefreshToken.objects.create(
-                user_uuid=user.uuid,
-                token=refresh_token,
-                expiration_time=refresh_token_exp,
-            )
-            response = JsonResponse({"refresh_token": refresh_token})
-            response.set_cookie(
-                key="access_token", value=access_token, secure=True, samesite="None"
-            )
-            return response
-        else:
+        if not totp.TOTP(user.otp_secret).verify(otp_code):
             return HttpResponseBadRequest()
+        access_token = create(
+            {"uuid": str(user.uuid)},
+            os.environ.get("ACCESS_SECRET"),
+            get_timestamp(minutes=30),
+        )
+        refresh_token_exp = get_timestamp(days=14)
+        refresh_token = create(
+            {},
+            os.environ.get("REFRESH_SECRET"),
+            refresh_token_exp,
+        )
+        RefreshToken.objects.create(
+            user_uuid=user.uuid,
+            token=refresh_token,
+            expiration_time=refresh_token_exp,
+        )
+        response = JsonResponse({"refresh_token": refresh_token})
+        response.set_cookie(
+            key="access_token", value=access_token, secure=True, samesite="None"
+        )
+        return response
 
 
 class RefreshTokenView(View):
