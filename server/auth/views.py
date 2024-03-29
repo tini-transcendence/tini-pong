@@ -11,6 +11,7 @@ from user.models import User
 
 from util.jwt import create, validate
 from util.timestamp import get_timestamp
+from pyotp import totp
 
 
 class OauthView(View):
@@ -61,6 +62,41 @@ class OauthView(View):
             key="access_token", value=access_token, secure=True, samesite="None"
         )
         return response
+
+
+class OTPView(View):
+    def post(self, request: HttpRequest):
+        request_body = json.loads(request.body)
+        user_uuid = request_body["user_uuid"]
+        otp_code = request_body["otp_code"]
+        try:
+            user = User.objects.get(pk=user_uuid)
+        except User.DoesNotExist:
+            return HttpResponseBadRequest()
+        if totp.TOTP(user.otp_secret).verify(otp_code):
+            access_token = create(
+                {"uuid": str(user.uuid)},
+                os.environ.get("ACCESS_SECRET"),
+                get_timestamp(minutes=30),
+            )
+            refresh_token_exp = get_timestamp(days=14)
+            refresh_token = create(
+                {},
+                os.environ.get("REFRESH_SECRET"),
+                refresh_token_exp,
+            )
+            RefreshToken.objects.create(
+                user_uuid=user.uuid,
+                token=refresh_token,
+                expiration_time=refresh_token_exp,
+            )
+            response = JsonResponse({"refresh_token": refresh_token})
+            response.set_cookie(
+                key="access_token", value=access_token, secure=True, samesite="None"
+            )
+            return response
+        else:
+            return HttpResponseBadRequest()
 
 
 class RefreshTokenView(View):

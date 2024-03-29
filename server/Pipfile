@@ -18,6 +18,7 @@ solc = "*"
 channels = "*"
 channels-redis = "*"
 daphne = "*"
+pyotp = "*"
 
 [dev-packages]
 
