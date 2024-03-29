@@ -7,7 +7,8 @@ export default class extends AbstractComponent {
 		this.setTitle("Lobby");
 	}
 
-	async getHtml() {
+	async getHtml(loginModule) {
+		loginModule.isLogin();
 		return `
 		<div class="modal fade" id="openGameRoomModal" tabindex="-1" aria-labelledby="openGameRoomModalLabel" aria-hidden="true">
 			<div class="modal-dialog">

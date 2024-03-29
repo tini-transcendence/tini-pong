@@ -6,7 +6,8 @@ export default class extends AbstractComponent {
 		this.setTitle("Users");
 	}
 
-	async getHtml() {
+	async getHtml(loginModule) {
+		loginModule.isLogin();
 		return `
 		<h1>User Page</h1>
 		<p>This is User Page.</p>

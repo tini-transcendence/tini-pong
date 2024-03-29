@@ -6,7 +6,8 @@ export default class extends AbstractComponent {
 		this.setTitle("MyPage");
 	}
 
-	async getHtml() {
+	async getHtml(loginModule) {
+		loginModule.isLogin();
 		return `
 		<div class="row g-3">
 			<div class="col">

@@ -9,7 +9,8 @@ export default class extends AbstractComponent {
 		this.setTitle("UserEdit");
 	}
 
-	async getHtml() {
+	async getHtml(loginModule) {
+		loginModule.isLogin();
 		return `
 		<div class="justify-content-center">
 			<img id="image-preview" src="./src/img/default_profile.png" width="200px" height="200px" alt="profile thumbnail" style="border-radius: 20%;"/>
