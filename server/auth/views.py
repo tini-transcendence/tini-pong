@@ -41,24 +41,28 @@ class OauthView(View):
             id_42=user_42_logged_in,
             defaults={"otp_secret": random_base32(), "nickname": user_42_logged_in},
         )
-        access_token = create_access_token(str(user_logged_in.uuid))
-        refresh_token = create_refresh_token()
-        RefreshToken.objects.create(
-            user_uuid=user_logged_in.uuid,
-            token=refresh_token,
-            expiration_time=decode(refresh_token)["exp"],
+        oauth_token = create(
+            {"uuid": str(user_logged_in.uuid)},
+            os.environ.get("FIRST_FACTOR_SECRET"),
+            get_timestamp(minutes=10),
         )
-        response = JsonResponse({"refresh_token": refresh_token})
+        response = HttpResponse()
         response.set_cookie(
-            key="access_token", value=access_token, secure=True, samesite="None"
+            key="oauth_token", value=oauth_token, secure=True, samesite="None"
         )
         return response
 
 
 class OTPView(View):
     def post(self, request: HttpRequest):
+        try:
+            oauth_token = request.COOKIES["oauth_token"]
+            if not validate(oauth_token, os.environ.get("FIRST_FACTOR_SECRET")):
+                return HttpResponse(status=HTTPStatus.UNAUTHORIZED)
+        except:
+            return HttpResponse(status=HTTPStatus.UNAUTHORIZED)
         request_body = json.loads(request.body)
-        user_uuid = request_body["user_uuid"]
+        user_uuid = decode(oauth_token)["uuid"]
         otp_code = request_body["otp_code"]
         try:
             user = User.objects.get(pk=user_uuid)
