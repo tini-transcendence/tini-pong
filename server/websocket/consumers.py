@@ -39,10 +39,22 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     },
                 },
             )
-        elif action == "ready" and not await self.is_room_owner(
-            self.user, self.room_uuid
-        ):
-            await self.set_ready_status(self.user, text_data_json["ready"])
+        elif action == "ready":
+            ready = text_data_json["is_ready"]
+            player_number, is_ready = await self.set_ready_status(self.user, ready)
+            if player_number is not None:
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "room_message",
+                        "message": {
+                            "action": "ready",
+                            "player_number": player_number,
+                            "is_ready": is_ready,
+                        },
+                    },
+                )
+            await self.set_ready_status(self.user, text_data_json["is_ready"])
         elif action == "start_game" and await self.is_room_owner(
             self.user, self.room_uuid
         ):
@@ -145,13 +157,29 @@ class RoomConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def is_room_owner(self, user, room_uuid):
         room = Room.objects.get(uuid=room_uuid)
-        return room.owner == user.uuid
+        return room.owner_uuid == user.uuid
 
     @database_sync_to_async
     def set_ready_status(self, user, ready):
-        room_user = RoomUser.objects.get(user=user.uuid, room__uuid=self.room_uuid)
-        room_user.is_ready = ready
-        room_user.save()
+        try:
+            room_user, created = RoomUser.objects.get_or_create(
+                user_uuid=user.uuid, room_uuid=self.room_uuid
+            )
+            room_user.is_ready = ready
+            room_user.save()
+            return room_user.player_number, room_user.is_ready
+        except RoomUser.MultipleObjectsReturned:
+            room_users = RoomUser.objects.filter(
+                user_uuid=user.uuid, room_uuid=self.room_uuid
+            )
+            if room_users:
+                room_user = room_users.first()
+                room_user.is_ready = ready
+                room_user.save()
+                for extra_user in room_users[1:]:
+                    extra_user.delete()
+                return room_user.player_number, room_user.is_ready
+        return None
 
     @database_sync_to_async
     def assign_player_number(self):
