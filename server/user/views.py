@@ -4,11 +4,11 @@ import os
 from django.http import JsonResponse, HttpRequest, HttpResponseBadRequest, HttpResponse
 from django.views import View
 
-from util.jwt import create
-from util.timestamp import get_timestamp
-
 from .models import User
 from auth.models import RefreshToken
+
+from util.jwt import create
+from util.timestamp import get_timestamp
 
 
 class StatusUpdateView(View):
