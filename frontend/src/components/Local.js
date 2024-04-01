@@ -1,5 +1,5 @@
 import AbstractComponent from "./AbstractComponent.js";
-import init from "../games/local_pong.js"
+import {init} from "../games/local_pong.js"
 
 import animateGame from "../utils/animateGameModule.js";
 
