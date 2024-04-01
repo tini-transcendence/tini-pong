@@ -89,7 +89,10 @@ export default class extends AbstractComponent {
 				if (response.ok) {
 					const data = await response.json();
 					localStorage.setItem("refresh_token", data.refresh_token);
-					location.href = "/";
+					if (data.has_logged_in)
+						location.href = "/";
+					else
+						location.href = "/edit";
 				}
 				else if (response.status === 401)
 					throw new Error("유효하지 않는 요청입니다.");
