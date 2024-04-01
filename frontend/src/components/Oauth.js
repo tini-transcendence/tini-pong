@@ -26,7 +26,9 @@ export default class extends AbstractComponent {
 					credentials: "include"
 				}));
 				if (response.ok) {
-					location.href = "/login/otp/qr";
+					const data = await response.json();
+					console.log(data.has_logged_in);
+					// location.href = "/login/otp/qr";
 				}
 				else
 					throw new Error(response.statusText);
