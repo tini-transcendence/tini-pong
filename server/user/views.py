@@ -51,7 +51,7 @@ class EditUserView(View):
 
 class StatusUpdateView(View):
     def post(self, request: HttpRequest):
-        User.objects.get(pk=request.user_uuid).save()
+        User.objects.get(pk=request.user_uuid).save(update_fields=["online_status"])
         return HttpResponse()
 
 
