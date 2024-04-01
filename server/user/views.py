@@ -11,6 +11,22 @@ from util.jwt import create
 from util.timestamp import get_timestamp
 
 
+class UserProfileView(View):
+    def get(self, request: HttpRequest):
+        try:
+            user_uuid = request.GET.get("uuid")
+            user = User.objects.get(pk=user_uuid)
+        except:
+            return HttpResponseBadRequest()
+        return JsonResponse(
+            {
+                "nickname": user.nickname,
+                "avatar": user.avatar,
+                "self": user_uuid == request.user_uuid,
+            }
+        )
+
+
 class StatusUpdateView(View):
     def post(self, request: HttpRequest):
         User.objects.get(pk=request.user_uuid).save()
