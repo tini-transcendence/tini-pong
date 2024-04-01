@@ -14,6 +14,7 @@ import Room from "./components/Room.js";
 import NotFound from "./components/NotFound.js";
 
 import LoginModule from "./utils/loginmodule.js";
+import animateGame from "./utils/animateGameModule.js";
 
 const ROUTE_PARAMETER_REGEX = /:(\w+)/g;
 const URL_FRAGMENT_REGEX = /\//g;
@@ -33,6 +34,8 @@ const routes = [
 ];
 
 const router = async () => {
+	animateGame.setAnimateOff();
+
 	const potentialMatches = routes.map(route => {
 		return {
 			route: route,

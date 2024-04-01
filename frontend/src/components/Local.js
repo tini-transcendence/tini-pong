@@ -1,6 +1,8 @@
 import AbstractComponent from "./AbstractComponent.js";
 import init from "../games/local_pong.js"
 
+import animateGame from "../utils/animateGameModule.js";
+
 export default class extends AbstractComponent {
 	constructor() {
 		super();
@@ -17,6 +19,7 @@ export default class extends AbstractComponent {
 	}
 
 	handleRoute() {
+		animateGame.setAnimateOff();
 		const goBackButton = document.querySelector("#goBackButton");
 		goBackButton.addEventListener("click", event => {
 			window.history.back();

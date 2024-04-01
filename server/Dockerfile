@@ -3,6 +3,7 @@ LABEL maintainer="tini-pong"
 
 ENV PYTHONUNBUFFERED 1
 
+
 COPY ./Pipfile /server/Pipfile
 COPY ./Pipfile.lock /server/Pipfile.lock
 WORKDIR /server
@@ -21,6 +22,18 @@ RUN adduser \
         --no-create-home \
         django-user
 
-COPY --chown=django-user:django-user ./ /server
+WORKDIR /server
+COPY ./Pipfile ./Pipfile
+COPY ./Pipfile.lock ./Pipfile.lock
+EXPOSE 8000
+
+RUN apk add --update --no-cache \
+    postgresql-client \
+    postgresql-dev \
+    gcc \
+    musl-dev \
+    libffi-dev
+RUN pip install pipenv && pipenv install --system --deploy --ignore-pipfile
 
 USER django-user
+COPY --chown=django-user:django-user ./ ./
