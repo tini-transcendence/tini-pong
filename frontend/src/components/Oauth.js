@@ -21,14 +21,12 @@ export default class extends AbstractComponent {
 		(async function() {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request(`http://localhost:8000/user/login/oauth${queryString}`, {
+				const response = await fetchModule.request(new Request(`http://localhost:8000/auth/oauth${queryString}`, {
 					method: 'GET',
 					credentials: "include"
 				}));
 				if (response.ok) {
-					const data = await response.json();
-					localStorage.setItem("refresh_token", data.refresh_token);
-					location.href = "/";
+					location.href = "/login/otp/qr";
 				}
 				else
 					throw new Error(response.statusText);
