@@ -88,7 +88,7 @@ class OTPView(View):
             user = User.objects.get(pk=user_uuid)
         except User.DoesNotExist:
             return HttpResponseBadRequest()
-        if not totp.TOTP(user.otp_secret).verify(otp_code):
+        if not totp.TOTP(user.otp_secret).verify(str(otp_code).zfill(6)):
             return HttpResponseBadRequest()
         user.has_logged_in = True
         user.save()
