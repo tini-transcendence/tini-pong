@@ -62,14 +62,11 @@ export default class extends AbstractComponent {
                     </div>
                 </div>
             </div>
+			<button type="button" class="btn btn-primary" id="startBtn"">시작</button>
 			<button type="button" class="btn btn-primary" id="readyBtn"">준비</button>
 			<button type="button" class="btn btn-primary" id="exitBtn">나가기</button>
         </div>
         `;
-	}
-
-	makeSocket() {
-
 	}
 
 	goBack() {
@@ -120,7 +117,7 @@ export default class extends AbstractComponent {
 			console.log('player 님이 방에 입장하셨습니다.');
 
 			const dataToSend = {
-				"action": "join",
+				"action": "join"
 			}
 
 			websocket.send(JSON.stringify(dataToSend));
@@ -129,7 +126,7 @@ export default class extends AbstractComponent {
 		// WebSocket 연결이 닫혔을 때 실행되는 이벤트 핸들러
 		websocket.onclose = function (event) {
 			console.log('WebSocket 연결이 닫혔습니다.');
-			this.goBack();
+			// this.goBack();
 		};
 
 		// const player1Node = document.querySelector("#player1");
@@ -164,32 +161,55 @@ export default class extends AbstractComponent {
 
 		function readyUpdate(data) {
 			const playerNode = document.querySelector("#player" + data["player_number"]);
-
-
+			const playerReadyNode = playerNode.querySelector(".card-footer");
+			if (data["is_ready"])
+				playerReadyNode.innerText = "Ready : Yes";
+			else
+				playerReadyNode.innerText = "Ready : No";
 		}
+
+		function startUpdate(data) {
+			if (data["status"] === "ok") {
+				location.href = currentURL + "/game";
+			} else {
+				console.log("not all players are ready yet!")
+			}
+		};
 
 		// WebSocket으로 메시지가 수신되었을 때 실행되는 이벤트 핸들러
 		websocket.onmessage = function (event) {
-			console.log('메시지를 받았습니다:', event.data);
 			//유저들의 레디상태 변경 혹은 나간 상태를 반영하고 화면을 변화시킨다
 			const data = JSON.parse(event.data);
+			console.log('메시지를 받았습니다 : ', data["action"]);
 
-			console.log();
 			if (data["action"] === "player_joined") {
 				dataUpdate(data);
 			} else if (data["action"] === "ready") {
 				readyUpdate(data);
+			} else if (data["action"] === "start") {
+				startUpdate(data);
 			}
 		};
+
+		const startBtn = document.querySelector("#startBtn");
+		startBtn.addEventListener("click", event => {
+			const dataToSend = {
+				"action": "start"
+			}
+			console.log(dataToSend);
+			websocket.send(JSON.stringify(dataToSend));
+		});
 
 		const readyBtn = document.querySelector("#readyBtn");
 		readyBtn.addEventListener("click", event => {
 			is_ready = is_ready ? false : true;
-			console.log('현재 상태 : 준비됨');
+			console.log('############현재 상태##############');
+			console.log(is_ready);
 			const dataToSend = {
 				"action": "ready",
 				"is_ready": is_ready
 			}
+			console.log('##########보내는 데이터############');
 			console.log(dataToSend);
 			websocket.send(JSON.stringify(dataToSend));
 		});
