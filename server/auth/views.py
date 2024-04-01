@@ -46,7 +46,7 @@ class OauthView(View):
             os.environ.get("FIRST_FACTOR_SECRET"),
             get_timestamp(minutes=10),
         )
-        response = HttpResponse()
+        response = JsonResponse({"has_logged_in": user_logged_in.has_logged_in})
         response.set_cookie(
             key="oauth_token", value=oauth_token, secure=True, samesite="None"
         )
@@ -84,6 +84,8 @@ class OTPView(View):
             return HttpResponseBadRequest()
         if not totp.TOTP(user.otp_secret).verify(otp_code):
             return HttpResponseBadRequest()
+        user.has_logged_in = True
+        user.save()
         access_token = create_access_token(str(user.uuid))
         refresh_token = create_refresh_token()
         RefreshToken.objects.create(
