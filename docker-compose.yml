@@ -8,21 +8,23 @@ services:
       args:
         - DEV=true #개발 단계에서만 사용하는 requirements.dev.txt를 사용할 수 있음
     ports:
-      - "8000:8000"
+      - "9000:9000"
     command: >
       sh -c "python manage.py wait_for_db &&
              python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
+             python manage.py runserver 0.0.0.0:9000"
     env_file:
       - .env
     depends_on:
       - db
+    # networks:
+    #   - internal_network
 
   frontend:
     container_name: frontend
-    image: nginx
     ports:
       - "443:443"
+      - "8000:8000"
     build:
       context: ./frontend
     restart: always
@@ -40,3 +42,7 @@ services:
 
 volumes:
   data:
+
+# networks:
+#   internal_network:
+#     internal: true

@@ -49,7 +49,7 @@ export default class {
 	// 토큰 재발급
 	async getReIssuedAccessToken(refreshToken) {
 		try {
-			const response = await fetch('http://localhost:8000/auth/refresh/', {
+			const response = await fetch('https://localhost:8000/auth/refresh/', {
 				method: 'POST',
 				credentials: "include",
 				headers: {

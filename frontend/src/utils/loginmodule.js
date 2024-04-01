@@ -17,7 +17,7 @@ export default class {
 
 		const getLoginStatus = async (fetchModule) => {
 			try {
-				const response = await fetchModule.request(new Request("http://localhost:8000/user/status-update/", {
+				const response = await fetchModule.request(new Request("https://localhost:8000/user/status-update/", {
 					method: 'POST',
 					credentials: "include",
 				}));

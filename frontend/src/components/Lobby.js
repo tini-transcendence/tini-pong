@@ -97,7 +97,7 @@ export default class extends AbstractComponent {
 		(async function () {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request("http://localhost:8000/room/list/", {
+				const response = await fetchModule.request(new Request("https://localhost:8000/room/list/", {
 					method: 'GET',
 					credentials: "include",
 				}));
@@ -144,7 +144,7 @@ export default class extends AbstractComponent {
 					(async function () {
 						try {
 							const fetchModule = new FetchModule();
-							const response = await fetchModule.request(new Request("http://localhost:8000/room/join/", {
+							const response = await fetchModule.request(new Request("https://localhost:8000/room/join/", {
 								method: 'POST',
 								credentials: "include",
 								headers: {
@@ -177,7 +177,7 @@ export default class extends AbstractComponent {
 			(async function () {
 				try {
 					const fetchModule = new FetchModule();
-					const response = await fetchModule.request(new Request("http://localhost:8000/room/create/", {
+					const response = await fetchModule.request(new Request("https://localhost:8000/room/create/", {
 						method: 'POST',
 						credentials: "include",
 						headers: {

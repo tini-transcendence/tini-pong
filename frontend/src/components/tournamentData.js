@@ -1,6 +1,7 @@
 // tournamentData.js
 
 import AbstractComponent from "./AbstractComponent.js";
+import FetchModule from "../utils/fetchmodule.js";
 
 export default class extends AbstractComponent {
     constructor() {
@@ -94,13 +95,35 @@ export default class extends AbstractComponent {
     }
 
     handleRoute() {
-        fetch("http://localhost:8000/dashboard")
-            .then((response) => {
-                return response.json();
-            })
-            .then((data) => {
-                this.populateTable(data);
-            });
+
+        const queryString = location.search;
+
+        (async function (callback) {
+            try {
+                const fetchModule = new FetchModule();
+                const response = await fetchModule.request(new Request(`https://localhost:8000/dashboard${queryString}`, {
+                    method: 'GET',
+                    credentials: "include"
+                }));
+                if (response.ok) {
+                    const data = await response.json();
+                    callback(data);
+                    // this.populateTable(data);
+                }
+                else
+                    throw new Error(response.statusText);
+            } catch (error) {
+                console.log(error.message);
+            }
+        })(this.populateTable);
+
+        // fetch("http://localhost:8000/dashboard")
+        //     .then((response) => {
+        //         return response.json();
+        //     })
+        //     .then((data) => {
+        //         this.populateTable(data);
+        //     });
 
         const goBackBtn = document.querySelector("#goBackButton");
         goBackBtn.addEventListener("click", event => {
