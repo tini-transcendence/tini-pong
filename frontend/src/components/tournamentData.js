@@ -105,6 +105,7 @@ export default class extends AbstractComponent {
                     credentials: "include"
                 }));
                 if (response.ok) {
+                    const data = await response.json();
                     callback(data);
                     // this.populateTable(data);
                 }
