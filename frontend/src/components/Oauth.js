@@ -28,7 +28,10 @@ export default class extends AbstractComponent {
 				if (response.ok) {
 					const data = await response.json();
 					console.log(data.has_logged_in);
-					// location.href = "/login/otp/qr";
+					if (data.has_logged_in)
+						location.href = "/login/otp";
+					else
+						location.href = "/login/otp/qr";
 				}
 				else
 					throw new Error(response.statusText);
