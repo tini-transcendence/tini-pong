@@ -1,4 +1,5 @@
 import AbstractComponent from "./AbstractComponent.js";
+import {containerEventKeyUp, containerEventKeyDown} from "../games/local_pong.js"
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -14,5 +15,10 @@ export default class extends AbstractComponent {
 		<button class="btn btn-outline-primary" data-href="/local">LOCAL</button>
 		<button class="btn btn-outline-primary" data-href="/lobby">ONLINE</button>
 		`;
+	}
+
+	handleRoute() {
+		window.document.removeEventListener('keydown', containerEventKeyDown);
+		window.document.removeEventListener('keyup', containerEventKeyUp);
 	}
 }

@@ -460,4 +460,4 @@ function simulation_paddle()
     paddle2.position.x += paddle2_spead;
 }
 
-export default init
+export { init, containerEventKeyUp, containerEventKeyDown }
