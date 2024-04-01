@@ -6,14 +6,13 @@ ENV PYTHONUNBUFFERED 1
 COPY ./Pipfile /server/Pipfile
 COPY ./Pipfile.lock /server/Pipfile.lock
 WORKDIR /server
-EXPOSE 8000
+# EXPOSE 8000
 
 ARG DEV=false
 RUN apk add --update --no-cache postgresql-client postgresql-dev gcc musl-dev && \
     apk add libffi-dev && \
     pip install pipenv && \
     pipenv install --system --deploy --ignore-pipfile
-
 
 EXPOSE 8000
 

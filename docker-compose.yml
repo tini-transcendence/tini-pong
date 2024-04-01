@@ -23,6 +23,7 @@ services:
     image: nginx
     ports:
       - "443:443"
+      - "9000:9000"
     build:
       context: ./frontend
     restart: always

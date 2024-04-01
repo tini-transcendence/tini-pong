@@ -96,6 +96,7 @@ export default class extends AbstractComponent {
 
 		// WebSocket 객체 생성
 		const websocket = new WebSocket(websocketURL);
+		window.websocket = websocket;
 		console.log('웹 소켓 URL :', websocket);
 
 		websocket.onerror = function () {
