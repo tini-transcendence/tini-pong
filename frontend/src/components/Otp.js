@@ -76,7 +76,7 @@ export default class extends AbstractComponent {
 				})
 
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request("http://localhost:8000/auth/otp/", {
+				const response = await fetchModule.request(new Request("https://localhost:8000/auth/otp/", {
 					method: 'POST',
 					credentials: "include",
 					headers: {

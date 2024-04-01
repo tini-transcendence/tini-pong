@@ -26,7 +26,7 @@ export default class extends AbstractComponent {
 		const loadQRcode = async () => {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request("http://localhost:8000/auth/otp/", {
+				const response = await fetchModule.request(new Request("https://localhost:8000/auth/otp/", {
 					method: 'GET',
 					credentials: "include"
 				}));
