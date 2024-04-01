@@ -9,3 +9,4 @@ class User(models.Model):
     nickname = models.CharField(max_length=20)
     avatar = models.CharField(null=True)
     online_status = models.DateTimeField(auto_now=True)
+    has_logged_in = models.BooleanField(default=False)

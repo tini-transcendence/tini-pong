@@ -1,7 +1,7 @@
-FROM debian:bullseye-slim
+FROM nginx
 
 RUN apt-get update && \
-    apt-get install -y nginx openssl dumb-init && \
+    apt-get install -y openssl && \
     apt-get install npm -y 
 
 COPY ./conf/default.conf /etc/nginx/conf.d/default.conf
@@ -18,6 +18,7 @@ COPY ./src /var/www/html/src
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 443
+# EXPOSE 8000
 
-ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-CMD ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
+# CMD ["/entrypoint.sh"]

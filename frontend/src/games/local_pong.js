@@ -1,3 +1,5 @@
+import animateGame from "../utils/animateGameModule.js";
+
 let
 local = true,
 online = false,
@@ -89,10 +91,23 @@ score = {
 
 function init()
 {
+  setGameStatus();
   setScoreBoard()
   setGame();
   setEvent();
+  animateGame.setAnimateOn();
   loop();
+}
+
+function setGameStatus()
+{
+  game = false;
+  end = false;
+  difficulty = 0;
+  score = {
+    player1: 0,
+    player2: 0
+  };
 }
 
 function setScoreBoard()
@@ -209,6 +224,7 @@ function containerEventKeyDown(e)
       paddle1.position.x = 0;
       paddle2.position.x = 0;
       end = false;
+      loop();
     }
   }
   else if (difficulty === 0)
@@ -303,10 +319,17 @@ function containerEventKeyUp(e)
 
 function loop()
 {
-  requestAnimationFrame(loop);
+  let num = requestAnimationFrame(loop);
   if (game === true && end === false)
     simulation_ball();
   simulation_paddle();
+  if (animateGame.getAnimate() === false)
+    end = true;
+  if (end === true)
+  {
+    stopBall();
+    cancelAnimationFrame(num);
+  }
   renderer.render(scene, camera);
 }
 
@@ -437,4 +460,4 @@ function simulation_paddle()
     paddle2.position.x += paddle2_spead;
 }
 
-export default init
+export { init, containerEventKeyUp, containerEventKeyDown }

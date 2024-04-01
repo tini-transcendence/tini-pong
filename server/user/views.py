@@ -1,5 +1,7 @@
 import requests
 import os
+import json
+from http import HTTPStatus
 
 from django.http import JsonResponse, HttpRequest, HttpResponseBadRequest, HttpResponse
 from django.views import View
@@ -11,9 +13,45 @@ from util.jwt import create
 from util.timestamp import get_timestamp
 
 
+class UserProfileView(View):
+    def get(self, request: HttpRequest):
+        try:
+            user_uuid = request.GET.get("uuid")
+            user = User.objects.get(pk=user_uuid)
+        except:
+            return HttpResponseBadRequest()
+        return JsonResponse(
+            {
+                "nickname": user.nickname,
+                "avatar": user.avatar,
+                "self": user_uuid == request.user_uuid,
+            }
+        )
+
+
+class EditUserView(View):
+    def post(self, request: HttpRequest):
+        try:
+            new_info = json.loads(request.body)
+        except:
+            return HttpResponseBadRequest()
+        new_info_filtered = {}
+        if "nickname" in new_info:
+            new_info_filtered["nickname"] = new_info["nickname"]
+        if "avatar" in new_info:
+            new_info_filtered["avatar"] = new_info["avatar"]
+        if len(new_info_filtered) == 0:
+            return HttpResponseBadRequest()
+        user = User.objects.get(pk=request.user_uuid)
+        for key, value in new_info_filtered.items():
+            setattr(user, key, value)
+        user.save(update_fields=list(new_info_filtered.keys()))
+        return HttpResponse(status=HTTPStatus.CREATED)
+
+
 class StatusUpdateView(View):
     def post(self, request: HttpRequest):
-        User.objects.get(pk=request.user_uuid).save()
+        User.objects.get(pk=request.user_uuid).save(update_fields=["online_status"])
         return HttpResponse()
 
 
@@ -62,6 +100,6 @@ class LoginOauthView(View):
         )
         response = JsonResponse({"refresh_token": refresh_token})
         response.set_cookie(
-            key="access_token", value=access_token, secure=True, samesite="None"
+            key="access_token", value=access_token, httponly=True, secure=True, samesite="None"
         )
         return response
