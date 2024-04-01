@@ -63,6 +63,12 @@ class OTPView(View):
             return HttpResponse(status=HTTPStatus.UNAUTHORIZED)
         user_uuid = decode(oauth_token)["uuid"]
         user = User.objects.get(pk=user_uuid)
+        if (
+            user.has_logged_in == True
+            and request.is_logged_in != False
+            and request.user_uuid != user_uuid
+        ):
+            return HttpResponse(status=HTTPStatus.UNAUTHORIZED)
         totp_uri = totp.TOTP(user.otp_secret).provisioning_uri(
             name=user.id_42, issuer_name="TINY_PONG"
         )
