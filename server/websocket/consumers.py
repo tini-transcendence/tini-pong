@@ -42,19 +42,17 @@ class RoomConsumer(AsyncWebsocketConsumer):
         elif action == "ready":
             ready = text_data_json["is_ready"]
             player_number, is_ready = await self.set_ready_status(self.user, ready)
-            if player_number is not None:
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        "type": "room_message",
-                        "message": {
-                            "action": "ready",
-                            "player_number": player_number,
-                            "is_ready": is_ready,
-                        },
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "room_message",
+                    "message": {
+                        "action": "ready",
+                        "player_number": player_number,
+                        "is_ready": is_ready,
                     },
-                )
-            await self.set_ready_status(self.user, text_data_json["is_ready"])
+                },
+            )
         elif action == "start_game" and await self.is_room_owner(
             self.user, self.room_uuid
         ):
@@ -162,48 +160,47 @@ class RoomConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def set_ready_status(self, user, ready):
         try:
-            room_user, created = RoomUser.objects.get_or_create(
+            room_user = RoomUser.objects.get(
                 user_uuid=user.uuid, room_uuid=self.room_uuid
             )
             room_user.is_ready = ready
-            room_user.save()
+            room_user.save(update_fields=["is_ready"])
             return room_user.player_number, room_user.is_ready
-        except RoomUser.MultipleObjectsReturned:
-            room_users = RoomUser.objects.filter(
-                user_uuid=user.uuid, room_uuid=self.room_uuid
-            )
-            if room_users:
-                room_user = room_users.first()
-                room_user.is_ready = ready
-                room_user.save()
-                for extra_user in room_users[1:]:
-                    extra_user.delete()
-                return room_user.player_number, room_user.is_ready
-        return None
+        except RoomUser.DoesNotExist:
+            return None, None
+        except Exception as e:
+            print(e)
+            return None, None
 
     @database_sync_to_async
     def assign_player_number(self):
         with transaction.atomic():
-            room = Room.objects.get(uuid=self.room_uuid)
+            room = Room.objects.select_for_update().get(uuid=self.room_uuid)
 
-            occupied_numbers = (
-                RoomUser.objects.filter(room_uuid=room)
-                .exclude(player_number__isnull=True)
-                .values_list("player_number", flat=True)
-                .order_by("player_number")
-            )
-
-            player_number = 1
-            for occupied_number in occupied_numbers:
-                if player_number < occupied_number:
-                    break
-                player_number += 1
-
-            RoomUser.objects.create(
+            room_user, created = RoomUser.objects.get_or_create(
                 room_uuid=room,
                 user_uuid=self.user,
-                player_number=player_number,
+                defaults={"player_number": None},
             )
+
+            if created:
+                occupied_numbers = (
+                    RoomUser.objects.filter(room_uuid=room)
+                    .exclude(player_number__isnull=True)
+                    .values_list("player_number", flat=True)
+                    .order_by("player_number")
+                )
+
+                player_number = 1
+                for occupied_number in occupied_numbers:
+                    if player_number < occupied_number:
+                        break
+                    player_number += 1
+
+                room_user.player_number = player_number
+                room_user.save(update_fields=["player_number"])
+            else:
+                player_number = room_user.player_number
 
         return player_number
 
