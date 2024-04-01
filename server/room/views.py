@@ -9,6 +9,7 @@ from .serializers import RoomSerializer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.http import JsonResponse
+from django.db import transaction
 
 # Create your views here.
 
@@ -29,11 +30,16 @@ class CreateRoomView(APIView):
                 difficulty=request.data.get("difficulty"),
                 owner_uuid_id=request.user_uuid,
             )
-            RoomUser.objects.create(room_uuid=room, user_uuid_id=request.user_uuid)
+            room_user = RoomUser.objects.create(
+                room_uuid=room, user_uuid_id=request.user_uuid
+            )
+
+            create_assign_player_number(room_user)
+
             channel_layer = get_channel_layer()
             group_name = f"room_{room.uuid}"
             async_to_sync(channel_layer.group_add)(group_name, request.user_uuid)
-
+            print("방 생성")
             return JsonResponse(
                 {"message": "Room created successfully", "room_uuid": str(room.uuid)},
                 status=status.HTTP_201_CREATED,
@@ -86,6 +92,7 @@ class JoinRoomView(APIView):
             group_name = f"room_{room_uuid}"
 
             async_to_sync(channel_layer.group_add)(group_name, user_uuid_id)
+            print("방 입장")
             return JsonResponse(
                 {"message": "Joined room successfully"}, status=status.HTTP_200_OK
             )
@@ -147,3 +154,24 @@ class LeaveRoomView(APIView):
             return JsonResponse(
                 {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
+
+def create_assign_player_number(room_user):
+    with transaction.atomic():
+        room = Room.objects.select_for_update().get(uuid=room_user.room_uuid_id)
+
+        occupied_numbers = (
+            RoomUser.objects.filter(room_uuid=room)
+            .exclude(player_number__isnull=True)
+            .values_list("player_number", flat=True)
+            .order_by("player_number")
+        )
+
+        player_number = 1
+        for occupied_number in occupied_numbers:
+            if player_number < occupied_number:
+                break
+            player_number += 1
+
+        room_user.player_number = player_number
+        room_user.save(update_fields=["player_number"])

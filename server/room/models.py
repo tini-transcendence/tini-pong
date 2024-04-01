@@ -30,5 +30,3 @@ class RoomUser(models.Model):
     is_ready = models.BooleanField(default=False)
     player_number = models.PositiveIntegerField(null=True, blank=True)
 
-    class Meta:
-        unique_together = [["user_uuid", "room_uuid"]]
