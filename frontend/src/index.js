@@ -4,6 +4,8 @@ import Navbar from "./components/Navbar.js";
 import Main from "./components/Main.js";
 import Login from "./components/Login.js";
 import Oauth from "./components/Oauth.js";
+import OtpQR from "./components/OtpQR.js";
+import Otp from "./components/Otp.js";
 import MyPage from "./components/MyPage.js";
 import Users from "./components/Users.js";
 import UserEdit from "./components/UserEdit.js";
@@ -23,6 +25,8 @@ const routes = [
 	{ path: "/", component: [Main, Navbar]},
 	{ path: "/login", component: [Login]},
 	{ path: "/login/oauth", component: [Oauth]},
+	{ path: "/login/otp/qr", component: [OtpQR]},
+	{ path: "/login/otp", component: [Otp]},
 	{ path: "/mypage", component: [MyPage, Navbar]},
 	{ path: "/users/:username", component: [Users, Navbar]},
 	{ path: "/edit", component: [UserEdit]},
