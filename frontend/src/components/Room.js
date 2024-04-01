@@ -91,7 +91,7 @@ export default class extends AbstractComponent {
 		const match = currentURL.match(/\/([^\/]+)\/?$/);
 		// 추출된 문자열 출력
 		const lastPart = match ? match[1] : null;
-		const websocketURL = 'ws://localhost:8000/ws/room/' + lastPart + '/?access_token=' + token;
+		const websocketURL = 'wss://localhost:8000/ws/room/' + lastPart + '/?access_token=' + token;
 
 
 		// WebSocket 객체 생성

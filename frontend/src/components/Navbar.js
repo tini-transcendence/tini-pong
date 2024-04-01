@@ -58,7 +58,7 @@ export default class extends AbstractComponent {
 		const fetchRemoveFriend = async (removeFriend) => {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request("http://localhost:8000/friend/delete", {
+				const response = await fetchModule.request(new Request("https://localhost:8000/friend/delete", {
 					method: 'DELETE',
 					credentials: "include",
 					headers: {
@@ -82,7 +82,7 @@ export default class extends AbstractComponent {
 		const fetchAddFriend = async (data, resultSearchUser) => {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request("http://localhost:8000/friend/add/", {
+				const response = await fetchModule.request(new Request("https://localhost:8000/friend/add/", {
 					method: 'POST',
 					credentials: "include",
 					headers: {
@@ -126,7 +126,7 @@ export default class extends AbstractComponent {
 		const fetchFriendList = async () => {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request("http://localhost:8000/friend/", {
+				const response = await fetchModule.request(new Request("https://localhost:8000/friend/", {
 					method: 'GET',
 					credentials: "include",
 				}));
@@ -147,7 +147,7 @@ export default class extends AbstractComponent {
 		const fetchSearchFriend = async (foundUser, resultSearchUser) => {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request(`http://localhost:8000/friend/search?nickname=${foundUser}`, {
+				const response = await fetchModule.request(new Request(`https://localhost:8000/friend/search?nickname=${foundUser}`, {
 					method: 'GET',
 					credentials: "include",
 				}));

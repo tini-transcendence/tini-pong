@@ -62,6 +62,6 @@ class LoginOauthView(View):
         )
         response = JsonResponse({"refresh_token": refresh_token})
         response.set_cookie(
-            key="access_token", value=access_token, secure=True, samesite="None"
+            key="access_token", value=access_token, httponly=True, secure=True, samesite="None"
         )
         return response

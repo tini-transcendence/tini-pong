@@ -21,7 +21,7 @@ export default class extends AbstractComponent {
 		(async function() {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request(`http://localhost:8000/user/login/oauth${queryString}`, {
+				const response = await fetchModule.request(new Request(`https://localhost:8000/user/login/oauth${queryString}`, {
 					method: 'GET',
 					credentials: "include"
 				}));

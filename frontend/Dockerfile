@@ -18,7 +18,7 @@ COPY ./src /var/www/html/src
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 443
-EXPOSE 8000
+# EXPOSE 8000
 
 ENTRYPOINT ["/entrypoint.sh"]
 # CMD ["/entrypoint.sh"]

@@ -94,7 +94,7 @@ export default class extends AbstractComponent {
     }
 
     handleRoute() {
-        fetch("http://localhost:8000/dashboard")
+        fetch("https://localhost:8000/dashboard")
             .then((response) => {
                 return response.json();
             })

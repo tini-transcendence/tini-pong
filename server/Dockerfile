@@ -14,7 +14,7 @@ RUN apk add --update --no-cache postgresql-client postgresql-dev gcc musl-dev &&
     pip install pipenv && \
     pipenv install --system --deploy --ignore-pipfile
 
-EXPOSE 8000
+# EXPOSE 8000
 
 RUN adduser \
         --disabled-password \
