@@ -1,5 +1,7 @@
 import requests
 import os
+import json
+from http import HTTPStatus
 
 from django.http import JsonResponse, HttpRequest, HttpResponseBadRequest, HttpResponse
 from django.views import View
@@ -25,6 +27,26 @@ class UserProfileView(View):
                 "self": user_uuid == request.user_uuid,
             }
         )
+
+
+class EditUserView(View):
+    def post(self, request: HttpRequest):
+        try:
+            new_info = json.loads(request.body)
+        except:
+            return HttpResponseBadRequest()
+        new_info_filtered = {}
+        if "nickname" in new_info:
+            new_info_filtered["nickname"] = new_info["nickname"]
+        if "avatar" in new_info:
+            new_info_filtered["avatar"] = new_info["avatar"]
+        if len(new_info_filtered) == 0:
+            return HttpResponseBadRequest()
+        user = User.objects.get(pk=request.user_uuid)
+        for key, value in new_info_filtered.items():
+            setattr(user, key, value)
+        user.save(update_fields=list(new_info_filtered.keys()))
+        return HttpResponse(status=HTTPStatus.CREATED)
 
 
 class StatusUpdateView(View):
