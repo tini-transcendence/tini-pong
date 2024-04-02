@@ -96,7 +96,7 @@ export default class extends AbstractComponent {
 
 		// WebSocket 객체 생성
 		const websocket = new WebSocket(websocketURL);
-		window.websocket = websocket;
+		// window.websocket = websocket;
 		console.log('웹 소켓 URL :', websocket);
 
 		websocket.onerror = function () {
@@ -104,7 +104,7 @@ export default class extends AbstractComponent {
 				setTimeout(() => {
 					console.log(`연결 실패. ${retryCount + 1}번째 재연결 시도 중...`);
 					retryCount++;
-					connectWebSocket();
+					const websocket = new WebSocket(websocketURL);
 				}, retryDelay);
 			} else {
 				console.log('WebSocket 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
@@ -127,7 +127,7 @@ export default class extends AbstractComponent {
 		// WebSocket 연결이 닫혔을 때 실행되는 이벤트 핸들러
 		websocket.onclose = function (event) {
 			console.log('WebSocket 연결이 닫혔습니다.');
-			// this.goBack();
+			this.goBack();
 		};
 
 		// const player1Node = document.querySelector("#player1");
