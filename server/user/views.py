@@ -5,6 +5,7 @@ from http import HTTPStatus
 
 from django.http import JsonResponse, HttpRequest, HttpResponseBadRequest, HttpResponse
 from django.views import View
+from django.db import IntegrityError
 
 from .models import User
 from auth.models import RefreshToken
@@ -47,7 +48,10 @@ class EditUserView(View):
         user = User.objects.get(pk=request.user_uuid)
         for key, value in new_info_filtered.items():
             setattr(user, key, value)
-        user.save(update_fields=list(new_info_filtered.keys()))
+        try:
+            user.save(update_fields=list(new_info_filtered.keys()))
+        except IntegrityError:
+            return HttpResponseBadRequest()
         return HttpResponse(status=HTTPStatus.CREATED)
 
 
