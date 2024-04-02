@@ -46,6 +46,7 @@ export default class extends AbstractComponent {
 		let validNick = false;
 		const nicknameForm = document.querySelector("#nickname-form");
 		const avatarForm = document.querySelector("#avatar-form");
+		const avatarPreview = document.querySelector("#image-preview");
 		const messageForm = document.querySelector("#message-form");
 
 		nicknameForm.addEventListener("change", e => {
@@ -65,6 +66,8 @@ export default class extends AbstractComponent {
 
 		avatarForm.addEventListener("change", e => {
 			const imgFile = e.target.files[0];
+			const reader = new FileReader();
+
 			if (!imgFile.type.match(fileForm)) {
 				alert("이미지 파일(jpg, jpeg, png, gif)만 업로드!");
 				return ;
@@ -72,14 +75,20 @@ export default class extends AbstractComponent {
 				alert("2MB 이하 크기만 업로드!");
 				return ;
 			}
-			const imageUrl = URL.createObjectURL(imgFile);
-			document.querySelector("#image-preview").setAttribute("src", `${imageUrl}`);
+			reader.addEventListener("load", e => {
+				avatarPreview.setAttribute("src", reader.result);
+			})
+			if (imgFile) {
+				reader.readAsDataURL(imgFile);
+			}
 		})
 
 		const editPageSubmit = document.querySelector("#editpage-submit");
 		editPageSubmit.addEventListener("click", async e => {
+			if (validNick === false)
+				return ;
 			console.log(nicknameForm.value);
-			console.log(avatarForm.src);
+			console.log(avatarPreview.src);
 			console.log(defenseXss.replaceSpecial(messageForm.value));
 
 			try {
@@ -92,7 +101,7 @@ export default class extends AbstractComponent {
 					},
 					body: JSON.stringify({
 						nickname: nicknameForm.value,
-						avatar: avatarForm.src,
+						avatar: avatarPreview.src,
 						message: defenseXss.replaceSpecial(messageForm.value),
 					}),
 				})

@@ -16,5 +16,6 @@ export default class {
         value = value.replaceAll("/", "&#x2F;");
         value = value.replaceAll("'", "&#x27;");
         value = value.replaceAll("\"", "&quot;");
+		return value;
 	}
 }
