@@ -18,8 +18,8 @@ export default class extends AbstractComponent {
 					<div class="text-center">
 						<h3>Nickname</h3>
 					</div>
-					<div class="mx-2 overflow-auto" style="max-height: 500px;">
-						<p>This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.This is My Page.</p>
+					<div class="mx-2 border">
+						<p>This is My Page.</p>
 					</div>
 				</div>
 				<div class="col col-md-8 p-2 border">
@@ -38,7 +38,24 @@ export default class extends AbstractComponent {
 							</div>
 						</div>
 					</div>
-					
+					<ul class="mt-2 border overflow-auto" style="height: 500px; padding-left: 0;">
+						<li class="d-flex align-items-center border">
+							<div class="align-self-stretch bg-primary text-white p-2">
+								승
+							</div>
+							<div class="d-inline-flex justify-content-around align-items-center p-2 border" style="width: 40rem;">
+								<div>nick1</div>
+								<div class="mx-2">
+									12 : 3
+								</div>
+								<div>nick2</div>
+							</div>
+							<div class="ms-auto p-2">
+								<div>2024:04:02 18:49</div>
+								<div><b>Hard</b></div>
+							</div>
+						</li>
+					</ul>
 				</div>
 			</div>
 		</div>
