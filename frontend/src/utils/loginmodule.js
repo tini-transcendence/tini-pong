@@ -32,7 +32,7 @@ export default class {
 		{
 			try {
 				const fetchModule = new FetchModule();
-				await fetchModule.request(new Request("http://localhost:8000/user/status-update/", {
+				await fetchModule.request(new Request("https://localhost:8000/user/status-update/", {
 					method: 'POST',
 					credentials: "include",
 				}));
