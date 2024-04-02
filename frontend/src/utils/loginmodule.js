@@ -32,7 +32,10 @@ export default class {
 		{
 			try {
 				const fetchModule = new FetchModule();
-				await fetchModule.getReIssuedAccessToken(refreshToken);
+				await fetchModule.request(new Request("http://localhost:8000/user/status-update/", {
+					method: 'POST',
+					credentials: "include",
+				}));
 
 				if (this.loginStatus === false) {
 					this.loginStatus = true;
