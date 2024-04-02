@@ -92,7 +92,7 @@ class OTPView(View):
             return HttpResponseBadRequest()
         has_logged_in = user.has_logged_in
         user.has_logged_in = True
-        user.save()
+        user.save(update_fields=["has_logged_in"])
         access_token = create_access_token(str(user.uuid))
         refresh_token = create_refresh_token()
         RefreshToken.objects.create(
