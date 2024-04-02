@@ -40,6 +40,8 @@ class EditUserView(View):
             new_info_filtered["nickname"] = new_info["nickname"]
         if "avatar" in new_info:
             new_info_filtered["avatar"] = new_info["avatar"]
+        if "message" in new_info:
+            new_info_filtered["message"] = new_info["message"]
         if len(new_info_filtered) == 0:
             return HttpResponseBadRequest()
         user = User.objects.get(pk=request.user_uuid)
