@@ -79,6 +79,7 @@ export default class extends AbstractComponent {
 					const userProfileNode = document.querySelector("#userpage-profile")
 
 					userProfileNode.querySelector("#userpage-profile-nickname").innerText = data.nickname;
+					userProfileNode.querySelector("#userpage-profile-message").innerText = data.message;
 					if (data.avatar)
 						userProfileNode.querySelector("#userpage-profile-avatar").src = data.avatar;
 					progressSetting();
