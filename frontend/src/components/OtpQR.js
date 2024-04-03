@@ -1,6 +1,7 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
 import { QRCode } from "../utils/qrcode.js";
+import {DOMAIN_NAME} from "../index.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -26,7 +27,7 @@ export default class extends AbstractComponent {
 		const loadQRcode = async () => {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request("https://localhost:8000/auth/otp/", {
+				const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/auth/otp/`, {
 					method: 'GET',
 					credentials: "include"
 				}));
