@@ -74,6 +74,7 @@ board,
 ball,
 paddle1,
 paddle2,
+last_winner = null,
 
 paddle1_spead = 0,
 paddle2_spead = 0,
@@ -366,7 +367,16 @@ function simulation_ball()
 
 function startOneGame()
 {
-  let direction = Math.random() > 0.5 ? -1 : 1;
+  let direction = 1;
+  if (last_winner === null)
+    direction = Math.random() > 0.5 ? -1 : 1;
+  else
+  {
+    if (last_winner === 'player1')
+      direction = -1;
+    else
+      direction = 1;
+  }
   ball.$velocity = {
     x: BALL_VELOCITY_X,
     z: direction * BALL_VELOCITY_Z
@@ -420,6 +430,7 @@ function isPastPaddle2()
 function scoreBy(playerName)
 {
   addPoint(playerName);
+  last_winner = playerName;
   stopBall();
   updateScoreBoard();
 }
