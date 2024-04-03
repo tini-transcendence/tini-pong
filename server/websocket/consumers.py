@@ -1,9 +1,8 @@
-import json
+import json, asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from room.models import Room, RoomUser
 from user.models import User
-from channels.layers import get_channel_layer
 from django.db import transaction
 
 
@@ -53,13 +52,38 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     },
                 },
             )
-        elif action == "start_game" and await self.is_room_owner(
-            self.user, self.room_uuid
-        ):
-            await self.start_game()
+        elif action == "start":
+            success, message = await self.start_game()
+            if success:
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "room_message",
+                        "message": {
+                            "action": "start",
+                            "message": message,
+                            "status": "ok",
+                        },
+                    },
+                )
+            else:
+                await self.send(text_data=json.dumps({"error": message}))
         elif action == "leave":
-            await self.leave_room()
-            await self.close()
+            is_owner = await self.is_room_owner(self.user, self.room_uuid)
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "room_message",
+                    "message": {
+                        "action": "terminate",
+                        "room_uuid": str(self.room_uuid),
+                        "is_owner": is_owner,
+                        "user_uuid": str(self.user.uuid) if not is_owner else None,
+                        "player_number": self.player_number if not is_owner else None,
+                    },
+                },
+            )
+
         elif action == "key_press":
             await self.handle_key_press(text_data_json["key"])
 
@@ -86,65 +110,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 )
             )
 
-    async def leave_room(self):
-        try:
-            room = await database_sync_to_async(Room.objects.get)(uuid=self.room_uuid)
-            user = self.scope["user"]
-
-            room_user = await database_sync_to_async(RoomUser.objects.filter)(
-                room_uuid=room, user_uuid=user
-            ).first()
-            if not room_user:
-                await self.send(
-                    text_data=json.dumps({"error": "User is not in the room."})
-                )
-                return
-
-            channel_layer = get_channel_layer()
-            group_name = f"room_{self.room_uuid}"
-
-            if room.owner_uuid == user.uuid:
-                room_users = await database_sync_to_async(RoomUser.objects.filter)(
-                    room_uuid=room
-                )
-                for member in room_users:
-                    await self.channel_layer.group_discard(group_name, member.user_uuid)
-                    await database_sync_to_async(member.delete)()
-
-                await database_sync_to_async(room.delete)()
-                await self.send(
-                    text_data=json.dumps(
-                        {"message": "Room closed and all users removed by owner"}
-                    )
-                )
-            else:
-                await self.channel_layer.group_discard(group_name, user.channel_name)
-                await database_sync_to_async(room_user.delete)()
-                await self.send(
-                    text_data=json.dumps({"message": "Left room successfully"})
-                )
-        except Room.DoesNotExist:
-            await self.send(text_data=json.dumps({"error": "Room not found"}))
-        except User.DoesNotExist:
-            await self.send(text_data=json.dumps({"error": "User not found"}))
-
     async def disconnect(self, close_code):
-        player_number = await self.remove_player_number(self.player_number)
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "room_message",
-                "message": {
-                    "action": "player_left",
-                    "player_number": player_number,
-                    "user_uuid": str(self.user.uuid),
-                },
-            },
-        )
-        if self.room_group_name:
-            await self.channel_layer.group_discard(
-                self.room_group_name, self.channel_name
-            )
+        is_owner = await self.is_room_owner(self.user, self.room_uuid)
+        if is_owner:
+            await self.delete_room_and_room_users(self.room_uuid)
+        else:
+            await self.remove_user_from_room(self.user, self.room_uuid)
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     @database_sync_to_async
     def is_user_in_room(self, user, room_uuid):
@@ -155,7 +127,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def is_room_owner(self, user, room_uuid):
         room = Room.objects.get(uuid=room_uuid)
-        return room.owner_uuid == user.uuid
+        return room.owner_uuid.uuid == user.uuid
 
     @database_sync_to_async
     def set_ready_status(self, user, ready):
@@ -210,15 +182,37 @@ class RoomConsumer(AsyncWebsocketConsumer):
         return room_user.player_number
 
     @database_sync_to_async
-    def remove_player_number(self, player_number):
-        RoomUser.objects.filter(
-            room_uuid=self.room_uuid, player_number=player_number
-        ).update(player_number=None)
-        return player_number
+    def remove_user_from_room(self, user, room_uuid):
+        room_user = RoomUser.objects.filter(
+            user_uuid=user.uuid, room_uuid=room_uuid
+        ).first()
+        if room_user:
+            room_user.player_number = None
+            room_user.save(update_fields=["player_number"])
+            room_user.delete()
+        if not RoomUser.objects.filter(room_uuid=room_uuid).exists():
+            Room.objects.filter(uuid=room_uuid).delete()
+
+    @database_sync_to_async
+    def delete_room_and_room_users(self, room_uuid):
+        Room.objects.filter(uuid=room_uuid).delete()
 
     @database_sync_to_async
     def start_game(self):
-        room = Room.objects.get(uuid=self.room_uuid)
-        if all(user.is_ready for user in room.roomuser_set.all()):
+        try:
+            room = Room.objects.get(uuid=self.room_uuid)
+            if room.owner_uuid.uuid != self.user.uuid:
+                return False, "방장 플레이어만 게임을 시작할 수 있습니다."
+
+            if not all(room_user.is_ready for room_user in room.room_users.all()):
+                return False, "모든 플레이어가 준비상태여야 합니다."
+
             room.is_active = True
             room.save()
+
+            player_numbers = list(
+                room.room_users.values_list("user_uuid", "player_number")
+            )
+            return True, "시작합니다"
+        except Room.DoesNotExist:
+            return False, "방을 찾을 수 없습니다."
