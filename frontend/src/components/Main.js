@@ -1,5 +1,6 @@
 import AbstractComponent from "./AbstractComponent.js";
-import {containerEventKeyUp, containerEventKeyDown} from "../games/local_pong.js"
+import {containerEventKeyUp, containerEventKeyDown} from "../games/localPongBasic.js"
+import {containerEventKeyUp as containerEventKeyUpM, containerEventKeyDown as containerEventKeyDownM} from "../games/localPongMultify.js"
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -20,5 +21,7 @@ export default class extends AbstractComponent {
 	handleRoute() {
 		window.document.removeEventListener('keydown', containerEventKeyDown);
 		window.document.removeEventListener('keyup', containerEventKeyUp);
+		window.document.removeEventListener('keydown', containerEventKeyDownM);
+		window.document.removeEventListener('keyup', containerEventKeyUpM);
 	}
 }

@@ -5,6 +5,7 @@ local = true,
 online = false,
 document = window.document,
 THREE = window.THREE,
+num = null,
 
 ARROW_LEFT = 37,
 ARROW_UP = 38,
@@ -47,9 +48,10 @@ BOARD_LOCATION_Y = -50,
 BOARD_LOCATION_Z = 0,
 BOARD_COLOR = 0x6666ff,
 
+BALL_DEFAULT_VELOCITY_Z = 20,
 BALL_RADIUS = 20,
 BALL_VELOCITY_X = 0,
-BALL_VELOCITY_Z = 20,
+BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z,
 BALL_LOCATION_X = 0,
 BALL_LOCATION_Y = 0,
 BALL_LOCATION_Z = 0,
@@ -74,6 +76,7 @@ board,
 ball,
 paddle1,
 paddle2,
+last_winner = null,
 
 paddle1_spead = 0,
 paddle2_spead = 0,
@@ -91,8 +94,10 @@ score = {
 
 function init()
 {
+  if (num)
+    cancelAnimationFrame(num);
   setGameStatus();
-  setScoreBoard()
+  setScoreBoard();
   setGame();
   setEvent();
   animateGame.setAnimateOn();
@@ -104,6 +109,7 @@ function setGameStatus()
   game = false;
   end = false;
   difficulty = 0;
+  PADDLE_WIDTH = PADDLE_DEFAULT_WIDTH;
   score = {
     player1: 0,
     player2: 0
@@ -112,7 +118,7 @@ function setGameStatus()
 
 function setScoreBoard()
 {
-  scoreBoard = document.getElementById('scoreBoard');
+  scoreBoard = document.getElementById('scoreBoardB');
   scoreBoard.innerHTML = 'Welcome! Select difficulty (E/N/H)';
 }
 
@@ -129,7 +135,7 @@ function setGame()
 
 function setRenderer()
 {
-  container = document.getElementById('container');
+  container = document.getElementById('containerB');
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(WIDTH, HEIGHT);
   renderer.setClearColor(0x9999BB, 1);
@@ -203,7 +209,7 @@ function containerEventKeyDown(e)
     if (e.keyCode === KEY_R)
     {
       scoreBoard.innerHTML = 'Welcome! Select difficulty (E/N/H)';
-      BALL_VELOCITY_Z = 20;
+      BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z;
       if (difficulty === 1)
       {
         PADDLE_WIDTH = PADDLE_DEFAULT_WIDTH;
@@ -241,7 +247,7 @@ function containerEventKeyDown(e)
     else if (e.keyCode === KEY_N)
     {
       difficulty = 2;
-      BALL_VELOCITY_Z = 20;
+      BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z;
       e.preventDefault();
     }
     else if (e.keyCode === KEY_H)
@@ -319,7 +325,8 @@ function containerEventKeyUp(e)
 
 function loop()
 {
-  let num = requestAnimationFrame(loop);
+  
+  num = requestAnimationFrame(loop);
   if (game === true && end === false)
     simulation_ball();
   simulation_paddle();
@@ -329,6 +336,7 @@ function loop()
   {
     stopBall();
     cancelAnimationFrame(num);
+    num = null;
   }
   renderer.render(scene, camera);
 }
@@ -366,7 +374,16 @@ function simulation_ball()
 
 function startOneGame()
 {
-  let direction = Math.random() > 0.5 ? -1 : 1;
+  let direction = 1;
+  if (last_winner === null)
+    direction = Math.random() > 0.5 ? -1 : 1;
+  else
+  {
+    if (last_winner === 'player1')
+      direction = -1;
+    else
+      direction = 1;
+  }
   ball.$velocity = {
     x: BALL_VELOCITY_X,
     z: direction * BALL_VELOCITY_Z
@@ -420,6 +437,7 @@ function isPastPaddle2()
 function scoreBy(playerName)
 {
   addPoint(playerName);
+  last_winner = playerName;
   stopBall();
   updateScoreBoard();
 }
