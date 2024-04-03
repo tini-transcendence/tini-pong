@@ -1,6 +1,6 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js"
-import {DOMAIN, DOMAIN_NAME} from "../index.js";
+import {DOMAIN, DOMAIN_NAME, navigateTo} from "../index.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -28,7 +28,7 @@ export default class extends AbstractComponent {
 					credentials: "include",
 				}));
 				if (response.ok)
-					location.href = "/";
+					navigateTo("/");
 				else
 					throw new Error(response.statusText);
 			} catch (error) {

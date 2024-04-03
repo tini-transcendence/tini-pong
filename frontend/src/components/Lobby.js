@@ -1,6 +1,6 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
-import {DOMAIN_NAME} from "../index.js";
+import {DOMAIN_NAME, navigateTo} from "../index.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -155,7 +155,7 @@ export default class extends AbstractComponent {
 								}),
 							}));
 							if (response.ok) {
-								location.href = `room/${roomuuid[1]}`;
+								navigateTo(`room/${roomuuid[1]}`);
 								// callback(roomuuid[1]);
 							}
 							else if (response.status === 404)
@@ -192,7 +192,7 @@ export default class extends AbstractComponent {
 					if (response.ok) {
 						const data = await response.json();
 						// callback(data.room_uuid);
-						location.href = `room/` + data.room_uuid;
+						navigateTo(`room/` + data.room_uuid);
 					}
 					else if (response.status === 404)
 						throw new Error(response.error);

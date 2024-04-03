@@ -1,6 +1,6 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
-import {DOMAIN_NAME} from "../index.js";
+import {DOMAIN_NAME, navigateTo} from "../index.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -28,11 +28,10 @@ export default class extends AbstractComponent {
 				}));
 				if (response.ok) {
 					const data = await response.json();
-					console.log(data.has_logged_in);
 					if (data.has_logged_in)
-						location.href = "/login/otp";
+						navigateTo("/login/otp");
 					else
-						location.href = "/login/otp/qr";
+						navigateTo("/login/otp/qr");
 				}
 				else
 					throw new Error(response.statusText);
