@@ -26,6 +26,7 @@ const routes = [
 	{ path: "/login/oauth", component: [Oauth]},
 	{ path: "/login/otp/qr", component: [OtpQR]},
 	{ path: "/login/otp", component: [Otp]},
+	{ path: "/mypage", component: [UserPage, Navbar]},
 	{ path: "/users/:useruuid", component: [UserPage, Navbar]},
 	{ path: "/edit", component: [UserEdit]},
 	{ path: "/lobby", component: [Lobby, Navbar]},

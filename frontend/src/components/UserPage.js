@@ -66,9 +66,11 @@ export default class extends AbstractComponent {
 	handleRoute(param) {
 		const profileSetting = async () => {
 			try {
-				console.log(param.useruuid);
+				let fetchString = "";
+				if (param.useruuid)
+					fetchString = `?uuid=${param.useruuid}`;
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request(`https://localhost:8000/user/profile?uuid=${param.useruuid}`, {
+				const response = await fetchModule.request(new Request(`https://localhost:8000/user/profile${fetchString}`, {
 					method: 'GET',
 					credentials: "include",
 				}));
