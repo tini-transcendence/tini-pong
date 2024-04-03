@@ -48,18 +48,19 @@ export default class extends AbstractComponent {
 		const avatarForm = document.querySelector("#avatar-form");
 		const avatarPreview = document.querySelector("#image-preview");
 		const messageForm = document.querySelector("#message-form");
+		const nicknameDangerForm = document.querySelector("#form-danger-1");
 
 		nicknameForm.addEventListener("change", e => {
 			if (e.target.value.length < 3) {
-				document.querySelector("#form-danger-1").innerText = "닉네임은 최소 3글자 이상으로 구성되어야 합니다.";
+				nicknameDangerForm.innerText = "닉네임은 최소 3글자 이상으로 구성되어야 합니다.";
 				validNick = false;
 			}
 			else if (!defenseXss.validateNickname(e.target.value)) {
-				document.querySelector("#form-danger-1").innerText = "닉네임은 한글과 알파벳, 숫자로만 구성될 수 있습니다.";
+				nicknameDangerForm.innerText = "닉네임은 한글과 알파벳, 숫자로만 구성될 수 있습니다.";
 				validNick = false;
 			}
 			else {
-				document.querySelector("#form-danger-1").innerText = "\u00A0";
+				nicknameDangerForm.innerText = "\u00A0";
 				validNick = true;
 			}
 		})
@@ -87,13 +88,9 @@ export default class extends AbstractComponent {
 		editPageSubmit.addEventListener("click", async e => {
 			if (validNick === false)
 				return ;
-			console.log(nicknameForm.value);
-			console.log(avatarPreview.src);
-			console.log(defenseXss.replaceSpecial(messageForm.value));
-
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request("https://localhost:8000/user/edit"), {
+				const response = await fetchModule.request(new Request("https://localhost:8000/user/edit/", {
 					method: 'POST',
 					credentials: "include",
 					headers: {
@@ -104,13 +101,14 @@ export default class extends AbstractComponent {
 						avatar: avatarPreview.src,
 						message: defenseXss.replaceSpecial(messageForm.value),
 					}),
-				})
+				}))
 				if (response.ok) {
 					console.log("저장되었습니다.");
 				}
 				else
 					throw new Error(response.statusText);
 			} catch (error) {
+				nicknameDangerForm.innerText = "이미 사용중인 닉네임입니다.";
 				console.log(error.message);
 			}
 		})
