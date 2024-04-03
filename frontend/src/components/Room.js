@@ -74,14 +74,11 @@ export default class extends AbstractComponent {
 	}
 
 	handleRoute() {
-		// this.makeSocket();
 
 		let retryCount = 0;
 		const maxRetry = 3;
 		const retryDelay = 2000;
 		let is_ready = false;
-
-		// const webSocket = new WebSocket(`ws://localhost:8000/ws/room/${roomUuid}/?access_token=${token}`);
 
 		const token = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
 
@@ -93,10 +90,9 @@ export default class extends AbstractComponent {
 		const lastPart = match ? match[1] : null;
 		const websocketURL = 'wss://localhost:8000/ws/room/' + lastPart + '/?access_token=' + token;
 
-
 		// WebSocket 객체 생성
 		const websocket = new WebSocket(websocketURL);
-		// window.websocket = websocket;
+		window.websocket = websocket;
 		console.log('웹 소켓 URL :', websocket);
 
 		websocket.onerror = function () {
@@ -116,7 +112,6 @@ export default class extends AbstractComponent {
 		websocket.onopen = function (event) {
 			console.log('WebSocket 연결이 열렸습니다.');
 			console.log('player 님이 방에 입장하셨습니다.');
-
 			const dataToSend = {
 				"action": "join"
 			}
@@ -127,12 +122,10 @@ export default class extends AbstractComponent {
 		// WebSocket 연결이 닫혔을 때 실행되는 이벤트 핸들러
 		websocket.onclose = function (event) {
 			console.log('WebSocket 연결이 닫혔습니다.');
-			this.goBack();
+			alert("방이 존재하지 않거나 가득 찼습니다.")
+			window.location.href = document.referrer;
 		};
 
-		// const player1Node = document.querySelector("#player1");
-		// const player1NickNode = player1Node.querySelector(".card-title");
-		// player1NickNode.innerText = "nick";
 		function dataUpdate(data) {
 			switch (data["player_number"]) {
 				case 1:
@@ -217,7 +210,11 @@ export default class extends AbstractComponent {
 
 		const goBackBtn = document.querySelector("#exitBtn");
 		goBackBtn.addEventListener("click", event => {
-			this.goBack();
+			const dataToSend = {
+				"action": "leave",
+			}
+			console.log("leave room message send");
+			websocket.send(JSON.stringify(dataToSend));
 		});
 	}
 }
