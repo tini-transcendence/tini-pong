@@ -157,7 +157,7 @@ export default class extends AbstractComponent {
 						resultSearchUser.insertAdjacentHTML("beforeend", `
 						<div class="alert alert-light d-flex align-items-center" role="alert">
 							<div class="p-2 me-auto">
-								<a href="/users/${data.nickname}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${data.nickname}</a>
+								<a href="/users/${data.uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${data.nickname}</a>
 							</div>
 							<div>
 								<button type="button" class="btn btn-outline-secondary">
@@ -223,7 +223,7 @@ export default class extends AbstractComponent {
 			newFriendListNode.insertAdjacentHTML("beforeend", `
 			<div class="d-flex flex-wrap">
 				<div class="p-2 me-auto">
-					<a href="/users/${element.nickname}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.nickname}</a>
+					<a href="/users/${element.uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.nickname}</a>
 				</div>
 				<div class="p-2" id="online-status"></div>
 				<div>
