@@ -8,8 +8,7 @@ export default class extends AbstractComponent {
 		this.setTitle("Main");
 	}
 
-	async getHtml(loginModule) {
-		loginModule.isLogin();
+	async getHtml() {
 		return `
 		<h1>Welcome!</h1>
 		<p>This is Main page.</p>
