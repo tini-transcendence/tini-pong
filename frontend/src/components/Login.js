@@ -1,5 +1,6 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js"
+import {DOMAIN} from "../index.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -28,11 +29,11 @@ export default class extends AbstractComponent {
 					await fetchModule.getReIssuedAccessToken(refreshToken);
 					location.href = "/";
 				} catch (error) {
-					location.href = "https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-a44af88cc4ff0433fc32ca3cc93bc26a96ced1a9b0a7c5293de5fb6418ab5707&redirect_uri=https%3A%2F%2Flocalhost%2Flogin%2Foauth&response_type=code";
+					location.href = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-a44af88cc4ff0433fc32ca3cc93bc26a96ced1a9b0a7c5293de5fb6418ab5707&redirect_uri=https%3A%2F%2F${DOMAIN}%2Flogin%2Foauth&response_type=code`;
 				}
 			}
 			else // refresh token 만료
-				location.href = "https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-a44af88cc4ff0433fc32ca3cc93bc26a96ced1a9b0a7c5293de5fb6418ab5707&redirect_uri=https%3A%2F%2Flocalhost%2Flogin%2Foauth&response_type=code";
+				location.href = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-a44af88cc4ff0433fc32ca3cc93bc26a96ced1a9b0a7c5293de5fb6418ab5707&redirect_uri=https%3A%2F%2F${DOMAIN}%2Flogin%2Foauth&response_type=code`;
 		})
 	}
 }
