@@ -1,3 +1,5 @@
+import {DOMAIN_NAME} from "../index.js";
+
 export default class {
 	constructor() {
 		this.isRefreshing = false;
@@ -49,7 +51,7 @@ export default class {
 	// 토큰 재발급
 	async getReIssuedAccessToken(refreshToken) {
 		try {
-			const response = await fetch('https://localhost:8000/auth/refresh/', {
+			const response = await fetch(`${DOMAIN_NAME}/auth/refresh/`, {
 				method: 'POST',
 				credentials: "include",
 				headers: {
