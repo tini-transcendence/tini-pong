@@ -1,4 +1,5 @@
 import AbstractComponent from "./AbstractComponent.js";
+import {DOMAIN} from "../index.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -81,7 +82,7 @@ export default class extends AbstractComponent {
 		const match = currentURL.match(/\/([^\/]+)\/?$/);
 		// 추출된 문자열 출력
 		const lastPart = match ? match[1] : null;
-		const websocketURL = 'wss://localhost:8000/ws/room/' + lastPart + '/?access_token=' + token;
+		const websocketURL = `wss://${DOMAIN}:8000/ws/room/` + lastPart + '/?access_token=' + token;
 
 		// WebSocket 객체 생성
 		const websocket = new WebSocket(websocketURL);
