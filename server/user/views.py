@@ -17,7 +17,10 @@ from util.timestamp import get_timestamp
 class UserProfileView(View):
     def get(self, request: HttpRequest):
         try:
-            user_uuid = request.GET.get("uuid")
+            user_uuid = request.GET["uuid"]
+        except:
+            user_uuid = request.user_uuid
+        try:
             user = User.objects.get(pk=user_uuid)
         except:
             return HttpResponseBadRequest()
@@ -25,6 +28,7 @@ class UserProfileView(View):
             {
                 "nickname": user.nickname,
                 "avatar": user.avatar,
+                "message": user.message,
                 "self": user_uuid == request.user_uuid,
             }
         )
