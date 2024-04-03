@@ -26,24 +26,30 @@ export default class extends AbstractComponent {
 		animateGame.setAnimateOff();
 		const selecterDiv = document.querySelector(".selecter");
 		const basicPongButton = document.querySelector("#basicPongButton");
-		basicPongButton.addEventListener("click", event => {
+		const multiplePongButton = document.querySelector("#multiplePongButton");
+		const goBackButton = document.querySelector("#goBackButton");
+
+		basicPongButton.addEventListener("click", async event => {
 			selecterDiv.innerHTML = `<h1>Basi Pong</h1>
-			<h3 id="scoreBoard"></h3>
-		   <div id="container"></div>`;
+			<h3 id="scoreBoardB"></h3>
+		   <div id="containerB"></div>`;
+			basicPongButton.style.display = 'none';
+			multiplePongButton.style.display = 'inline';
+			animateGame.setAnimateOff();
 			basicPong();
 		});
-		const multiplePongButton = document.querySelector("#multiplePongButton");
-		multiplePongButton.addEventListener("click", event => {
+		multiplePongButton.addEventListener("click", async event => {
 			selecterDiv.innerHTML = `<h1>Multiple Pong</h1>
-			<h3 id="scoreBoard"></h3>
-		   <div id="container"></div>`;
-		   multiplePong();
+			<h3 id="scoreBoardM"></h3>
+			<div id="containerM"></div>`;
+			basicPongButton.style.display = 'inline';
+			multiplePongButton.style.display = 'none';
+			animateGame.setAnimateOff();
+			multiplePong();
 		});
-		const goBackButton = document.querySelector("#goBackButton");
 		goBackButton.addEventListener("click", event => {
 			window.history.back();
 		});
-		init();
 	}
 }
 

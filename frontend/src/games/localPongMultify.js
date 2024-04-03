@@ -5,6 +5,7 @@ local = true,
 online = false,
 document = window.document,
 THREE = window.THREE,
+num = null,
 
 ARROW_LEFT = 37,
 ARROW_UP = 38,
@@ -47,9 +48,10 @@ BOARD_LOCATION_Y = -50,
 BOARD_LOCATION_Z = 0,
 BOARD_COLOR = 0x6666ff,
 
+BALL_DEFAULT_VELOCITY_Z = 20,
 BALL_RADIUS = 20,
 BALL_VELOCITY_X = 0,
-BALL_VELOCITY_Z = 20,
+BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z,
 BALL_LOCATION_X = 0,
 BALL_LOCATION_Y = 0,
 BALL_LOCATION_Z = 0,
@@ -96,6 +98,8 @@ score = {
 
 function init()
 {
+  if (num)
+    cancelAnimationFrame(num);
   setGameStatus();
   setScoreBoard()
   setGame();
@@ -109,6 +113,7 @@ function setGameStatus()
   game = false;
   end = false;
   difficulty = 0;
+  PADDLE_WIDTH = PADDLE_DEFAULT_WIDTH;
   score = {
     player_left: 0,
     player_right: 0
@@ -117,7 +122,7 @@ function setGameStatus()
 
 function setScoreBoard()
 {
-  scoreBoard = document.getElementById('scoreBoard');
+  scoreBoard = document.getElementById('scoreBoardM');
   scoreBoard.innerHTML = 'Welcome! Select difficulty (E/N/H)';
 }
 
@@ -134,7 +139,7 @@ function setGame()
 
 function setRenderer()
 {
-  container = document.getElementById('container');
+  container = document.getElementById('containerM');
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(WIDTH, HEIGHT);
   renderer.setClearColor(0x9999BB, 1);
@@ -213,7 +218,7 @@ function containerEventKeyDown(e)
     if (e.keyCode === KEY_R)
     {
       scoreBoard.innerHTML = 'Welcome! Select difficulty (E/N/H)';
-      BALL_VELOCITY_Z = 20;
+      BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z;
       PADDLE_WIDTH = PADDLE_DEFAULT_WIDTH;
       paddle1.scale.set(1, 1, 1);
       paddle2.scale.set(1, 1, 1);
@@ -248,7 +253,7 @@ function containerEventKeyDown(e)
     else if (e.keyCode === KEY_N)
     {
       difficulty = 2;
-      BALL_VELOCITY_Z = 20;
+      BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z;
       e.preventDefault();
     }
     else if (e.keyCode === KEY_H)
@@ -372,7 +377,7 @@ function containerEventKeyUp(e)
 
 function loop()
 {
-  let num = requestAnimationFrame(loop);
+  num = requestAnimationFrame(loop);
   if (game === true && end === false)
     simulation_ball();
   simulation_paddle();
@@ -382,6 +387,7 @@ function loop()
   {
     stopBall();
     cancelAnimationFrame(num);
+    num = null;
   }
   renderer.render(scene, camera);
 }
