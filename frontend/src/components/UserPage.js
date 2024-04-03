@@ -1,9 +1,10 @@
 import AbstractComponent from "./AbstractComponent.js";
+import FetchModule from "../utils/fetchmodule.js";
 
 export default class extends AbstractComponent {
 	constructor() {
 		super();
-		this.setTitle("MyPage");
+		this.setTitle("UserPage");
 	}
 
 	async getHtml(loginModule) {
@@ -11,15 +12,15 @@ export default class extends AbstractComponent {
 		return `
 		<div class="container-fluid">
 			<div class="row row-cols-1 row-cols-md-2 m-md-3 mt-3">
-				<div class="col col-md-4 p-2 border">
+				<div class="col col-md-4 p-2 border" id="userpage-profile">
 					<div class="text-center mb-3">
-						<img class="img-fluid" src="./src/img/default_profile.png" width="200px" height="200px" alt="profile thumbnail" style="border-radius: 20%;"/>
+						<img id="userpage-profile-avatar" class="img-fluid" src="/src/img/default_profile.png" width="200px" height="200px" alt="profile thumbnail" style="border-radius: 20%;"/>
 					</div>
 					<div class="text-center">
-						<h3>Nickname</h3>
+						<h3 id="userpage-profile-nickname">Nickname</h3>
 					</div>
 					<div class="mx-2 border">
-						<p>This is My Page.</p>
+						<p id="userpage-profile-message">This is My Page.</p>
 					</div>
 				</div>
 				<div class="col col-md-8 p-2 border">
@@ -62,8 +63,38 @@ export default class extends AbstractComponent {
 		`;
 	}
 
-	handleRoute() {
-		(function progressSetting() {
+	handleRoute(param) {
+		const profileSetting = async () => {
+			try {
+				console.log(param.useruuid);
+				const fetchModule = new FetchModule();
+				const response = await fetchModule.request(new Request(`https://localhost:8000/user/profile?uuid=${param.useruuid}`, {
+					method: 'GET',
+					credentials: "include",
+				}));
+				if (response.ok) {
+					const data = await response.json();
+					const userProfileNode = document.querySelector("#userpage-profile")
+
+					userProfileNode.querySelector("#userpage-profile-nickname").innerText = data.nickname;
+					if (data.avatar)
+						userProfileNode.querySelector("#userpage-profile-avatar").src = data.avatar;
+					progressSetting();
+				}
+				else
+					throw new Error(response.statusText);
+			} catch (error) {
+				const profileNode = document.querySelector("#app .container-fluid")
+				profileNode.replaceChildren();
+				profileNode.insertAdjacentHTML("beforeend", `
+				<div class="d-flex justify-content-center align-items-center" style="min-height: 80dvh;">
+					<div>유저가 존재하지 않습니다.</div>
+				</div>
+				`);
+			}
+		}
+
+		const progressSetting = () => {
 			const progressBar = document.querySelector("#winrate-progress");
 			const saveLog = localStorage.getItem("log");
 			if (saveLog !== null) {
@@ -83,6 +114,7 @@ export default class extends AbstractComponent {
 				progressBarLose.children[0].innerText = `${loseNum}`;
 				document.querySelector("#rate-progress").innerText = `${winRate}%`;
 			}
-		})();
+		}
+		profileSetting();
 	}
 }
