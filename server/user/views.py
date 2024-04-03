@@ -5,6 +5,7 @@ from http import HTTPStatus
 
 from django.http import JsonResponse, HttpRequest, HttpResponseBadRequest, HttpResponse
 from django.views import View
+from django.db import IntegrityError
 
 from .models import User
 from auth.models import RefreshToken
@@ -40,12 +41,17 @@ class EditUserView(View):
             new_info_filtered["nickname"] = new_info["nickname"]
         if "avatar" in new_info:
             new_info_filtered["avatar"] = new_info["avatar"]
+        if "message" in new_info:
+            new_info_filtered["message"] = new_info["message"]
         if len(new_info_filtered) == 0:
             return HttpResponseBadRequest()
         user = User.objects.get(pk=request.user_uuid)
         for key, value in new_info_filtered.items():
             setattr(user, key, value)
-        user.save(update_fields=list(new_info_filtered.keys()))
+        try:
+            user.save(update_fields=list(new_info_filtered.keys()))
+        except IntegrityError:
+            return HttpResponseBadRequest()
         return HttpResponse(status=HTTPStatus.CREATED)
 
 
@@ -100,6 +106,10 @@ class LoginOauthView(View):
         )
         response = JsonResponse({"refresh_token": refresh_token})
         response.set_cookie(
-            key="access_token", value=access_token, httponly=True, secure=True, samesite="None"
+            key="access_token",
+            value=access_token,
+            httponly=True,
+            secure=True,
+            samesite="None",
         )
         return response

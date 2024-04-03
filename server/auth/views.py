@@ -90,8 +90,9 @@ class OTPView(View):
             return HttpResponseBadRequest()
         if not totp.TOTP(user.otp_secret).verify(str(otp_code).zfill(6)):
             return HttpResponseBadRequest()
+        has_logged_in = user.has_logged_in
         user.has_logged_in = True
-        user.save()
+        user.save(update_fields=["has_logged_in"])
         access_token = create_access_token(str(user.uuid))
         refresh_token = create_refresh_token()
         RefreshToken.objects.create(
@@ -99,7 +100,9 @@ class OTPView(View):
             token=refresh_token,
             expiration_time=decode(refresh_token)["exp"],
         )
-        response = JsonResponse({"refresh_token": refresh_token})
+        response = JsonResponse(
+            {"refresh_token": refresh_token, "has_logged_in": has_logged_in}
+        )
         response.set_cookie(
             key="access_token", value=access_token, secure=True, samesite="None"
         )
