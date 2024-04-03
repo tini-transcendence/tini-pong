@@ -106,7 +106,7 @@ DATABASES = {
         "NAME": os.environ.get("DB_NAME"),
         "USER": os.environ.get("DB_USER"),
         "PASSWORD": os.environ.get("DB_PASS"),
-        "PORT": "5432",
+        "PORT": os.environ.get("DB_PORT"),
     }
 }
 
@@ -162,12 +162,11 @@ TEST_RUNNER = "django.test.runner.DiscoverRunner"
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "https://localhost",
-    "https://localhost:443",
-    "https://127.0.0.1",
-    "https://127.0.0.1:443",
+    f'{os.environ.get("DOMAIN_NAME")}',
 ]
 
-CSRF_TRUSTED_ORIGINS = ["https://localhost:8000"]
+CSRF_TRUSTED_ORIGINS = [
+    f'{os.environ.get("DOMAIN_NAME")}:{os.environ.get("BACKEND_ENTRY_PORT")}'
+]
 
 AUTH_WHITELIST = os.environ.get("AUTH_WHITELIST").split(",")
