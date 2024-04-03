@@ -10,63 +10,63 @@ export default class extends AbstractComponent {
 
 	async getHtml() {
 		return `
-        <div class="container-md text-center">
-            <div class="row">
-                <div class="col-7 border p-2">
-                    <div class="row row-cols-1 row-cols-md-2 g-4">
-                        <div class="col">
-                            <div class="card h-100 w-75 m-auto" id="player1" style="max-width: 18rem;">
-                                <img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
-                                <div class="card-body">
-                                    <h5 class="card-title">Nickname</h5>
-                                    <p class="card-text">Win:0 Lose:0</p>
-                                </div>
-                                <div class="card-footer">Ready</div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="card h-100 w-75 m-auto" id="player2" style="max-width: 18rem;">
-                                <img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
-                                <div class="card-body">
-                                    <h5 class="card-title">Nickname</h5>
-                                    <p class="card-text">Win:0 Lose:0</p>
-                                </div>
-                                <div class="card-footer">Ready</div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="card h-100 w-75 m-auto" id="player3" style="max-width: 18rem;">
-                                <img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
-                                <div class="card-body">
-                                    <h5 class="card-title">Nickname</h5>
-                                    <p class="card-text">Win:0 Lose:0</p>
-                                </div>
-                                <div class="card-footer">Ready</div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="card h-100 w-75 m-auto" id="player4" style="max-width: 18rem;">
-                                <img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
-                                <div class="card-body">
-                                    <h5 class="card-title">Nickname</h5>
-                                    <p class="card-text">Win:0 Lose:0</p>
-                                </div>
-                                <div class="card-footer">Ready</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-5 border p-2">
-                    <div class="m-auto" style="background-color: #ced4da;" spacing="2.4rem">
-                        <h4>TITLE</h4>
-                    </div>
-                </div>
-            </div>
+		<div class="container-md text-center">
+			<div class="row">
+				<div class="col-7 border p-2">
+					<div class="row row-cols-1 row-cols-md-2 g-4">
+						<div class="col">
+							<div class="card h-100 w-75 m-auto" id="player1" style="max-width: 18rem;">
+								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+								<div class="card-body">
+									<h5 class="card-title">Nickname</h5>
+									<p class="card-text">Win:0 Lose:0</p>
+								</div>
+								<div class="card-footer">Ready</div>
+							</div>
+						</div>
+						<div class="col">
+							<div class="card h-100 w-75 m-auto" id="player2" style="max-width: 18rem;">
+								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+								<div class="card-body">
+									<h5 class="card-title">Nickname</h5>
+									<p class="card-text">Win:0 Lose:0</p>
+								</div>
+								<div class="card-footer">Ready</div>
+							</div>
+						</div>
+						<div class="col">
+							<div class="card h-100 w-75 m-auto" id="player3" style="max-width: 18rem;">
+								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+								<div class="card-body">
+									<h5 class="card-title">Nickname</h5>
+									<p class="card-text">Win:0 Lose:0</p>
+								</div>
+								<div class="card-footer">Ready</div>
+							</div>
+						</div>
+						<div class="col">
+							<div class="card h-100 w-75 m-auto" id="player4" style="max-width: 18rem;">
+								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+								<div class="card-body">
+									<h5 class="card-title">Nickname</h5>
+									<p class="card-text">Win:0 Lose:0</p>
+								</div>
+								<div class="card-footer">Ready</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-5 border p-2">
+					<div class="m-auto" style="background-color: #ced4da;" spacing="2.4rem">
+						<h4>TITLE</h4>
+					</div>
+				</div>
+			</div>
 			<button type="button" class="btn btn-primary" id="startBtn"">시작</button>
 			<button type="button" class="btn btn-primary" id="readyBtn"">준비</button>
 			<button type="button" class="btn btn-primary" id="exitBtn">나가기</button>
-        </div>
-        `;
+		</div>
+		`;
 	}
 
 	goBack() {
@@ -74,14 +74,11 @@ export default class extends AbstractComponent {
 	}
 
 	handleRoute() {
-		// this.makeSocket();
 
 		let retryCount = 0;
 		const maxRetry = 3;
 		const retryDelay = 2000;
 		let is_ready = false;
-
-		// const webSocket = new WebSocket(`ws://localhost:8000/ws/room/${roomUuid}/?access_token=${token}`);
 
 		const token = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
 
@@ -93,10 +90,9 @@ export default class extends AbstractComponent {
 		const lastPart = match ? match[1] : null;
 		const websocketURL = 'wss://localhost:8000/ws/room/' + lastPart + '/?access_token=' + token;
 
-
 		// WebSocket 객체 생성
 		const websocket = new WebSocket(websocketURL);
-		// window.websocket = websocket;
+		window.websocket = websocket;
 		console.log('웹 소켓 URL :', websocket);
 
 		websocket.onerror = function () {
@@ -116,7 +112,6 @@ export default class extends AbstractComponent {
 		websocket.onopen = function (event) {
 			console.log('WebSocket 연결이 열렸습니다.');
 			console.log('player 님이 방에 입장하셨습니다.');
-
 			const dataToSend = {
 				"action": "join"
 			}
@@ -127,12 +122,10 @@ export default class extends AbstractComponent {
 		// WebSocket 연결이 닫혔을 때 실행되는 이벤트 핸들러
 		websocket.onclose = function (event) {
 			console.log('WebSocket 연결이 닫혔습니다.');
-			this.goBack();
+			alert("방이 존재하지 않거나 가득 찼습니다.")
+			window.location.href = document.referrer;
 		};
 
-		// const player1Node = document.querySelector("#player1");
-		// const player1NickNode = player1Node.querySelector(".card-title");
-		// player1NickNode.innerText = "nick";
 		function dataUpdate(data) {
 			switch (data["player_number"]) {
 				case 1:
@@ -189,6 +182,8 @@ export default class extends AbstractComponent {
 				readyUpdate(data);
 			} else if (data["action"] === "start") {
 				startUpdate(data);
+			} else if (data["action"] === "terminate") {
+				websocket.close();
 			}
 		};
 
@@ -217,9 +212,11 @@ export default class extends AbstractComponent {
 
 		const goBackBtn = document.querySelector("#exitBtn");
 		goBackBtn.addEventListener("click", event => {
-			this.goBack();
+			const dataToSend = {
+				"action": "leave",
+			}
+			console.log("leave room message send");
+			websocket.send(JSON.stringify(dataToSend));
 		});
 	}
 }
-
-
