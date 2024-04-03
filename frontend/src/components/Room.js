@@ -1,5 +1,3 @@
-
-
 import AbstractComponent from "./AbstractComponent.js";
 
 export default class extends AbstractComponent {
@@ -21,7 +19,7 @@ export default class extends AbstractComponent {
 									<h5 class="card-title">Nickname</h5>
 									<p class="card-text">Win:0 Lose:0</p>
 								</div>
-								<div class="card-footer">Ready</div>
+								<div class="card-footer">Ready : ?</div>
 							</div>
 						</div>
 						<div class="col">
@@ -31,7 +29,7 @@ export default class extends AbstractComponent {
 									<h5 class="card-title">Nickname</h5>
 									<p class="card-text">Win:0 Lose:0</p>
 								</div>
-								<div class="card-footer">Ready</div>
+								<div class="card-footer">Ready : ?</div>
 							</div>
 						</div>
 						<div class="col">
@@ -41,7 +39,7 @@ export default class extends AbstractComponent {
 									<h5 class="card-title">Nickname</h5>
 									<p class="card-text">Win:0 Lose:0</p>
 								</div>
-								<div class="card-footer">Ready</div>
+								<div class="card-footer">Ready : ?</div>
 							</div>
 						</div>
 						<div class="col">
@@ -51,7 +49,7 @@ export default class extends AbstractComponent {
 									<h5 class="card-title">Nickname</h5>
 									<p class="card-text">Win:0 Lose:0</p>
 								</div>
-								<div class="card-footer">Ready</div>
+								<div class="card-footer">Ready : ?</div>
 							</div>
 						</div>
 					</div>
@@ -69,12 +67,7 @@ export default class extends AbstractComponent {
 		`;
 	}
 
-	goBack() {
-		window.history.back();
-	}
-
 	handleRoute() {
-
 		let retryCount = 0;
 		const maxRetry = 3;
 		const retryDelay = 2000;
@@ -104,7 +97,8 @@ export default class extends AbstractComponent {
 				}, retryDelay);
 			} else {
 				console.log('WebSocket 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
-				this.goBack();
+				location.href = "/lobby";
+				// window.location.href = document.referrer;
 			}
 		};
 
@@ -115,15 +109,15 @@ export default class extends AbstractComponent {
 			const dataToSend = {
 				"action": "join"
 			}
-
 			websocket.send(JSON.stringify(dataToSend));
 		};
 
 		// WebSocket 연결이 닫혔을 때 실행되는 이벤트 핸들러
 		websocket.onclose = function (event) {
 			console.log('WebSocket 연결이 닫혔습니다.');
-			alert("방이 존재하지 않거나 가득 찼습니다.")
-			window.location.href = document.referrer;
+			alert("로비로 이동합니다.")
+			location.href = "/lobby";
+			// window.location.href = document.referrer;
 		};
 
 		function dataUpdate(data) {
@@ -164,17 +158,15 @@ export default class extends AbstractComponent {
 
 		function startUpdate(data) {
 			if (data["status"] === "ok") {
-				location.href = currentURL + "/game";
+				location.href = "/game";
 			} else {
 				console.log("not all players are ready yet!")
 			}
 		};
 
-		// WebSocket으로 메시지가 수신되었을 때 실행되는 이벤트 핸들러
 		websocket.onmessage = function (event) {
-			//유저들의 레디상태 변경 혹은 나간 상태를 반영하고 화면을 변화시킨다
 			const data = JSON.parse(event.data);
-			console.log('메시지를 받았습니다 : ', data["action"]);
+			console.log('받은 메시지의 action : ', data["action"]);
 
 			if (data["action"] === "player_joined") {
 				dataUpdate(data);
@@ -192,21 +184,18 @@ export default class extends AbstractComponent {
 			const dataToSend = {
 				"action": "start"
 			}
-			console.log(dataToSend);
+			console.log("start message send");
 			websocket.send(JSON.stringify(dataToSend));
 		});
 
 		const readyBtn = document.querySelector("#readyBtn");
 		readyBtn.addEventListener("click", event => {
 			is_ready = is_ready ? false : true;
-			console.log('############현재 상태##############');
-			console.log(is_ready);
 			const dataToSend = {
 				"action": "ready",
 				"is_ready": is_ready
 			}
-			console.log('##########보내는 데이터############');
-			console.log(dataToSend);
+			console.log("ready message send");
 			websocket.send(JSON.stringify(dataToSend));
 		});
 
