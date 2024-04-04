@@ -33,7 +33,6 @@ export default class extends AbstractComponent {
 				}));
 				if (response.ok) {
 					const data = await response.json();
-					console.log(data.otp_uri);
 					const qrcode = new QRCode(document.getElementById("qrcode"), data.otp_uri);
 				}
 				else

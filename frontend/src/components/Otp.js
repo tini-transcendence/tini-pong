@@ -1,6 +1,6 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
-import {DOMAIN_NAME} from "../index.js";
+import {DOMAIN_NAME, navigateTo} from "../index.js";
 
 const regex = /^[0-9]+$/;
 const regex2 = /^[0-9]$/;
@@ -91,9 +91,9 @@ export default class extends AbstractComponent {
 					const data = await response.json();
 					localStorage.setItem("refresh_token", data.refresh_token);
 					if (data.has_logged_in)
-						location.href = "/";
+						navigateTo("/");
 					else
-						location.href = "/edit";
+						navigateTo("/edit");
 				}
 				else if (response.status === 401)
 					throw new Error("유효하지 않는 요청입니다.");
