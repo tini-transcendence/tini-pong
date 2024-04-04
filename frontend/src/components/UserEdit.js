@@ -1,7 +1,7 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
 import DefenseXss from "../utils/defenseXss.js";
-import {DOMAIN_NAME} from "../index.js";
+import {DOMAIN_NAME, navigateTo} from "../index.js";
 
 const fileForm = /image\/(jpg|jpeg|png|gif)$/;
 const maxFileSize = 2 * 1024 * 1024;
@@ -102,11 +102,10 @@ export default class extends AbstractComponent {
 				let img = new Image;
 				img.onload = function() {
 					let thumbFile = getThumbFile(img, imgFile);
-					console.log(thumbFile);
 					avatarPreview.setAttribute("src", thumbFile);
 				}
 				img.onerror = function() {
-					console.log("error!");
+					alert("파일 업로드에 실패하였습니다.");
 				}
 				img.src = reader.result;
 			})
@@ -134,12 +133,12 @@ export default class extends AbstractComponent {
 					}),
 				}))
 				if (response.ok) {
-					console.log("저장되었습니다.");
+					alert("저장되었습니다.");
+					navigateTo("/");
 				}
 				else
 					throw new Error(response.statusText);
 			} catch (error) {
-				nicknameDangerForm.innerText = "이미 사용중인 닉네임입니다.";
 				console.log(error.message);
 			}
 		})
