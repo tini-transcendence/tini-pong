@@ -50,6 +50,26 @@ export default class extends AbstractComponent {
 		const messageForm = document.querySelector("#message-form");
 		const nicknameDangerForm = document.querySelector("#form-danger-1");
 
+		const profileSetting = async () => {
+			try {
+				const fetchModule = new FetchModule();
+				const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/user/profile`, {
+					method: 'GET',
+					credentials: "include",
+				}));
+				if (response.ok) {
+					const data = await response.json();
+					nicknameForm.value = data.nickname;
+					avatarPreview.src = data.avatar;
+					messageForm.value = data.message;
+				}
+				else
+					throw new Error(response.statusText);
+			} catch (error) {
+				console.log(error.message);
+			}
+		}
+
 		nicknameForm.addEventListener("change", e => {
 			if (e.target.value.length < 3) {
 				nicknameDangerForm.innerText = "닉네임은 최소 3글자 이상으로 구성되어야 합니다.";
@@ -142,5 +162,7 @@ export default class extends AbstractComponent {
 				console.log(error.message);
 			}
 		})
+
+		profileSetting();
 	}
 }
