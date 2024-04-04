@@ -1,6 +1,6 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
-import {DOMAIN_NAME} from "../index.js";
+import {BACKEND_URL} from "../index.js";
 
 let friends = [];
 
@@ -59,7 +59,7 @@ export default class extends AbstractComponent {
 		const fetchRemoveFriend = async (removeFriend) => {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/friend/delete`, {
+				const response = await fetchModule.request(new Request(`${BACKEND_URL}/friend/delete`, {
 					method: 'DELETE',
 					credentials: "include",
 					headers: {
@@ -83,7 +83,7 @@ export default class extends AbstractComponent {
 		const fetchAddFriend = async (data, resultSearchUser) => {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/friend/add/`, {
+				const response = await fetchModule.request(new Request(`${BACKEND_URL}/friend/add/`, {
 					method: 'POST',
 					credentials: "include",
 					headers: {
@@ -127,7 +127,7 @@ export default class extends AbstractComponent {
 		const fetchFriendList = async () => {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/friend/`, {
+				const response = await fetchModule.request(new Request(`${BACKEND_URL}/friend/`, {
 					method: 'GET',
 					credentials: "include",
 				}));
@@ -148,7 +148,7 @@ export default class extends AbstractComponent {
 		const fetchSearchFriend = async (foundUser, resultSearchUser) => {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/friend/search?nickname=${foundUser}`, {
+				const response = await fetchModule.request(new Request(`${BACKEND_URL}/friend/search?nickname=${foundUser}`, {
 					method: 'GET',
 					credentials: "include",
 				}));
