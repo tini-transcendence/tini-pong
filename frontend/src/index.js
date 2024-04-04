@@ -12,6 +12,7 @@ import Lobby from "./components/Lobby.js";
 import Local from "./components/Local.js";
 import Tdata from "./components/tournamentData.js";
 import Room from "./components/Room.js";
+import Game from "./components/Game.js";
 import NotFound from "./components/NotFound.js";
 
 import LoginModule from "./utils/loginmodule.js";
@@ -36,6 +37,7 @@ const routes = [
 	{ path: "/local", component: [Local], login: true},
 	{ path: "/tdata", component: [Tdata], login: true},
 	{ path: "/room/:roomuuid", component: [Room], login: true},
+	{ path: "/game", component: [Game], login: true},
 	{ path: "/404", component: [NotFound], login: false},
 ];
 

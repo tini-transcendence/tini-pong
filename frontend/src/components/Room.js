@@ -95,6 +95,7 @@ export default class extends AbstractComponent {
 					console.log(`연결 실패. ${retryCount + 1}번째 재연결 시도 중...`);
 					retryCount++;
 					const websocket = new WebSocket(websocketURL);
+					window.websocket = websocket;
 				}, retryDelay);
 			} else {
 				console.log('WebSocket 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');

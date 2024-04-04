@@ -460,7 +460,7 @@ function updateScoreBoard()
     resultDiv.style.display = 'block';
     const resultBoard = resultDiv.querySelector('#resultT');
     const result = document.createElement('div');
-    result.textContent = roundText + ' : ' + player1 + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + score.player2;
+    result.textContent = roundText + ' : ' + player1 + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + ' : ' + score.player2;
     resultBoard.appendChild(result);
     if (round === 1)
     {

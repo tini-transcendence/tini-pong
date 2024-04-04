@@ -121,17 +121,18 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 await self.remove_user_from_room(self.user, self.room_uuid)
 
         elif action == "key_press":
-            await self.handle_key_press(text_data_json["key"])
+            await self.handle_key_press(text_data_json["event"], text_data_json["key"])
 
     async def room_message(self, event):
         await self.send(text_data=json.dumps(event["message"]))
 
-    async def handle_key_press(self, key):
-        player_number = await self.get_player_number(self.user)
-
+    async def handle_key_press(self, event, key):
+        await self.send(text_data=json.dumps(
+            {"type": "player_key_press", "player_number": self.player_number, "event": event, "key": key},
+        ))
         await self.channel_layer.group_send(
             self.room_group_name,
-            {"type": "player_key_press", "player_number": player_number, "key": key},
+            {"type": "player_key_press", "player_number": self.player_number, "event": event, "key": key},
         )
 
     async def player_key_press(self, event):
@@ -227,11 +228,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     return room_user.player_number
             except RoomUser.DoesNotExist:
                 pass
-
-    @database_sync_to_async
-    def get_player_number(self, user):
-        room_user = RoomUser.objects.get(user=user, room_uuid=self.room_uuid)
-        return room_user.player_number
 
     @database_sync_to_async
     def remove_user_from_room(self, user, room_uuid):
