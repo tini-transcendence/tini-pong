@@ -71,7 +71,7 @@ class SearchFriendView(View):
                 {
                     "uuid": uuid,
                     "nickname": nickname,
-					"avatar": avatar,
+                    "avatar": avatar,
                     "id_tag": str(uuid)[:4],
                     "status": status,
                 }
