@@ -4,7 +4,6 @@ from .views import (
     CreateRoomView,
     DeleteRoomView,
     JoinRoomView,
-    LeaveRoomView,
 )
 
 urlpatterns = [
@@ -12,5 +11,4 @@ urlpatterns = [
     path("create/", CreateRoomView.as_view(), name="create_room"),
     path("delete/<uuid:uuid>/", DeleteRoomView.as_view(), name="delete_room"),
     path("join/", JoinRoomView.as_view(), name="join_room"),
-    path("room/leave/", LeaveRoomView.as_view(), name="leave_room"),
 ]

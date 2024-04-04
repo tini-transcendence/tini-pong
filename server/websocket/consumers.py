@@ -19,12 +19,23 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
+
+
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         action = text_data_json.get("action")
 
         if action == "join":
+            # print("")
+            # print("@@@@@@@@@@@@@@@유저 들어옴@@@@@@@@@@@@@@")
+            # print("")
             player_number = await self.assign_player_number()
+            # print("서버측 넘버")
+            # print(player_number)
+            # print("")
+            existing_players = await self.get_existing_players_info()
+            if existing_players == None:
+                existing_players = 0
             self.player_number = player_number
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -34,7 +45,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         "action": "player_joined",
                         "user_uuid": str(self.user.uuid),
                         "user_nickname": self.user.nickname,
+                        "is_ready": False,
                         "player_number": player_number,
+                        "players": existing_players,
                     },
                 },
             )
@@ -68,21 +81,44 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 )
             else:
                 await self.send(text_data=json.dumps({"error": message}))
+
         elif action == "leave":
             is_owner = await self.is_room_owner(self.user, self.room_uuid)
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "room_message",
-                    "message": {
-                        "action": "terminate",
-                        "room_uuid": str(self.room_uuid),
-                        "is_owner": is_owner,
-                        "user_uuid": str(self.user.uuid) if not is_owner else None,
-                        "player_number": self.player_number if not is_owner else None,
+            
+            if is_owner:
+                # print("@@@")
+                # print("방장이 나감")
+                # print("")
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "room_message",
+                        "message": {
+                            "action": "terminate",
+                            "room_uuid": str(self.room_uuid),
+                            "is_owner": is_owner
+                        },
                     },
-                },
-            )
+                )
+                
+                await self.delete_room_and_room_users(self.room_uuid)
+            else:
+                # print("@@@")
+                # print("일반 유저가 나감")
+                # print("")
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "room_message",
+                        "message": {
+                            "action": "player_left",
+                            "user_uuid": str(self.user.uuid),
+                            "player_number": self.player_number,
+                        },
+                    },
+                )
+                
+                await self.remove_user_from_room(self.user, self.room_uuid)
 
         elif action == "key_press":
             await self.handle_key_press(text_data_json["key"])
@@ -112,11 +148,18 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         is_owner = await self.is_room_owner(self.user, self.room_uuid)
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        
         if is_owner:
+            # print("@@@")
+            # print("방장의 연결 끊김")
+            # print("")
             await self.delete_room_and_room_users(self.room_uuid)
         else:
+            # print("@@@")
+            # print("일반 유저의 연결 끊김")
+            # print("")
             await self.remove_user_from_room(self.user, self.room_uuid)
-        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     @database_sync_to_async
     def is_user_in_room(self, user, room_uuid):
@@ -146,35 +189,44 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def assign_player_number(self):
+        print("")
+        print("넘버 할당 로직 들어옴")
+        print("")
         with transaction.atomic():
             room = Room.objects.select_for_update().get(uuid=self.room_uuid)
 
-            room_user, created = RoomUser.objects.get_or_create(
-                room_uuid=room,
-                user_uuid=self.user,
-                defaults={"player_number": None},
-            )
-
-            if created:
-                occupied_numbers = (
-                    RoomUser.objects.filter(room_uuid=room)
-                    .exclude(player_number__isnull=True)
-                    .values_list("player_number", flat=True)
-                    .order_by("player_number")
+            try:
+                room_user = RoomUser.objects.get(
+                    room_uuid=room,
+                    user_uuid=self.user
                 )
+                if room_user.player_number == None:
+                    occupied_numbers = (
+                        RoomUser.objects.filter(room_uuid=room)
+                        .exclude(player_number__isnull=True)
+                        .values_list("player_number", flat=True)
+                        .order_by("player_number")
+                    )
+                    print("이미 있는 넘버들")
+                    print(occupied_numbers)
+                    print("")
 
-                player_number = 1
-                for occupied_number in occupied_numbers:
-                    if player_number < occupied_number:
-                        break
-                    player_number += 1
+                    player_number = 1
+                    for occupied_number in occupied_numbers:
+                        if player_number < occupied_number:
+                            break
+                        player_number += 1
 
-                room_user.player_number = player_number
-                room_user.save(update_fields=["player_number"])
-            else:
-                player_number = room_user.player_number
-
-        return player_number
+                    room_user.player_number = player_number
+                    room_user.save(update_fields=["player_number"])
+                    print("할당된 넘버")
+                    print(player_number)
+                    print("")
+                    return player_number
+                else:
+                    return room_user.player_number
+            except RoomUser.DoesNotExist:
+                pass
 
     @database_sync_to_async
     def get_player_number(self, user):
@@ -186,12 +238,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
         room_user = RoomUser.objects.filter(
             user_uuid=user.uuid, room_uuid=room_uuid
         ).first()
+        # print("@@@")
+        # print("유저를 내보냅니다")
+        # print("")
         if room_user:
-            room_user.player_number = None
-            room_user.save(update_fields=["player_number"])
             room_user.delete()
-        if not RoomUser.objects.filter(room_uuid=room_uuid).exists():
-            Room.objects.filter(uuid=room_uuid).delete()
 
     @database_sync_to_async
     def delete_room_and_room_users(self, room_uuid):
@@ -216,3 +267,21 @@ class RoomConsumer(AsyncWebsocketConsumer):
             return True, "시작합니다"
         except Room.DoesNotExist:
             return False, "방을 찾을 수 없습니다."
+
+    @database_sync_to_async
+    def get_existing_players_info(self):
+        room = Room.objects.get(uuid=self.room_uuid)
+        
+        room_users = room.room_users.all().select_related('user_uuid')
+        
+        players_info = [
+            {
+                'user_uuid': str(room_user.user_uuid.uuid),
+                'user_nickname': room_user.user_uuid.nickname,
+                'is_ready': room_user.is_ready,
+                'player_number': room_user.player_number,
+            }
+            for room_user in room_users
+        ]
+        
+        return players_info

@@ -31,10 +31,8 @@ class CreateRoomView(APIView):
                 owner_uuid_id=request.user_uuid,
             )
             room_user = RoomUser.objects.create(
-                room_uuid=room, user_uuid_id=request.user_uuid
+                room_uuid=room, user_uuid_id=request.user_uuid, is_ready=False, player_number=1
             )
-
-            create_assign_player_number(room_user)
 
             channel_layer = get_channel_layer()
             group_name = f"room_{room.uuid}"
@@ -104,74 +102,3 @@ class JoinRoomView(APIView):
             return JsonResponse(
                 {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
             )
-
-
-class LeaveRoomView(APIView):
-    def post(self, request, *args, **kwargs):
-        room_uuid = request.data.get("room_uuid")
-        user_uuid_id = request.user_uuid_id
-        try:
-            room = Room.objects.get(uuid=room_uuid)
-            user = User.objects.get(uuid=user_uuid_id)
-
-            room_user = RoomUser.objects.filter(room_uuid=room, user_uuid=user).first()
-            if not room_user:
-                return JsonResponse(
-                    {"error": "User is not in the room."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            channel_layer = get_channel_layer()
-            group_name = f"room_{room_uuid}"
-
-            if room.owner_uuid == user_uuid_id:
-                room_users = RoomUser.objects.filter(room_uuid=room)
-                for member in room_users:
-                    async_to_sync(channel_layer.group_discard)(
-                        group_name, member.user_uuid
-                    )
-                    member.delete()
-
-                room.delete()
-                return JsonResponse(
-                    {"message": "Room closed and all users removed by owner"},
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                async_to_sync(channel_layer.group_discard)(
-                    group_name, user.channel_name
-                )
-                room_user.delete()
-
-                return JsonResponse(
-                    {"message": "Left room successfully"}, status=status.HTTP_200_OK
-                )
-        except Room.DoesNotExist:
-            return JsonResponse(
-                {"error": "Room not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-        except User.DoesNotExist:
-            return JsonResponse(
-                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-
-def create_assign_player_number(room_user):
-    with transaction.atomic():
-        room = Room.objects.select_for_update().get(uuid=room_user.room_uuid_id)
-
-        occupied_numbers = (
-            RoomUser.objects.filter(room_uuid=room)
-            .exclude(player_number__isnull=True)
-            .values_list("player_number", flat=True)
-            .order_by("player_number")
-        )
-
-        player_number = 1
-        for occupied_number in occupied_numbers:
-            if player_number < occupied_number:
-                break
-            player_number += 1
-
-        room_user.player_number = player_number
-        room_user.save(update_fields=["player_number"])
