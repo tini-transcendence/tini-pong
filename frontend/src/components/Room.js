@@ -238,7 +238,7 @@ export default class extends AbstractComponent {
 					websocket.close();
 				} else {
 					console.log(`Removing player ${userUuid} from the UI.`);
-					removePlayerFromUI(playerNum);
+					leaveUpdate(playerNum);
 				}
 			}
 		};
