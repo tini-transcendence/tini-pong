@@ -1,5 +1,5 @@
 import AbstractComponent from "./AbstractComponent.js";
-import {DOMAIN} from "../index.js";
+import {DOMAIN, navigateTo} from "../index.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -98,7 +98,7 @@ export default class extends AbstractComponent {
 				}, retryDelay);
 			} else {
 				console.log('WebSocket 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
-				location.href = "/lobby";
+				navigateTo("/lobby");
 				// window.location.href = document.referrer;
 			}
 		};
@@ -117,11 +117,16 @@ export default class extends AbstractComponent {
 		websocket.onclose = function (event) {
 			console.log('WebSocket 연결이 닫혔습니다.');
 			alert("로비로 이동합니다.")
-			location.href = "/lobby";
+			navigateTo("/lobby");
 			// window.location.href = document.referrer;
 		};
 
+		let playerNo = 0;
+
 		function dataUpdate(data) {
+
+			console.log(data["player_number"]);
+			console.log(typeof(data["player_number"]));
 			switch (data["player_number"]) {
 				case 1:
 					const player1Node = document.querySelector("#player1");
@@ -159,7 +164,7 @@ export default class extends AbstractComponent {
 
 		function startUpdate(data) {
 			if (data["status"] === "ok") {
-				location.href = "/game";
+				navigateTo("/game");
 			} else {
 				console.log("not all players are ready yet!")
 			}
@@ -170,13 +175,39 @@ export default class extends AbstractComponent {
 			console.log('받은 메시지의 action : ', data["action"]);
 
 			if (data["action"] === "player_joined") {
+				if (playerNo === 0)
+					playerNo = data["player_number"];
+				console.log(localStorage.getItem('myUserUuid'));
 				dataUpdate(data);
+				if (data["players"]){
+					const players = data["players"];
+					players.forEach(player => {
+						dataUpdate(player);
+					})
+				}
 			} else if (data["action"] === "ready") {
 				readyUpdate(data);
 			} else if (data["action"] === "start") {
 				startUpdate(data);
 			} else if (data["action"] === "terminate") {
+				console.log('방장이 방을 종료했습니다.');
+				alert("방이 종료되어 로비로 이동합니다.");
 				websocket.close();
+			} else if(data["action"] === "player_left") {
+				const userUuid = data["user_uuid"];
+				const playerNum = data["player_number"];
+				// console.log(playerNum);
+				// console.log(playerNo);
+				console.log(`플레이어 ${userUuid}가 방에서 나갔습니다.`);
+				if(playerNo === playerNum) {
+					console.log('You have left the room. Closing WebSocket connection.');
+					alert("당신은 방에서 나갔습니다. 로비로 이동합니다.");
+					playerNo = 0;
+					websocket.close();
+				} else {
+					console.log(`Removing player ${userUuid} from the UI.`);
+					// removePlayerFromUI(playerNum);
+				}
 			}
 		};
 

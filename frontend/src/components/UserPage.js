@@ -8,8 +8,7 @@ export default class extends AbstractComponent {
 		this.setTitle("UserPage");
 	}
 
-	async getHtml(loginModule) {
-		loginModule.isLogin();
+	async getHtml() {
 		return `
 		<div class="container-fluid">
 			<div class="row row-cols-1 row-cols-md-2 m-md-3 mt-3">

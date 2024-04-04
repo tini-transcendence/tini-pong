@@ -12,8 +12,7 @@ export default class extends AbstractComponent {
 		this.setTitle("UserEdit");
 	}
 
-	async getHtml(loginModule) {
-		loginModule.isLogin();
+	async getHtml() {
 		return `
 		<div class="container">
 			<h3 class="m-3 text-center">
@@ -70,15 +69,46 @@ export default class extends AbstractComponent {
 			const imgFile = e.target.files[0];
 			const reader = new FileReader();
 
+			// 이미지 유효성검사
 			if (!imgFile.type.match(fileForm)) {
-				alert("이미지 파일(jpg, jpeg, png, gif)만 업로드!");
+				alert("이미지 파일(jpg, jpeg, png)만 업로드!");
 				return ;
 			} else if (imgFile.size > maxFileSize) {
 				alert("2MB 이하 크기만 업로드!");
 				return ;
 			}
+			// 이미지 리사이징
+			const getThumbFile = (image, file) => {
+				const canvas = document.createElement("canvas");
+				const base_size = 1024000;
+				const comp_size = 102400;
+				let width = image.width;
+				let height = image.height;
+				const size = file.size;
+
+				if (size <= base_size)
+					return image.src;
+				
+				const ratio = Math.ceil(Math.sqrt((size / comp_size), 2));
+				width = image.width / ratio;
+				height = image.height / ratio;
+				canvas.width = width;
+				canvas.height = height;
+				canvas.getContext("2d").drawImage(image, 0, 0, width, height);
+				return canvas.toDataURL("image/png");
+			}
+
 			reader.addEventListener("load", e => {
-				avatarPreview.setAttribute("src", reader.result);
+				let img = new Image;
+				img.onload = function() {
+					let thumbFile = getThumbFile(img, imgFile);
+					console.log(thumbFile);
+					avatarPreview.setAttribute("src", thumbFile);
+				}
+				img.onerror = function() {
+					console.log("error!");
+				}
+				img.src = reader.result;
 			})
 			if (imgFile) {
 				reader.readAsDataURL(imgFile);

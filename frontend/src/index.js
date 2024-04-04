@@ -24,19 +24,19 @@ const ROUTE_PARAMETER_REGEX = /:(\w+)/g;
 const URL_FRAGMENT_REGEX = /\//g;
 
 const routes = [
-	{ path: "/", component: [Main, Navbar]},
-	{ path: "/login", component: [Login]},
-	{ path: "/login/oauth", component: [Oauth]},
-	{ path: "/login/otp/qr", component: [OtpQR]},
-	{ path: "/login/otp", component: [Otp]},
-	{ path: "/mypage", component: [UserPage, Navbar]},
-	{ path: "/users/:useruuid", component: [UserPage, Navbar]},
-	{ path: "/edit", component: [UserEdit]},
-	{ path: "/lobby", component: [Lobby, Navbar]},
-	{ path: "/local", component: [Local]},
-	{ path: "/tdata", component: [Tdata]},
-	{ path: "/room/:roomuuid", component: [Room]},
-	{ path: "/404", component: [NotFound]},
+	{ path: "/", component: [Main, Navbar], login: true},
+	{ path: "/login", component: [Login], login: false},
+	{ path: "/login/oauth", component: [Oauth], login: false},
+	{ path: "/login/otp/qr", component: [OtpQR], login: false},
+	{ path: "/login/otp", component: [Otp], login: false},
+	{ path: "/mypage", component: [UserPage, Navbar], login: true},
+	{ path: "/users/:useruuid", component: [UserPage, Navbar], login: true},
+	{ path: "/edit", component: [UserEdit], login: true},
+	{ path: "/lobby", component: [Lobby, Navbar], login: true},
+	{ path: "/local", component: [Local], login: true},
+	{ path: "/tdata", component: [Tdata], login: true},
+	{ path: "/room/:roomuuid", component: [Room], login: true},
+	{ path: "/404", component: [NotFound], login: false},
 ];
 
 const router = async () => {
@@ -71,8 +71,15 @@ const router = async () => {
 		}
 	}
 
+	if (match.route.login === true) { // login 상태 확인
+		const islogin = await loginModule.isLogin();
+		if (islogin === false) {
+			return ;
+		}
+	}
+
 	const component = new match.route.component[0]();
-	document.querySelector("#app").innerHTML = await component.getHtml(loginModule);
+	document.querySelector("#app").innerHTML = await component.getHtml();
 	if (match.route.component[1]) {
 		const navbar = new match.route.component[1]();
 		if (navbar) {
@@ -86,7 +93,7 @@ const router = async () => {
 	component.handleRoute(getParams(match));
 }
 
-const navigateTo = url => {
+export const navigateTo = url => {
 	history.pushState(null, null, url);
 	router();
 };
