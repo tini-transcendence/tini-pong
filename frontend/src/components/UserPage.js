@@ -1,6 +1,6 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
-import {DOMAIN_NAME} from "../index.js";
+import {BACKEND_URL} from "../index.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -70,7 +70,7 @@ export default class extends AbstractComponent {
 				if (param.useruuid)
 					fetchString = `?uuid=${param.useruuid}`;
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/user/profile${fetchString}`, {
+				const response = await fetchModule.request(new Request(`${BACKEND_URL}/user/profile${fetchString}`, {
 					method: 'GET',
 					credentials: "include",
 				}));

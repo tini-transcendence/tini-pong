@@ -1,4 +1,4 @@
-import {DOMAIN_NAME} from "../index.js";
+import {BACKEND_URL} from "../index.js";
 
 export default class {
 	constructor() {
@@ -51,7 +51,7 @@ export default class {
 	// 토큰 재발급
 	async getReIssuedAccessToken(refreshToken) {
 		try {
-			const response = await fetch(`${DOMAIN_NAME}/auth/refresh/`, {
+			const response = await fetch(`${BACKEND_URL}/auth/refresh/`, {
 				method: 'POST',
 				credentials: "include",
 				headers: {

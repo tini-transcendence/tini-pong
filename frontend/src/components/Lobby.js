@@ -1,6 +1,6 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
-import {DOMAIN_NAME, navigateTo} from "../index.js";
+import {BACKEND_URL, navigateTo} from "../index.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -97,7 +97,7 @@ export default class extends AbstractComponent {
 		(async function () {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/room/list/`, {
+				const response = await fetchModule.request(new Request(`${BACKEND_URL}/room/list/`, {
 					method: 'GET',
 					credentials: "include",
 				}));
@@ -144,7 +144,7 @@ export default class extends AbstractComponent {
 					(async function () {
 						try {
 							const fetchModule = new FetchModule();
-							const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/room/join/`, {
+							const response = await fetchModule.request(new Request(`${BACKEND_URL}/room/join/`, {
 								method: 'POST',
 								credentials: "include",
 								headers: {
@@ -177,7 +177,7 @@ export default class extends AbstractComponent {
 			(async function () {
 				try {
 					const fetchModule = new FetchModule();
-					const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/room/create/`, {
+					const response = await fetchModule.request(new Request(`${BACKEND_URL}/room/create/`, {
 						method: 'POST',
 						credentials: "include",
 						headers: {

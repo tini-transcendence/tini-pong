@@ -13,7 +13,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
         -subj "/C=KR/L=Seoul/O=42Seoul/CN=nginx" \
         > /dev/null 2>&1
 
-sed -i "s#localhost#${DOMAIN}#g" /var/www/html/src/index.js
+sed -i "s#localhost#${DOMAIN_NAME}#g" /var/www/html/src/index.js
 
 # Execute nginx
 exec nginx -g "daemon off;"
