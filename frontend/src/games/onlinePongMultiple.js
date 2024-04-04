@@ -1,14 +1,15 @@
 import animateGame from "../utils/animateGameModule.js";
 
 let
+local = true,
+online = false,
 document = window.document,
 THREE = window.THREE,
 num = null,
 
-ARROW_LEFT = 37,
 ARROW_UP = 38,
-ARROW_RIGHT = 39,
 ARROW_DOWN = 40,
+KEY_N = 78,
 
 WIDTH = 800,
 HEIGHT = 600,
@@ -65,10 +66,14 @@ board,
 ball,
 paddle1,
 paddle2,
+paddle3,
+paddle4,
 last_winner = null,
 
 paddle1_spead = 0,
 paddle2_spead = 0,
+paddle3_spead = 0,
+paddle4_spead = 0,
 
 difficulty = 0,
 
@@ -77,46 +82,51 @@ end = false,
 
 player_1,
 player_2,
+player_3,
+player_4,
 
 scoreBoard,
 score = {
-  player1: 0,
-  player2: 0
+  player_left: 0,
+  player_right: 0
 };
 
-function init(d, pn1, pn2)
+function init(d, pn1, pn2, pn3, pn4)
 {
   if (num)
     cancelAnimationFrame(num);
-  setGameStatus(d, pn1, pn2);
+  setGameStatus(d, pn1, pn2, pn3, pn4);
   setScoreBoard()
   setGame();
-  setDifficulty();
   setEvent();
   animateGame.setAnimateOn();
   loop();
 }
 
-function setGameStatus(d, pn1, pn2)
+function setGameStatus(d, pn1, pn2, pn3, pn4)
 {
   game = false;
   end = false;
   player_1 = pn1;
   player_2 = pn2;
+  player_3 = pn3;
+  player_4 = pn4;
   difficulty = d;
   PADDLE_WIDTH = PADDLE_DEFAULT_WIDTH;
   paddle1_spead = 0;
   paddle2_spead = 0;
+  paddle3_spead = 0;
+  paddle4_spead = 0;
   score = {
-    player1: 0,
-    player2: 0
+    player_left: 0,
+    player_right: 0
   };
 }
 
 function setScoreBoard()
 {
   scoreBoard = document.getElementById('scoreBoard');
-  scoreBoard.innerHTML = 'Welcome! '+ player_1 + ' vs ' + player_2 + '! [key:up,down]';
+  scoreBoard.innerHTML = 'Welcome! team left ('+ player_1 + ' ' + player_2 + ') vs team right (' + player_3 + ' ' + player_4 + ')! [key:up,down]';
 }
 
 function setGame()
@@ -179,9 +189,14 @@ function setBall()
 function setPaddle()
 {
   paddle1 = addPaddle();
-  paddle1.position.z = BOARD_LENGTH / 2;
+  paddle1.position.set(-BOARD_WIDTH / 4, 0, BOARD_LENGTH / 2 - PADDLE_LENGTH);
   paddle2 = addPaddle();
-  paddle2.position.z = -BOARD_LENGTH / 2;
+  paddle2.position.set(BOARD_WIDTH / 4, 0, BOARD_LENGTH / 2 - PADDLE_LENGTH);
+  paddle3 = addPaddle();
+  paddle3.position.set(-BOARD_WIDTH / 4, 0, -BOARD_LENGTH / 2 + PADDLE_LENGTH);
+  paddle4 = addPaddle();
+  paddle4.position.set(BOARD_WIDTH / 4, 0, -BOARD_LENGTH / 2 + PADDLE_LENGTH);
+  
 }
 
 function addPaddle()
@@ -193,34 +208,11 @@ function addPaddle()
   return paddle;
 }
 
-function setDifficulty()
-{
-  if (difficulty === 1)
-  {
-    BALL_VELOCITY_Z *= 0.8;
-    PADDLE_WIDTH *= 1.2;
-    paddle1.scale.set(1.2, 1, 1);
-    paddle2.scale.set(1.2, 1, 1);
-  }
-  else if (difficulty === 2)
-  {
-    BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z;
-  }
-  else if (difficulty === 3)
-  {
-    BALL_VELOCITY_Z *= 1.2;
-    PADDLE_WIDTH *= 0.8;
-    paddle1.scale.set(0.8, 1, 1);
-    paddle2.scale.set(0.8, 1, 1);
-  }
-}
-
 function setEvent()
 {
   document.addEventListener('keydown', onlineContainerEventKeyDown);
   document.addEventListener('keyup', onlineContainerEventKeyUp);
 
-  // 만약 창을 벗어난 유저를 식별할 수 있다면 disconnect 처리도 가능하지 않을까?
   window.websocket.onmessage = function (event) {
     const data = JSON.parse(event.data);
     console.log('game : ', data["type"]);
@@ -250,6 +242,28 @@ function setEvent()
           paddle2_spead = PADDLE_SPEAD;
         }
       }
+      else if (data["player_number"] === 3)
+      {
+        if (data["key"] === ARROW_UP)
+        {
+          paddle3_spead = -PADDLE_SPEAD;
+        }
+        else if (data["key"] === ARROW_DOWN)
+        {
+          paddle3_spead = PADDLE_SPEAD;
+        }
+      }
+      else if (data["player_number"] === 4)
+      {
+        if (data["key"] === ARROW_UP)
+        {
+          paddle4_spead = -PADDLE_SPEAD;
+        }
+        else if (data["key"] === ARROW_DOWN)
+        {
+          paddle4_spead = PADDLE_SPEAD;
+        }
+      }
     }
     else if (data["event"] === "keyup")
     {
@@ -277,6 +291,32 @@ function setEvent()
         {
           if (paddle2_spead === PADDLE_SPEAD)
             paddle2_spead = 0;
+        }
+      }
+      else if (data["player_number"] === 3)
+      {
+        if (data["key"] === ARROW_UP)
+        {
+          if (paddle3_spead === -PADDLE_SPEAD)
+            paddle3_spead = 0;
+        }
+        else if (data["key"] === ARROW_DOWN)
+        {
+          if (paddle3_spead === PADDLE_SPEAD)
+            paddle3_spead = 0;
+        }
+      }
+      else if (data["player_number"] === 4)
+      {
+        if (data["key"] === ARROW_UP)
+        {
+          if (paddle4_spead === -PADDLE_SPEAD)
+            paddle4_spead = 0;
+        }
+        else if (data["key"] === ARROW_DOWN)
+        {
+          if (paddle4_spead === PADDLE_SPEAD)
+            paddle4_spead = 0;
         }
       }
     }
@@ -378,16 +418,32 @@ function simulation_ball()
       hitBallBack(paddle1);
     }
     
-    if(isPaddle2Collision()) {
+    else if(isPaddle2Collision()) {
       hitBallBack(paddle2);
+    }
+
+    if(isPaddle3Collision()) {
+      hitBallBack(paddle3);
+    }
+    
+    else if(isPaddle4Collision()) {
+      hitBallBack(paddle4);
     }
     
     if(isPastPaddle1()) {
-      scoreBy('player2');
+      scoreBy('player_right');
+    }
+
+    else if(isPastPaddle2()) {
+      scoreBy('player_right');
     }
     
-    if(isPastPaddle2()) {
-      scoreBy('player1');
+    if(isPastPaddle3()) {
+      scoreBy('player_left');
+    }
+
+    else if(isPastPaddle4()) {
+      scoreBy('player_left');
     }
   }
 }
@@ -399,7 +455,7 @@ function startOneGame()
     direction = Math.random() > 0.5 ? -1 : 1;
   else
   {
-    if (last_winner === 'player1')
+    if (last_winner === 'player_left')
       direction = -1;
     else
       direction = 1;
@@ -429,7 +485,17 @@ function isPaddle1Collision()
 
 function isPaddle2Collision()
 {
-  return ball.position.z - BALL_RADIUS <= paddle2.position.z && isBallAlignedWithPaddle(paddle2);
+  return ball.position.z + BALL_RADIUS >= paddle2.position.z && isBallAlignedWithPaddle(paddle2);
+}
+
+function isPaddle3Collision()
+{
+  return ball.position.z - BALL_RADIUS <= paddle3.position.z && isBallAlignedWithPaddle(paddle3);
+}
+
+function isPaddle4Collision()
+{
+  return ball.position.z - BALL_RADIUS <= paddle4.position.z && isBallAlignedWithPaddle(paddle4);
 }
 
 function isBallAlignedWithPaddle(paddle)
@@ -451,7 +517,17 @@ function isPastPaddle1()
 
 function isPastPaddle2()
 {
-  return ball.position.z < paddle2.position.z - PADDLE_LENGTH;
+  return ball.position.z > paddle2.position.z + PADDLE_LENGTH;
+}
+
+function isPastPaddle3()
+{
+  return ball.position.z < paddle3.position.z - PADDLE_LENGTH;
+}
+
+function isPastPaddle4()
+{
+  return ball.position.z < paddle4.position.z - PADDLE_LENGTH;
 }
 
 function scoreBy(playerName)
@@ -465,13 +541,13 @@ function scoreBy(playerName)
 function updateScoreBoard()
 {
   end = true;
-  if (score.player1 === 5)
-    scoreBoard.innerHTML = player_1 + ' Win! ' + player_1 + ':' + score.player1 + ", " + player_2 + ' : ' + score.player2;
-  else if (score.player2 === 5)
-    scoreBoard.innerHTML = player_2 + ' Win! ' + player_1 + ':' + score.player1 + ", " + player_2 + ' : ' + score.player2;
+  if (score.player_left === 5)
+    scoreBoard.innerHTML = 'Team left Win! team left ('+ player_1 + ' ' + player_2 + '):' + score.player_left + ', team right (' + player_3 + ' ' + player_4 + ') : ' + score.player_right;
+  else if (score.player_right === 5)
+    scoreBoard.innerHTML = 'Team right Win! team left ('+ player_1 + ' ' + player_2 + '):' + score.player_left + ', team right (' + player_3 + ' ' + player_4 + ') : ' + score.player_right;
   else
   {
-    scoreBoard.innerHTML = 'Player 1: ' + score.player1 + ' Player 2: ' + score.player2;
+    scoreBoard.innerHTML = 'Player left: ' + score.player_left + ' Player right: ' + score.player_right;
     end = false;
   }
   if (end === true)
@@ -480,7 +556,6 @@ function updateScoreBoard()
     document.removeEventListener('keydown', onlineContainerEventKeyDown);
     document.removeEventListener('keyup', onlineContainerEventKeyUp);
     // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
-
   }
 }
 
@@ -499,11 +574,17 @@ function addPoint(playerName)
 
 function simulation_paddle()
 {
-  if (PADDLE_WIDTH / 2 + -BOARD_WIDTH / 2 < paddle1.position.x + paddle1_spead && paddle1.position.x + paddle1_spead < -PADDLE_WIDTH / 2 + BOARD_WIDTH / 2)
+  if (PADDLE_WIDTH / 2 + -BOARD_WIDTH / 2 < paddle1.position.x + paddle1_spead && paddle1.position.x + paddle1_spead < -PADDLE_WIDTH / 3 + 0)
     paddle1.position.x += paddle1_spead;
 
-  if (PADDLE_WIDTH / 2 + -BOARD_WIDTH / 2 < paddle2.position.x + paddle2_spead && paddle2.position.x + paddle2_spead < -PADDLE_WIDTH / 2 + BOARD_WIDTH / 2)
+  if (PADDLE_WIDTH / 3 + 0 < paddle2.position.x + paddle2_spead && paddle2.position.x + paddle2_spead < -PADDLE_WIDTH / 2 + BOARD_WIDTH / 2)
     paddle2.position.x += paddle2_spead;
+
+  if (PADDLE_WIDTH / 2 + -BOARD_WIDTH / 2 < paddle3.position.x + paddle3_spead && paddle3.position.x + paddle3_spead < -PADDLE_WIDTH / 3 + 0)
+    paddle3.position.x += paddle3_spead;
+
+  if (PADDLE_WIDTH / 3 + 0 < paddle4.position.x + paddle4_spead && paddle4.position.x + paddle4_spead < -PADDLE_WIDTH / 2 + BOARD_WIDTH / 2)
+    paddle4.position.x += paddle4_spead;
 }
 
 export { init, onlineContainerEventKeyUp, onlineContainerEventKeyDown }

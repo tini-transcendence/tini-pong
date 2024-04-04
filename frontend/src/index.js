@@ -104,7 +104,13 @@ const pathToRegex = (path) => {
 	return new RegExp('^' + path.replace(URL_FRAGMENT_REGEX, '\\/').replace(ROUTE_PARAMETER_REGEX, '(.+)') + '$');
 }
 
-window.addEventListener("popstate", router);
+window.addEventListener("popstate", () => {
+	if (window.websocket !== undefined && window.websocket.readyState === WebSocket.OPEN) {
+		window.websocket.close();
+		window.websocket = undefined;
+	}
+	router();
+});
 
 document.addEventListener("DOMContentLoaded", () => {
 	document.body.addEventListener("click", e => {

@@ -263,6 +263,8 @@ function containerEventKeyDown(e)
       };
       paddle1.position.x = 0;
       paddle2.position.x = 0;
+      paddle1_spead = 0;
+      paddle2_spead = 0;
       end = false;
       loop();
     }
