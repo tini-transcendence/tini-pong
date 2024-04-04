@@ -62,6 +62,7 @@ export default class extends AbstractComponent {
 					nicknameForm.value = data.nickname;
 					avatarPreview.src = data.avatar;
 					messageForm.value = data.message;
+					validNick = true;
 				}
 				else
 					throw new Error(response.statusText);
