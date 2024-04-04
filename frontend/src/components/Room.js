@@ -1,5 +1,5 @@
 import AbstractComponent from "./AbstractComponent.js";
-import {DOMAIN} from "../index.js";
+import {DOMAIN, navigateTo} from "../index.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -98,7 +98,7 @@ export default class extends AbstractComponent {
 				}, retryDelay);
 			} else {
 				console.log('WebSocket 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
-				location.href = "/lobby";
+				navigateTo("/lobby");
 				// window.location.href = document.referrer;
 			}
 		};
@@ -117,7 +117,7 @@ export default class extends AbstractComponent {
 		websocket.onclose = function (event) {
 			console.log('WebSocket 연결이 닫혔습니다.');
 			alert("로비로 이동합니다.")
-			location.href = "/lobby";
+			navigateTo("/lobby");
 			// window.location.href = document.referrer;
 		};
 
@@ -164,7 +164,7 @@ export default class extends AbstractComponent {
 
 		function startUpdate(data) {
 			if (data["status"] === "ok") {
-				location.href = "/game";
+				navigateTo("/game");
 			} else {
 				console.log("not all players are ready yet!")
 			}

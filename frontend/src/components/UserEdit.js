@@ -12,8 +12,7 @@ export default class extends AbstractComponent {
 		this.setTitle("UserEdit");
 	}
 
-	async getHtml(loginModule) {
-		loginModule.isLogin();
+	async getHtml() {
 		return `
 		<div class="container">
 			<h3 class="m-3 text-center">
