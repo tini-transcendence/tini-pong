@@ -29,7 +29,7 @@ SECRET_KEY = "django-insecure-j%b!(ql#=ntfh0d2uwqtyxa*in0-&-qk!!jb&f(6fq@18oj803
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [os.environ.get("DOMAIN")]
+ALLOWED_HOSTS = [os.environ.get("DOMAIN_NAME")]
 
 
 # Application definition
@@ -162,11 +162,11 @@ TEST_RUNNER = "django.test.runner.DiscoverRunner"
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    f'{os.environ.get("DOMAIN_NAME")}',
+    os.environ.get("FRONTEND_URL"),
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    f'{os.environ.get("DOMAIN_NAME")}:{os.environ.get("BACKEND_ENTRY_PORT")}'
+    os.environ.get("BACKEND_URL"),
 ]
 
 AUTH_WHITELIST = os.environ.get("AUTH_WHITELIST").split(",")

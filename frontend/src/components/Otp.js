@@ -1,6 +1,6 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
-import {DOMAIN_NAME, navigateTo} from "../index.js";
+import {BACKEND_URL, navigateTo} from "../index.js";
 
 const regex = /^[0-9]+$/;
 const regex2 = /^[0-9]$/;
@@ -77,7 +77,7 @@ export default class extends AbstractComponent {
 				})
 
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/auth/otp/`, {
+				const response = await fetchModule.request(new Request(`${BACKEND_URL}/auth/otp/`, {
 					method: 'POST',
 					credentials: "include",
 					headers: {

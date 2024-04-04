@@ -1,6 +1,6 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
-import {DOMAIN_NAME, navigateTo} from "../index.js";
+import {BACKEND_URL, navigateTo} from "../index.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -22,7 +22,7 @@ export default class extends AbstractComponent {
 		(async function() {
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/auth/oauth${queryString}`, {
+				const response = await fetchModule.request(new Request(`${BACKEND_URL}/auth/oauth${queryString}`, {
 					method: 'GET',
 					credentials: "include"
 				}));

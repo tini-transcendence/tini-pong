@@ -1,5 +1,5 @@
 import FetchModule from "./fetchmodule.js"
-import {DOMAIN_NAME, navigateTo} from "../index.js";
+import {BACKEND_URL, navigateTo} from "../index.js";
 
 export default class {
 	constructor() {
@@ -18,7 +18,7 @@ export default class {
 
 		const getLoginStatus = async (fetchModule) => {
 			try {
-				const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/user/status-update/`, {
+				const response = await fetchModule.request(new Request(`${BACKEND_URL}/user/status-update/`, {
 					method: 'POST',
 					credentials: "include",
 				}));
@@ -32,7 +32,7 @@ export default class {
 
 		try {
 			const fetchModule = new FetchModule();
-			const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/user/status-update/`, {
+			const response = await fetchModule.request(new Request(`${BACKEND_URL}/user/status-update/`, {
 				method: 'POST',
 				credentials: "include",
 			}));

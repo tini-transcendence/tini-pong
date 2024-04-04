@@ -76,54 +76,71 @@ board,
 ball,
 paddle1,
 paddle2,
-paddle3,
-paddle4,
 last_winner = null,
 
 paddle1_spead = 0,
 paddle2_spead = 0,
-paddle3_spead = 0,
-paddle4_spead = 0,
 
 difficulty = 0,
 
 game = false,
 end = false,
 
+nick1,
+nick2,
+nick3,
+nick4,
+
+round,
+
+player1,
+player2,
+winner,
+
 scoreBoard,
 score = {
-  player_left: 0,
-  player_right: 0
+  player1: 0,
+  player2: 0
 };
 
-function init()
+function init(d, pn1, pn2, pn3, pn4)
 {
   if (num)
     cancelAnimationFrame(num);
-  setGameStatus();
-  setScoreBoard()
+  setGameStatus(d, pn1, pn2, pn3, pn4);
+  setScoreBoard();
   setGame();
+  setDifficulty()
   setEvent();
   animateGame.setAnimateOn();
   loop();
 }
 
-function setGameStatus()
+function setGameStatus(d, pn1, pn2, pn3, pn4)
 {
+  difficulty = d;
+  round = 1;
+  nick1 = pn1;
+  nick2 = pn2;
+  nick3 = pn3;
+  nick4 = pn4;
+  player1 = nick1;
+  player2 = nick2;
   game = false;
   end = false;
-  difficulty = 0;
   PADDLE_WIDTH = PADDLE_DEFAULT_WIDTH;
+  paddle1_spead = 0;
+  paddle2_spead = 0;
   score = {
-    player_left: 0,
-    player_right: 0
+    player1: 0,
+    player2: 0
   };
 }
 
 function setScoreBoard()
 {
-  scoreBoard = document.getElementById('scoreBoardM');
-  scoreBoard.innerHTML = 'Welcome! Select difficulty (E/N/H)';
+  scoreBoard = document.getElementById('scoreBoardT');
+  scoreBoard.innerHTML = 'Round 1! Press the key to start! ' + player1 + '(w,s) ' + player2 + '(up,down)';
 }
 
 function setGame()
@@ -139,7 +156,7 @@ function setGame()
 
 function setRenderer()
 {
-  container = document.getElementById('containerM');
+  container = document.getElementById('containerT');
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(WIDTH, HEIGHT);
   renderer.setClearColor(0x9999BB, 1);
@@ -186,14 +203,9 @@ function setBall()
 function setPaddle()
 {
   paddle1 = addPaddle();
-  paddle1.position.set(-BOARD_WIDTH / 4, 0, BOARD_LENGTH / 2 - PADDLE_LENGTH);
+  paddle1.position.z = BOARD_LENGTH / 2;
   paddle2 = addPaddle();
-  paddle2.position.set(BOARD_WIDTH / 4, 0, BOARD_LENGTH / 2 - PADDLE_LENGTH);
-  paddle3 = addPaddle();
-  paddle3.position.set(-BOARD_WIDTH / 4, 0, -BOARD_LENGTH / 2 + PADDLE_LENGTH);
-  paddle4 = addPaddle();
-  paddle4.position.set(BOARD_WIDTH / 4, 0, -BOARD_LENGTH / 2 + PADDLE_LENGTH);
-  
+  paddle2.position.z = -BOARD_LENGTH / 2;
 }
 
 function addPaddle()
@@ -203,6 +215,28 @@ function addPaddle()
       paddle = new THREE.Mesh(paddleGeometry, paddleMaterial);
   scene.add(paddle);
   return paddle;
+}
+
+function setDifficulty()
+{
+  if (difficulty === 1)
+  {
+    BALL_VELOCITY_Z *= 0.8;
+    PADDLE_WIDTH *= 1.2;
+    paddle1.scale.set(1.2, 1, 1);
+    paddle2.scale.set(1.2, 1, 1);
+  }
+  else if (difficulty === 2)
+  {
+    BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z;
+  }
+  else if (difficulty === 3)
+  {
+    BALL_VELOCITY_Z *= 1.2;
+    PADDLE_WIDTH *= 0.8;
+    paddle1.scale.set(0.8, 1, 1);
+    paddle2.scale.set(0.8, 1, 1);
+  }
 }
 
 function setEvent()
@@ -215,61 +249,23 @@ function containerEventKeyDown(e)
 {
   if (end == true)
   {
-    if (e.keyCode === KEY_R)
+    if (e.keyCode === KEY_N)
     {
-      scoreBoard.innerHTML = 'Welcome! Select difficulty (E/N/H)';
-      BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z;
-      PADDLE_WIDTH = PADDLE_DEFAULT_WIDTH;
-      paddle1.scale.set(1, 1, 1);
-      paddle2.scale.set(1, 1, 1);
-      paddle3.scale.set(1, 1, 1);
-      paddle4.scale.set(1, 1, 1);
-      difficulty = 0;
+      let roundText;
+      if (round === 2)
+        roundText = 'Round 2!';
+      if (round === 3)
+        roundText = 'Final round!';
+      scoreBoard.innerHTML = roundText + ' Press the key to start! ' + player1 + '(w,s) ' + player2 + '(up,down)';
       score = {
-        player_left: 0,
-        player_right: 0
+        player1: 0,
+        player2: 0
       };
-      paddle1.position.set(-BOARD_WIDTH / 4, 0, BOARD_LENGTH / 2);
-      paddle2.position.set(BOARD_WIDTH / 4, 0, BOARD_LENGTH / 2);
-      paddle3.position.set(-BOARD_WIDTH / 4, 0, -BOARD_LENGTH / 2);
-      paddle4.position.set(BOARD_WIDTH / 4, 0, -BOARD_LENGTH / 2);
+      paddle1.position.x = 0;
+      paddle2.position.x = 0;
       end = false;
       loop();
     }
-  }
-  else if (difficulty === 0)
-  {
-    if (e.keyCode === KEY_E)
-    {
-      difficulty = 1;
-      BALL_VELOCITY_Z *= 0.8;
-      PADDLE_WIDTH *= 1.2;
-      paddle1.scale.set(1.2, 1, 1);
-      paddle2.scale.set(1.2, 1, 1);
-      paddle3.scale.set(1.2, 1, 1);
-      paddle4.scale.set(1.2, 1, 1);
-      e.preventDefault();
-    }
-    else if (e.keyCode === KEY_N)
-    {
-      difficulty = 2;
-      BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z;
-      e.preventDefault();
-    }
-    else if (e.keyCode === KEY_H)
-    {
-      difficulty = 3;
-      BALL_VELOCITY_Z *= 1.2;
-      PADDLE_WIDTH *= 0.8;
-      paddle1.scale.set(0.8, 1, 1);
-      paddle2.scale.set(0.8, 1, 1);
-      paddle3.scale.set(0.8, 1, 1);
-      paddle4.scale.set(0.8, 1, 1);
-      e.preventDefault();
-    }
-    else 
-      return ;
-    scoreBoard.innerHTML = 'Press the key to start! (w,s)(up,down)';
   }
   else
   {
@@ -283,34 +279,14 @@ function containerEventKeyDown(e)
       paddle1_spead = PADDLE_SPEAD;
       e.preventDefault();
     }
-    else if (e.keyCode === KEY_A)
+    else if (e.keyCode === ARROW_UP)
     {
       paddle2_spead = -PADDLE_SPEAD;
       e.preventDefault();
     }
-    else if (e.keyCode === KEY_D)
-    {
-      paddle2_spead = PADDLE_SPEAD;
-      e.preventDefault();
-    }
-    else if (e.keyCode === ARROW_UP)
-    {
-      paddle3_spead = -PADDLE_SPEAD;
-      e.preventDefault();
-    }
     else if (e.keyCode === ARROW_DOWN)
     {
-      paddle3_spead = PADDLE_SPEAD;
-      e.preventDefault();
-    }
-    else if (e.keyCode === ARROW_RIGHT)
-    {
-      paddle4_spead = -PADDLE_SPEAD;
-      e.preventDefault();
-    }
-    else if (e.keyCode === ARROW_LEFT)
-    {
-      paddle4_spead = PADDLE_SPEAD;
+      paddle2_spead = PADDLE_SPEAD;
       e.preventDefault();
     }
     else
@@ -337,40 +313,16 @@ function containerEventKeyUp(e)
       paddle1_spead = 0;
     e.preventDefault();
   }
-  if (e.keyCode === KEY_A)
+  if (e.keyCode === ARROW_UP)
   {
     if (paddle2_spead === -PADDLE_SPEAD)
       paddle2_spead = 0;
     e.preventDefault();
   }
-  if (e.keyCode === KEY_D)
+  if (e.keyCode === ARROW_DOWN)
   {
     if (paddle2_spead === PADDLE_SPEAD)
       paddle2_spead = 0;
-    e.preventDefault();
-  }
-  if (e.keyCode === ARROW_UP)
-  {
-    if (paddle3_spead === -PADDLE_SPEAD)
-      paddle3_spead = 0;
-    e.preventDefault();
-  }
-  if (e.keyCode === ARROW_DOWN)
-  {
-    if (paddle3_spead === PADDLE_SPEAD)
-      paddle3_spead = 0;
-    e.preventDefault();
-  }
-  if (e.keyCode === ARROW_RIGHT)
-  {
-    if (paddle4_spead === -PADDLE_SPEAD)
-      paddle4_spead = 0;
-    e.preventDefault();
-  }
-  if (e.keyCode === ARROW_LEFT)
-  {
-    if (paddle4_spead === PADDLE_SPEAD)
-      paddle4_spead = 0;
     e.preventDefault();
   }
 }
@@ -409,32 +361,16 @@ function simulation_ball()
       hitBallBack(paddle1);
     }
     
-    else if(isPaddle2Collision()) {
+    if(isPaddle2Collision()) {
       hitBallBack(paddle2);
-    }
-
-    if(isPaddle3Collision()) {
-      hitBallBack(paddle3);
-    }
-    
-    else if(isPaddle4Collision()) {
-      hitBallBack(paddle4);
     }
     
     if(isPastPaddle1()) {
-      scoreBy('player_right');
-    }
-
-    else if(isPastPaddle2()) {
-      scoreBy('player_right');
+      scoreBy('player2');
     }
     
-    if(isPastPaddle3()) {
-      scoreBy('player_left');
-    }
-
-    else if(isPastPaddle4()) {
-      scoreBy('player_left');
+    if(isPastPaddle2()) {
+      scoreBy('player1');
     }
   }
 }
@@ -446,7 +382,7 @@ function startOneGame()
     direction = Math.random() > 0.5 ? -1 : 1;
   else
   {
-    if (last_winner === 'player_left')
+    if (last_winner === 'player1')
       direction = -1;
     else
       direction = 1;
@@ -476,17 +412,7 @@ function isPaddle1Collision()
 
 function isPaddle2Collision()
 {
-  return ball.position.z + BALL_RADIUS >= paddle2.position.z && isBallAlignedWithPaddle(paddle2);
-}
-
-function isPaddle3Collision()
-{
-  return ball.position.z - BALL_RADIUS <= paddle3.position.z && isBallAlignedWithPaddle(paddle3);
-}
-
-function isPaddle4Collision()
-{
-  return ball.position.z - BALL_RADIUS <= paddle4.position.z && isBallAlignedWithPaddle(paddle4);
+  return ball.position.z - BALL_RADIUS <= paddle2.position.z && isBallAlignedWithPaddle(paddle2);
 }
 
 function isBallAlignedWithPaddle(paddle)
@@ -508,17 +434,7 @@ function isPastPaddle1()
 
 function isPastPaddle2()
 {
-  return ball.position.z > paddle2.position.z + PADDLE_LENGTH;
-}
-
-function isPastPaddle3()
-{
-  return ball.position.z < paddle3.position.z - PADDLE_LENGTH;
-}
-
-function isPastPaddle4()
-{
-  return ball.position.z < paddle4.position.z - PADDLE_LENGTH;
+  return ball.position.z < paddle2.position.z - PADDLE_LENGTH;
 }
 
 function scoreBy(playerName)
@@ -532,13 +448,78 @@ function scoreBy(playerName)
 function updateScoreBoard()
 {
   end = true;
-  if (score.player_left === 5)
-    scoreBoard.innerHTML = 'Player left Win! [r] to regame';
-  else if (score.player_right === 5)
-    scoreBoard.innerHTML = 'Player right Win! [r] to regmae';
+  let roundText = 'Round 1';
+  if (round === 2)
+    roundText = 'Round 2';
+  if (round === 3)
+    roundText = 'Final round';
+  if (score.player1 === 5)
+  {
+    scoreBoard.innerHTML = player1 + ' Win! [n] to next round';
+    const resultDiv = document.querySelector(".result");
+    resultDiv.style.display = 'block';
+    const resultBoard = resultDiv.querySelector('#resultT');
+    const result = document.createElement('div');
+    result.textContent = roundText + ' : ' + player1 + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + score.player2;
+    resultBoard.appendChild(result);
+    if (round === 1)
+    {
+      round = 2;
+      winner = player1;
+      player1 = nick3;
+      player2 = nick4;
+    }
+    else if (round === 2)
+    {
+      round = 3;
+      player2 = player1;
+      player1 = winner;
+    }
+    else if (round === 3)
+    {
+      const selecterDiv = document.querySelector(".selecter");
+      selecterDiv.style.display = 'none';
+      const tournamentPongButton = document.querySelector("#tournamentPongButton");
+      tournamentPongButton.style.display = 'inline';
+      window.document.removeEventListener('keydown', containerEventKeyDown);
+      window.document.removeEventListener('keyup', containerEventKeyUp);
+    }
+  }
+  else if (score.player2 === 5)
+  {
+    scoreBoard.innerHTML = player2 + ' Win! [n] to next round';
+    const resultDiv = document.querySelector(".result");
+    resultDiv.style.display = 'block';
+    const resultBoard = resultDiv.querySelector('#resultT');
+    const result = document.createElement('div');
+    result.textContent = roundText + ' : ' + player2 + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + score.player2;
+    resultBoard.appendChild(result);
+    if (round === 1)
+    {
+      round = 2;
+      winner = player2;
+      player1 = nick3;
+      player2 = nick4;
+    }
+    else if (round === 2)
+    {
+      round = 3;
+      player2 = player2;
+      player1 = winner;
+    }
+    else if (round === 3)
+    {
+      const selecterDiv = document.querySelector(".selecter");
+      selecterDiv.style.display = 'none';
+      const tournamentPongButton = document.querySelector("#tournamentPongButton");
+      tournamentPongButton.style.display = 'inline';
+      window.document.removeEventListener('keydown', containerEventKeyDown);
+      window.document.removeEventListener('keyup', containerEventKeyUp);
+    }
+  }
   else
   {
-    scoreBoard.innerHTML = 'Player left: ' + score.player_left + ' Player right: ' + score.player_right;
+    scoreBoard.innerHTML = player1 + ' : ' + score.player1 + ' ' + player2 + ': ' + score.player2;
     end = false;
   }
 }
@@ -558,17 +539,11 @@ function addPoint(playerName)
 
 function simulation_paddle()
 {
-  if (PADDLE_WIDTH / 2 + -BOARD_WIDTH / 2 < paddle1.position.x + paddle1_spead && paddle1.position.x + paddle1_spead < -PADDLE_WIDTH / 3 + 0)
+  if (PADDLE_WIDTH / 2 + -BOARD_WIDTH / 2 < paddle1.position.x + paddle1_spead && paddle1.position.x + paddle1_spead < -PADDLE_WIDTH / 2 + BOARD_WIDTH / 2)
     paddle1.position.x += paddle1_spead;
 
-  if (PADDLE_WIDTH / 3 + 0 < paddle2.position.x + paddle2_spead && paddle2.position.x + paddle2_spead < -PADDLE_WIDTH / 2 + BOARD_WIDTH / 2)
+  if (PADDLE_WIDTH / 2 + -BOARD_WIDTH / 2 < paddle2.position.x + paddle2_spead && paddle2.position.x + paddle2_spead < -PADDLE_WIDTH / 2 + BOARD_WIDTH / 2)
     paddle2.position.x += paddle2_spead;
-
-  if (PADDLE_WIDTH / 2 + -BOARD_WIDTH / 2 < paddle3.position.x + paddle3_spead && paddle3.position.x + paddle3_spead < -PADDLE_WIDTH / 3 + 0)
-    paddle3.position.x += paddle3_spead;
-
-  if (PADDLE_WIDTH / 3 + 0 < paddle4.position.x + paddle4_spead && paddle4.position.x + paddle4_spead < -PADDLE_WIDTH / 2 + BOARD_WIDTH / 2)
-    paddle4.position.x += paddle4_spead;
 }
 
 export { init, containerEventKeyUp, containerEventKeyDown }
