@@ -76,7 +76,7 @@ board,
 ball,
 paddle1,
 paddle2,
-last_winner = null,
+last_scored_player = null,
 
 paddle1_spead = 0,
 paddle2_spead = 0,
@@ -95,7 +95,12 @@ round,
 
 player1,
 player2,
-winner,
+player1_num,
+player2_num,
+round1Winner,
+round1Winner_num,
+round2Winner,
+round2Winner_num,
 
 scoreBoard,
 score = {
@@ -126,6 +131,8 @@ function setGameStatus(d, pn1, pn2, pn3, pn4)
   nick4 = pn4;
   player1 = nick1;
   player2 = nick2;
+  player1_num = 1;
+  player2_num = 2;
   game = false;
   end = false;
   PADDLE_WIDTH = PADDLE_DEFAULT_WIDTH;
@@ -139,8 +146,8 @@ function setGameStatus(d, pn1, pn2, pn3, pn4)
 
 function setScoreBoard()
 {
-  scoreBoard = document.getElementById('scoreBoardT');
-  scoreBoard.innerHTML = 'Round 1! Press the key to start! ' + player1 + '(w,s) ' + player2 + '(up,down)';
+  scoreBoard = document.getElementById('scoreBoard');
+  scoreBoard.innerHTML = 'Round 1! Press the key to start! ' + player1 + ' vs ' + player2 + '(up,down)';
 }
 
 function setGame()
@@ -156,7 +163,7 @@ function setGame()
 
 function setRenderer()
 {
-  container = document.getElementById('containerT');
+  container = document.getElementById('container');
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(WIDTH, HEIGHT);
   renderer.setClearColor(0x9999BB, 1);
@@ -241,22 +248,21 @@ function setDifficulty()
 
 function setEvent()
 {
-  document.addEventListener('keydown', containerEventKeyDown);
-  document.addEventListener('keyup', containerEventKeyUp);
-}
+  document.addEventListener('keydown', onlineContainerEventKeyDown);
+  document.addEventListener('keyup', onlineContainerEventKeyUp);
 
-function containerEventKeyDown(e)
-{
-  if (end == true)
-  {
-    if (e.keyCode === KEY_N)
+  window.websocket.onmessage = function (event) {
+    const data = JSON.parse(event.data);
+    console.log('game : ', data["type"]);
+    console.log(data);
+    if (end == true)
     {
       let roundText;
       if (round === 2)
         roundText = 'Round 2!';
       if (round === 3)
         roundText = 'Final round!';
-      scoreBoard.innerHTML = roundText + ' Press the key to start! ' + player1 + '(w,s) ' + player2 + '(up,down)';
+      scoreBoard.innerHTML = roundText + ' Press the key to start! ' + player1 + ' ' + player2 + '(up,down)';
       score = {
         player1: 0,
         player2: 0
@@ -268,63 +274,123 @@ function containerEventKeyDown(e)
       end = false;
       loop();
     }
-  }
-  else
-  {
-    if (e.keyCode === KEY_W)
-    {
-      paddle1_spead = -PADDLE_SPEAD;
-      e.preventDefault();
-    }
-    else if (e.keyCode === KEY_S)
-    {
-      paddle1_spead = PADDLE_SPEAD;
-      e.preventDefault();
-    }
-    else if (e.keyCode === ARROW_UP)
-    {
-      paddle2_spead = -PADDLE_SPEAD;
-      e.preventDefault();
-    }
-    else if (e.keyCode === ARROW_DOWN)
-    {
-      paddle2_spead = PADDLE_SPEAD;
-      e.preventDefault();
-    }
     else
-      return ;
-    if (game === false && end === false)
     {
-      updateScoreBoard();
-      game = true;
+      if (data["event"] === "keydown")
+      {
+        if (data["player_number"] === player1_num)
+        {
+          if (data["key"] === ARROW_UP)
+          {
+            paddle1_spead = -PADDLE_SPEAD;
+          }
+          else if (data["key"] === ARROW_DOWN)
+          {
+            paddle1_spead = PADDLE_SPEAD;
+          }
+        }
+        else if (data["player_number"] === player2_num)
+        {
+          if (data["key"] === ARROW_UP)
+          {
+            paddle2_spead = -PADDLE_SPEAD;
+          }
+          else if (data["key"] === ARROW_DOWN)
+          {
+            paddle2_spead = PADDLE_SPEAD;
+          }
+        }
+      }
+      else if (data["event"] === "keyup")
+      {
+        if (data["player_number"] === player1_num)
+        {
+          if (data["key"] === ARROW_UP)
+          {
+            if (paddle1_spead === -PADDLE_SPEAD)
+              paddle1_spead = 0;
+          }
+          else if (data["key"] === ARROW_DOWN)
+          {
+            if (paddle1_spead === PADDLE_SPEAD)
+              paddle1_spead = 0;
+          }
+        }
+        else if (data["player_number"] === player2_num)
+        {
+          if (data["key"] === ARROW_UP)
+          {
+            if (paddle2_spead === -PADDLE_SPEAD)
+              paddle2_spead = 0;
+          }
+          else if (data["key"] === ARROW_DOWN)
+          {
+            if (paddle2_spead === PADDLE_SPEAD)
+              paddle2_spead = 0;
+          }
+        }
+      }
+      else
+        return;
+      if (end === false)
+      {
+        updateScoreBoard();
+        game = true;
+      }
     }
-  }
+  };
 }
 
-function containerEventKeyUp(e)
+function onlineContainerEventKeyDown(e)
 {
-  if (e.keyCode === KEY_W)
-  {
-    if (paddle1_spead === -PADDLE_SPEAD)
-      paddle1_spead = 0;
-    e.preventDefault();
-  }
-  if (e.keyCode === KEY_S)
-  {
-    if (paddle1_spead === PADDLE_SPEAD)
-      paddle1_spead = 0;
-    e.preventDefault();
-  }
   if (e.keyCode === ARROW_UP)
   {
-    if (paddle2_spead === -PADDLE_SPEAD)
-      paddle2_spead = 0;
+    // send key down arrow up
+    const dataToSend = {
+      "action": "key_press",
+      "event": "keydown",
+      "key": ARROW_UP
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
   }
-  if (e.keyCode === ARROW_DOWN)
+  else if (e.keyCode === ARROW_DOWN)
   {
-    if (paddle2_spead === PADDLE_SPEAD)
-      paddle2_spead = 0;
+    // send key down arrow down
+    const dataToSend = {
+      "action": "key_press",
+      "event": "keydown",
+      "key": ARROW_DOWN
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
+    e.preventDefault();
+  }
+  else
+    return ;
+}
+
+function onlineContainerEventKeyUp(e)
+{
+  if (e.keyCode === ARROW_UP)
+  {
+    // send key up arrow up
+    const dataToSend = {
+      "action": "key_press",
+      "event": "keyup",
+      "key": ARROW_UP
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
+    e.preventDefault();
+  }
+  else if (e.keyCode === ARROW_DOWN)
+  {
+    // send key up arrow down
+    const dataToSend = {
+      "action": "key_press",
+      "event": "keyup",
+      "key": ARROW_DOWN
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
   }
 }
@@ -380,11 +446,11 @@ function simulation_ball()
 function startOneGame()
 {
   let direction = 1;
-  if (last_winner === null)
+  if (last_scored_player === null)
     direction = Math.random() > 0.5 ? -1 : 1;
   else
   {
-    if (last_winner === 'player1')
+    if (last_scored_player === 'player1')
       direction = -1;
     else
       direction = 1;
@@ -442,9 +508,26 @@ function isPastPaddle2()
 function scoreBy(playerName)
 {
   addPoint(playerName);
-  last_winner = playerName;
+  last_scored_player = playerName;
   stopBall();
   updateScoreBoard();
+}
+
+function addResult(res)
+{
+  const resultDiv = document.querySelector("#tournament_result");
+  resultDiv.style.display = 'block';
+  resultDiv.style.margin = '10px';
+  resultDiv.innerHTML = `
+        <br><br>
+        <h2>Game result</h2>
+        <p>local game does not save a result in server</p>
+        <h3><b>left</b> vs <b>right</b></h3>
+        <div id="resultT"></div>`
+  const resultBoard = resultDiv.querySelector('#resultT');
+  const result = document.createElement('div');
+  result.textContent = res;
+  resultBoard.appendChild(result);
 }
 
 function updateScoreBoard()
@@ -458,65 +541,63 @@ function updateScoreBoard()
   if (score.player1 === 5)
   {
     scoreBoard.innerHTML = player1 + ' Win! [n] to next round';
-    const resultDiv = document.querySelector(".result");
-    resultDiv.style.display = 'block';
-    const resultBoard = resultDiv.querySelector('#resultT');
-    const result = document.createElement('div');
-    result.textContent = roundText + ' : ' + player1 + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + ' : ' + score.player2;
-    resultBoard.appendChild(result);
+    addResult(roundText + ' : ' + player1 + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + ' : ' + score.player2);
     if (round === 1)
     {
       round = 2;
-      winner = player1;
+      round1Winner = player1;
+      round1Winner_num = player1_num;
       player1 = nick3;
       player2 = nick4;
+      player1_num = 3;
+      player2_num = 4;
     }
     else if (round === 2)
     {
       round = 3;
       player2 = player1;
-      player1 = winner;
+      player2_num = player1_num;
+      player1 = round1Winner;
+      player1_num = round1Winner_num
     }
     else if (round === 3)
     {
-      const selecterDiv = document.querySelector(".selecter");
-      selecterDiv.style.display = 'none';
-      const tournamentPongButton = document.querySelector("#tournamentPongButton");
-      tournamentPongButton.style.display = 'inline';
-      window.document.removeEventListener('keydown', containerEventKeyDown);
-      window.document.removeEventListener('keyup', containerEventKeyUp);
+      // 이벤트 제거
+      document.removeEventListener('keydown', onlineonlineContainerEventKeyDown);
+      document.removeEventListener('keyup', onlineonlineContainerEventKeyUp);
+      // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
     }
   }
   else if (score.player2 === 5)
   {
     scoreBoard.innerHTML = player2 + ' Win! [n] to next round';
-    const resultDiv = document.querySelector(".result");
-    resultDiv.style.display = 'block';
-    const resultBoard = resultDiv.querySelector('#resultT');
-    const result = document.createElement('div');
-    result.textContent = roundText + ' : ' + player2 + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + score.player2;
-    resultBoard.appendChild(result);
+    addResult(roundText + ' : ' + player2 + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + score.player2);
     if (round === 1)
     {
       round = 2;
-      winner = player2;
+      round1Winner = player2;
+      round1Winner_num = player2_num;
       player1 = nick3;
       player2 = nick4;
+      player1_num = 3;
+      player2_num = 4;
+      // 만약 필요하다면 roune 1 결과 전송
     }
     else if (round === 2)
     {
       round = 3;
       player2 = player2;
-      player1 = winner;
+      player2_num = player2_num;
+      player1 = round1Winner;
+      player1_num = round1Winner_num
+      // 만약 필요하다면 roune 2 결과 전송
     }
     else if (round === 3)
     {
-      const selecterDiv = document.querySelector(".selecter");
-      selecterDiv.style.display = 'none';
-      const tournamentPongButton = document.querySelector("#tournamentPongButton");
-      tournamentPongButton.style.display = 'inline';
-      window.document.removeEventListener('keydown', containerEventKeyDown);
-      window.document.removeEventListener('keyup', containerEventKeyUp);
+      // 이벤트 제거
+      document.removeEventListener('keydown', onlineonlineContainerEventKeyDown);
+      document.removeEventListener('keyup', onlineonlineContainerEventKeyUp);
+      // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
     }
   }
   else
@@ -548,4 +629,4 @@ function simulation_paddle()
     paddle2.position.x += paddle2_spead;
 }
 
-export { init, containerEventKeyUp, containerEventKeyDown }
+export { init, onlineContainerEventKeyUp, onlineContainerEventKeyDown }

@@ -2,6 +2,10 @@ import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
 import {BACKEND_URL, navigateTo} from "../index.js";
 
+import {onlineContainerEventKeyUp, onlineContainerEventKeyDown} from "../games/onlinePongBasic.js"
+import {onlineContainerEventKeyUp as onlineContainerEventKeyUpM, onlineContainerEventKeyDown as onlineContainerEventKeyDownM} from "../games/onlinePongMultiple.js"
+import {onlineContainerEventKeyUp as onlineContainerEventKeyUpT, onlineContainerEventKeyDown as onlineContainerEventKeyDownT} from "../games/onlinePongTournament.js"
+
 export default class extends AbstractComponent {
 	constructor() {
 		super();
@@ -48,15 +52,21 @@ export default class extends AbstractComponent {
 								<div class="col">
 									<label class="col-form-label">PLAYER</label>
 										<div class="form-check">
-											<input class="form-check-input" type="radio" name="flexRadioHC" id="flexRadioHC1" value="2" checked>
+											<input class="form-check-input" type="radio" name="flexRadioHC" id="flexRadioHC1" value="1" checked>
 											<label class="form-check-label" for="flexRadioHC1">
-												2 player
+												1vs1(2p)
 											</label>
 										</div>
 										<div class="form-check">
-											<input class="form-check-input" type="radio" name="flexRadioHC" id="flexRadioHC2" value="4">
+											<input class="form-check-input" type="radio" name="flexRadioHC" id="flexRadioHC2" value="2">
 											<label class="form-check-label" for="flexRadioHC2">
-												4 player
+												2vs2(4p)
+											</label>
+										</div>
+										<div class="form-check">
+											<input class="form-check-input" type="radio" name="flexRadioHC" id="flexRadioHC3" value="3">
+											<label class="form-check-label" for="flexRadioHC3">
+												tournament(4p)
 											</label>
 										</div>
 								</div>
@@ -203,6 +213,12 @@ export default class extends AbstractComponent {
 				}
 			})();
 		})
+		document.removeEventListener('keydown', onlineContainerEventKeyDown);
+		document.removeEventListener('keyup', onlineContainerEventKeyUp);
+		document.removeEventListener('keydown', onlineContainerEventKeyDownM);
+		document.removeEventListener('keyup', onlineContainerEventKeyUpM);
+		document.removeEventListener('keydown', onlineContainerEventKeyDownT);
+		document.removeEventListener('keyup', onlineContainerEventKeyUpT);
 	}
 
 	// connectToWebSocket(roomUuid) {

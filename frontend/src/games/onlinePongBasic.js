@@ -1,22 +1,14 @@
+import animateGame from "../utils/animateGameModule.js";
+
 let
-local = true,
-online = false,
 document = window.document,
 THREE = window.THREE,
+num = null,
 
 ARROW_LEFT = 37,
 ARROW_UP = 38,
 ARROW_RIGHT = 39,
 ARROW_DOWN = 40,
-KEY_W = 87,
-KEY_A = 65,
-KEY_R = 82,
-KEY_S = 83,
-KEY_D = 68,
-
-KEY_E = 69,
-KEY_N = 78,
-KEY_H = 72,
 
 WIDTH = 800,
 HEIGHT = 600,
@@ -45,9 +37,10 @@ BOARD_LOCATION_Y = -50,
 BOARD_LOCATION_Z = 0,
 BOARD_COLOR = 0x6666ff,
 
+BALL_DEFAULT_VELOCITY_Z = 20,
 BALL_RADIUS = 20,
 BALL_VELOCITY_X = 0,
-BALL_VELOCITY_Z = 20,
+BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z,
 BALL_LOCATION_X = 0,
 BALL_LOCATION_Y = 0,
 BALL_LOCATION_Z = 0,
@@ -72,6 +65,7 @@ board,
 ball,
 paddle1,
 paddle2,
+last_winner = null,
 
 paddle1_spead = 0,
 paddle2_spead = 0,
@@ -81,24 +75,48 @@ difficulty = 0,
 game = false,
 end = false,
 
+player_1,
+player_2,
+
 scoreBoard,
 score = {
   player1: 0,
   player2: 0
 };
 
-function init()
+function init(d, pn1, pn2)
 {
+  if (num)
+    cancelAnimationFrame(num);
+  setGameStatus(d, pn1, pn2);
   setScoreBoard()
   setGame();
+  setDifficulty();
   setEvent();
+  animateGame.setAnimateOn();
   loop();
+}
+
+function setGameStatus(d, pn1, pn2)
+{
+  game = false;
+  end = false;
+  player_1 = pn1;
+  player_2 = pn2;
+  difficulty = d;
+  PADDLE_WIDTH = PADDLE_DEFAULT_WIDTH;
+  paddle1_spead = 0;
+  paddle2_spead = 0;
+  score = {
+    player1: 0,
+    player2: 0
+  };
 }
 
 function setScoreBoard()
 {
   scoreBoard = document.getElementById('scoreBoard');
-//   scoreBoard.innerHTML = 'Welcome! Select difficulty (E/N/H)';
+  scoreBoard.innerHTML = 'Welcome! '+ player_1 + ' vs ' + player_2 + '! [key:up,down]';
 }
 
 function setGame()
@@ -175,138 +193,171 @@ function addPaddle()
   return paddle;
 }
 
-function setEvent()
+function setDifficulty()
 {
-  document.addEventListener('keydown', containerEventKeyDown);
-  document.addEventListener('keyup', containerEventKeyUp);
+  if (difficulty === 1)
+  {
+    BALL_VELOCITY_Z *= 0.8;
+    PADDLE_WIDTH *= 1.2;
+    paddle1.scale.set(1.2, 1, 1);
+    paddle2.scale.set(1.2, 1, 1);
+  }
+  else if (difficulty === 2)
+  {
+    BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z;
+  }
+  else if (difficulty === 3)
+  {
+    BALL_VELOCITY_Z *= 1.2;
+    PADDLE_WIDTH *= 0.8;
+    paddle1.scale.set(0.8, 1, 1);
+    paddle2.scale.set(0.8, 1, 1);
+  }
 }
 
-function containerEventKeyDown(e)
+function setEvent()
 {
-  if (end == true)
-  {
-    if (e.keyCode === KEY_R)
+  document.addEventListener('keydown', onlineContainerEventKeyDown);
+  document.addEventListener('keyup', onlineContainerEventKeyUp);
+
+  // 만약 창을 벗어난 유저를 식별할 수 있다면 disconnect 처리도 가능하지 않을까?
+  window.websocket.onmessage = function (event) {
+    const data = JSON.parse(event.data);
+    console.log('game : ', data["type"]);
+    console.log(data);
+  
+    if (data["event"] === "keydown")
     {
-      scoreBoard.innerHTML = 'Welcome! Select difficulty (E/N/H)';
-      BALL_VELOCITY_Z = 20;
-      if (difficulty === 1)
+      if (data["player_number"] === 1)
       {
-        PADDLE_WIDTH = PADDLE_DEFAULT_WIDTH;
-        paddle1.scale.set(1, 1, 1);
-        paddle2.scale.set(1, 1, 1);
+        if (data["key"] === ARROW_UP)
+        {
+          paddle1_spead = -PADDLE_SPEAD;
+        }
+        else if (data["key"] === ARROW_DOWN)
+        {
+          paddle1_spead = PADDLE_SPEAD;
+        }
       }
-      if (difficulty === 3)
+      else if (data["player_number"] === 2)
       {
-        PADDLE_WIDTH = PADDLE_DEFAULT_WIDTH;
-        paddle1.scale.set(1, 1, 1);
-        paddle2.scale.set(1, 1, 1);
+        if (data["key"] === ARROW_UP)
+        {
+          paddle2_spead = -PADDLE_SPEAD;
+        }
+        else if (data["key"] === ARROW_DOWN)
+        {
+          paddle2_spead = PADDLE_SPEAD;
+        }
       }
-      difficulty = 0;
-      score = {
-        player1: 0,
-        player2: 0
-      };
-      paddle1.position.x = 0;
-      paddle2.position.x = 0;
-      end = false;
     }
-  }
-  else if (difficulty === 0)
-  {
-    if (e.keyCode === KEY_E)
+    else if (data["event"] === "keyup")
     {
-      difficulty = 1;
-      BALL_VELOCITY_Z *= 0.8;
-      PADDLE_WIDTH *= 1.2;
-      paddle1.scale.set(1.2, 1, 1);
-      paddle2.scale.set(1.2, 1, 1);
-      e.preventDefault();
-    }
-    else if (e.keyCode === KEY_N)
-    {
-      difficulty = 2;
-      BALL_VELOCITY_Z = 20;
-      e.preventDefault();
-    }
-    else if (e.keyCode === KEY_H)
-    {
-      difficulty = 3;
-      BALL_VELOCITY_Z *= 1.2;
-      PADDLE_WIDTH *= 0.8;
-      paddle1.scale.set(0.8, 1, 1);
-      paddle2.scale.set(0.8, 1, 1);
-      e.preventDefault();
-    }
-    else 
-      return ;
-    scoreBoard.innerHTML = 'Press the key to start! (w,s)(up,down)';
-  }
-  else
-  {
-    if (e.keyCode === KEY_W)
-    {
-      paddle1_spead = -PADDLE_SPEAD;
-      e.preventDefault();
-    }
-    else if (e.keyCode === KEY_S)
-    {
-      paddle1_spead = PADDLE_SPEAD;
-      e.preventDefault();
-    }
-    else if (e.keyCode === ARROW_UP)
-    {
-      paddle2_spead = -PADDLE_SPEAD;
-      e.preventDefault();
-    }
-    else if (e.keyCode === ARROW_DOWN)
-    {
-      paddle2_spead = PADDLE_SPEAD;
-      e.preventDefault();
+      if (data["player_number"] === 1)
+      {
+        if (data["key"] === ARROW_UP)
+        {
+          if (paddle1_spead === -PADDLE_SPEAD)
+            paddle1_spead = 0;
+        }
+        else if (data["key"] === ARROW_DOWN)
+        {
+          if (paddle1_spead === PADDLE_SPEAD)
+            paddle1_spead = 0;
+        }
+      }
+      else if (data["player_number"] === 2)
+      {
+        if (data["key"] === ARROW_UP)
+        {
+          if (paddle2_spead === -PADDLE_SPEAD)
+            paddle2_spead = 0;
+        }
+        else if (data["key"] === ARROW_DOWN)
+        {
+          if (paddle2_spead === PADDLE_SPEAD)
+            paddle2_spead = 0;
+        }
+      }
     }
     else
-      return ;
-    if (game === false && end === false)
+      return;
+    if (end === false)
     {
       updateScoreBoard();
       game = true;
     }
-  }
+  };
 }
 
-function containerEventKeyUp(e)
+function onlineContainerEventKeyDown(e)
 {
-  if (e.keyCode === KEY_W)
-  {
-    if (paddle1_spead === -PADDLE_SPEAD)
-      paddle1_spead = 0;
-    e.preventDefault();
-  }
-  if (e.keyCode === KEY_S)
-  {
-    if (paddle1_spead === PADDLE_SPEAD)
-      paddle1_spead = 0;
-    e.preventDefault();
-  }
   if (e.keyCode === ARROW_UP)
   {
-    if (paddle2_spead === -PADDLE_SPEAD)
-      paddle2_spead = 0;
+    // send key down arrow up
+    const dataToSend = {
+      "action": "key_press",
+      "event": "keydown",
+      "key": ARROW_UP
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
   }
-  if (e.keyCode === ARROW_DOWN)
+  else if (e.keyCode === ARROW_DOWN)
   {
-    if (paddle2_spead === PADDLE_SPEAD)
-      paddle2_spead = 0;
+    // send key down arrow down
+    const dataToSend = {
+      "action": "key_press",
+      "event": "keydown",
+      "key": ARROW_DOWN
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
+    e.preventDefault();
+  }
+  else
+    return ;
+}
+
+function onlineContainerEventKeyUp(e)
+{
+  if (e.keyCode === ARROW_UP)
+  {
+    // send key up arrow up
+    const dataToSend = {
+      "action": "key_press",
+      "event": "keyup",
+      "key": ARROW_UP
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
+    e.preventDefault();
+  }
+  else if (e.keyCode === ARROW_DOWN)
+  {
+    // send key up arrow down
+    const dataToSend = {
+      "action": "key_press",
+      "event": "keyup",
+      "key": ARROW_DOWN
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
   }
 }
 
 function loop()
 {
-  requestAnimationFrame(loop);
+  num = requestAnimationFrame(loop);
   if (game === true && end === false)
     simulation_ball();
   simulation_paddle();
+  if (animateGame.getAnimate() === false)
+    end = true;
+  if (end === true)
+  {
+    stopBall();
+    cancelAnimationFrame(num);
+    num = null;
+  }
   renderer.render(scene, camera);
 }
 
@@ -343,7 +394,16 @@ function simulation_ball()
 
 function startOneGame()
 {
-  let direction = Math.random() > 0.5 ? -1 : 1;
+  let direction = 1;
+  if (last_winner === null)
+    direction = Math.random() > 0.5 ? -1 : 1;
+  else
+  {
+    if (last_winner === 'player1')
+      direction = -1;
+    else
+      direction = 1;
+  }
   ball.$velocity = {
     x: BALL_VELOCITY_X,
     z: direction * BALL_VELOCITY_Z
@@ -397,6 +457,7 @@ function isPastPaddle2()
 function scoreBy(playerName)
 {
   addPoint(playerName);
+  last_winner = playerName;
   stopBall();
   updateScoreBoard();
 }
@@ -405,13 +466,21 @@ function updateScoreBoard()
 {
   end = true;
   if (score.player1 === 5)
-    scoreBoard.innerHTML = 'Player 1 Win! [r] to regame';
+    scoreBoard.innerHTML = player_1 + ' Win! ' + player_1 + ':' + score.player1 + ", " + player_2 + ' : ' + score.player2;
   else if (score.player2 === 5)
-    scoreBoard.innerHTML = 'Player 2 Win! [r] to regmae';
+    scoreBoard.innerHTML = player_2 + ' Win! ' + player_1 + ':' + score.player1 + ", " + player_2 + ' : ' + score.player2;
   else
   {
     scoreBoard.innerHTML = 'Player 1: ' + score.player1 + ' Player 2: ' + score.player2;
     end = false;
+  }
+  if (end === true)
+  {
+    // 이벤트 제거
+    document.removeEventListener('keydown', onlineContainerEventKeyDown);
+    document.removeEventListener('keyup', onlineContainerEventKeyUp);
+    // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
+
   }
 }
 
@@ -437,4 +506,4 @@ function simulation_paddle()
     paddle2.position.x += paddle2_spead;
 }
 
-export default init
+export { init, onlineContainerEventKeyUp, onlineContainerEventKeyDown }

@@ -90,17 +90,22 @@ export default class extends AbstractComponent {
 		console.log('웹 소켓 URL :', websocket);
 
 		websocket.onerror = function () {
-			if (retryCount < maxRetry) {
-				setTimeout(() => {
-					console.log(`연결 실패. ${retryCount + 1}번째 재연결 시도 중...`);
-					retryCount++;
-					const websocket = new WebSocket(websocketURL);
-				}, retryDelay);
-			} else {
-				console.log('WebSocket 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
-				navigateTo("/lobby");
-				// window.location.href = document.referrer;
+			if (websocket !== undefined && websocket.readyState === WebSocket.OPEN) {
+				websocket.close();
+				window.websocket = undefined;
 			}
+			// if (retryCount < maxRetry) {
+			// 	setTimeout(() => {
+			// 		console.log(`연결 실패. ${retryCount + 1}번째 재연결 시도 중...`);
+			// 		retryCount++;
+			// 		const websocket = new WebSocket(websocketURL);
+			// 		window.websocket = websocket;
+			// 	}, retryDelay);
+			// } else {
+			// 	console.log('WebSocket 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
+			// 	navigateTo("/lobby");
+			// 	// window.location.href = document.referrer;
+			// }
 		};
 
 		// WebSocket 연결이 열렸을 때 실행되는 이벤트 핸들러
@@ -115,8 +120,8 @@ export default class extends AbstractComponent {
 
 		// WebSocket 연결이 닫혔을 때 실행되는 이벤트 핸들러
 		websocket.onclose = function (event) {
+			window.websocket = undefined;
 			console.log('WebSocket 연결이 닫혔습니다.');
-			alert("로비로 이동합니다.")
 			navigateTo("/lobby");
 			// window.location.href = document.referrer;
 		};
