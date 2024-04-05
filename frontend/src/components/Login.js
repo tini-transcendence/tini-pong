@@ -10,9 +10,20 @@ export default class extends AbstractComponent {
 
 	async getHtml() {
 		return `
-		<h1 class="display-1 text-center">TITLE</h1>
-		<div class="d-flex justify-content-center">
-			<button class="btn btn-outline-primary btn-lg">LOG IN</button>
+		<style>
+		body {
+			background-image: url("./src/img/Login_Background.png");
+			background-repeat: no-repeat;
+			background-attachment: fixed;
+			background-size: cover;
+			background-position: center;
+		}
+		</style>
+		<div class="d-flex flex-column justify-content-center align-items-start" style="min-height: 100dvh; margin-left: 18dvw;">
+			<div class="text-start noto-sans white-blue lobby-title">TINY<br />PING<br />PONG</div>
+			<div class="mt-5">
+				<button class="btn btn-outline-light btn-lg noto-sans lobby-btn">&nbsp&nbsp&nbspLOG IN&nbsp&nbsp&nbsp</button>
+			</div>
 		</div>
 		`;
 	}
