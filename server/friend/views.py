@@ -19,9 +19,13 @@ class FriendListView(View):
         ).select_related()
         response_list = []
         for friend in friend_list:
-            uuid, nickname = attrgetter("uuid", "nickname")(friend.user_to)
+            uuid, nickname, avatar = attrgetter("uuid", "nickname", "avatar")(
+                friend.user_to
+            )
             status = calculate_online_status(friend.user_to.online_status)
-            response_list.append({"uuid": uuid, "nickname": nickname, "status": status})
+            response_list.append(
+                {"uuid": uuid, "nickname": nickname, "avatar": avatar, "status": status}
+            )
         return JsonResponse(response_list, safe=False)
 
 
@@ -55,16 +59,24 @@ class DeleteFriendView(View):
 
 class SearchFriendView(View):
     def get(self, request: HttpRequest):
-        try:
-            target_nickname = request.GET.get("nickname")
-            searched_user = User.objects.get(nickname=target_nickname)
-            uuid, nickname = attrgetter("uuid", "nickname")(searched_user)
+        target_nickname = request.GET.get("nickname")
+        searched_users = User.objects.filter(nickname=target_nickname)
+        response_list = []
+        for user in searched_users:
+            uuid, nickname, avatar = attrgetter("uuid", "nickname", "avatar")(user)
             if request.user_uuid == str(uuid):
-                return HttpResponseBadRequest()
-            status = calculate_online_status(searched_user.online_status)
-            return JsonResponse({"uuid": uuid, "nickname": nickname, "status": status})
-        except User.DoesNotExist:
-            return JsonResponse({})
+                continue
+            status = calculate_online_status(user.online_status)
+            response_list.append(
+                {
+                    "uuid": uuid,
+                    "nickname": nickname,
+                    "avatar": avatar,
+                    "id_tag": str(uuid)[:4],
+                    "status": status,
+                }
+            )
+        return JsonResponse(response_list, safe=False)
 
 
 def calculate_online_status(online_status: datetime):

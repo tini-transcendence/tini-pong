@@ -26,13 +26,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
         action = text_data_json.get("action")
 
         if action == "join":
-            # print("")
-            # print("@@@@@@@@@@@@@@@유저 들어옴@@@@@@@@@@@@@@")
-            # print("")
             player_number = await self.assign_player_number()
-            # print("서버측 넘버")
-            # print(player_number)
-            # print("")
+            room_data = await self.send_room_data()
             existing_players = await self.get_existing_players_info()
             if existing_players == None:
                 existing_players = 0
@@ -45,9 +40,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         "action": "player_joined",
                         "user_uuid": str(self.user.uuid),
                         "user_nickname": self.user.nickname,
+                        "user_avatar": self.user.avatar,
                         "is_ready": False,
                         "player_number": player_number,
                         "players": existing_players,
+                        "room_data": room_data,
                     },
                 },
             )
@@ -127,25 +124,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event["message"]))
 
     async def handle_key_press(self, event, key):
-        await self.send(text_data=json.dumps(
-            {"type": "player_key_press", "player_number": self.player_number, "event": event, "key": key},
-        ))
+        print("@@@")
+        print(f"Player {self.player_number} 키 누름 감지")
+        print("@@@")
         await self.channel_layer.group_send(
             self.room_group_name,
             {"type": "player_key_press", "player_number": self.player_number, "event": event, "key": key},
         )
-
-    async def player_key_press(self, event):
-        if event["player_number"] != self.player_number:
-            await self.send(
-                text_data=json.dumps(
-                    {
-                        "type": "key_press",
-                        "player_number": event["player_number"],
-                        "key": event["key"],
-                    }
-                )
-            )
 
     async def disconnect(self, close_code):
         is_owner = await self.is_room_owner(self.user, self.room_uuid)
@@ -234,9 +219,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         room_user = RoomUser.objects.filter(
             user_uuid=user.uuid, room_uuid=room_uuid
         ).first()
-        # print("@@@")
-        # print("유저를 내보냅니다")
-        # print("")
         if room_user:
             room_user.delete()
 
@@ -269,15 +251,29 @@ class RoomConsumer(AsyncWebsocketConsumer):
         room = Room.objects.get(uuid=self.room_uuid)
         
         room_users = room.room_users.all().select_related('user_uuid')
-        
         players_info = [
             {
                 'user_uuid': str(room_user.user_uuid.uuid),
                 'user_nickname': room_user.user_uuid.nickname,
                 'is_ready': room_user.is_ready,
+                'user_avatar': room_user.user_uuid.avatar,
                 'player_number': room_user.player_number,
             }
             for room_user in room_users
         ]
         
         return players_info
+    
+    @database_sync_to_async
+    def send_room_data(self):
+        room = Room.objects.get(uuid=self.room_uuid)
+
+        room_data = [
+            {
+                "room_name": room.name,
+                "room_type": room.type,
+                "room_difficulty": room.difficulty,
+            }
+        ]
+
+        return room_data

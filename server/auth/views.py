@@ -39,7 +39,11 @@ class OauthView(View):
         user_42_logged_in = profile_response.json().get("login")
         (user_logged_in, created) = User.objects.get_or_create(
             id_42=user_42_logged_in,
-            defaults={"otp_secret": random_base32(), "nickname": user_42_logged_in},
+            defaults={
+                "otp_secret": random_base32(),
+                "nickname": user_42_logged_in,
+                "avatar": os.environ.get("BASE_USER_IMAGE"),
+            },
         )
         oauth_token = create(
             {"uuid": str(user_logged_in.uuid)},

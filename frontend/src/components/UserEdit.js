@@ -1,7 +1,7 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
 import DefenseXss from "../utils/defenseXss.js";
-import {DOMAIN_NAME} from "../index.js";
+import {BACKEND_URL, navigateTo} from "../index.js";
 
 const fileForm = /image\/(jpg|jpeg|png|gif)$/;
 const maxFileSize = 2 * 1024 * 1024;
@@ -49,6 +49,27 @@ export default class extends AbstractComponent {
 		const avatarPreview = document.querySelector("#image-preview");
 		const messageForm = document.querySelector("#message-form");
 		const nicknameDangerForm = document.querySelector("#form-danger-1");
+
+		const profileSetting = async () => {
+			try {
+				const fetchModule = new FetchModule();
+				const response = await fetchModule.request(new Request(`${BACKEND_URL}/user/profile`, {
+					method: 'GET',
+					credentials: "include",
+				}));
+				if (response.ok) {
+					const data = await response.json();
+					nicknameForm.value = data.nickname;
+					avatarPreview.src = data.avatar;
+					messageForm.value = data.message;
+					validNick = true;
+				}
+				else
+					throw new Error(response.statusText);
+			} catch (error) {
+				console.log(error.message);
+			}
+		}
 
 		nicknameForm.addEventListener("change", e => {
 			if (e.target.value.length < 3) {
@@ -102,11 +123,10 @@ export default class extends AbstractComponent {
 				let img = new Image;
 				img.onload = function() {
 					let thumbFile = getThumbFile(img, imgFile);
-					console.log(thumbFile);
 					avatarPreview.setAttribute("src", thumbFile);
 				}
 				img.onerror = function() {
-					console.log("error!");
+					alert("파일 업로드에 실패하였습니다.");
 				}
 				img.src = reader.result;
 			})
@@ -121,7 +141,7 @@ export default class extends AbstractComponent {
 				return ;
 			try {
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/user/edit/`, {
+				const response = await fetchModule.request(new Request(`${BACKEND_URL}/user/edit/`, {
 					method: 'POST',
 					credentials: "include",
 					headers: {
@@ -134,14 +154,16 @@ export default class extends AbstractComponent {
 					}),
 				}))
 				if (response.ok) {
-					console.log("저장되었습니다.");
+					alert("저장되었습니다.");
+					navigateTo("/");
 				}
 				else
 					throw new Error(response.statusText);
 			} catch (error) {
-				nicknameDangerForm.innerText = "이미 사용중인 닉네임입니다.";
 				console.log(error.message);
 			}
 		})
+
+		profileSetting();
 	}
 }

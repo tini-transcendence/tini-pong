@@ -2,7 +2,7 @@
 
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
-import {DOMAIN_NAME} from "../index.js";
+import {BACKEND_URL} from "../index.js";
 
 export default class extends AbstractComponent {
     constructor() {
@@ -102,7 +102,7 @@ export default class extends AbstractComponent {
         (async function (callback) {
             try {
                 const fetchModule = new FetchModule();
-                const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/dashboard${queryString}`, {
+                const response = await fetchModule.request(new Request(`${BACKEND_URL}/dashboard${queryString}`, {
                     method: 'GET',
                     credentials: "include"
                 }));

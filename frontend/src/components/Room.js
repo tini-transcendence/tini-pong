@@ -1,5 +1,5 @@
 import AbstractComponent from "./AbstractComponent.js";
-import {DOMAIN, navigateTo} from "../index.js";
+import { DOMAIN_NAME, navigateTo } from "../index.js";
 
 
 export let gt = 1;
@@ -90,7 +90,7 @@ export default class extends AbstractComponent {
 		const match = currentURL.match(/\/([^\/]+)\/?$/);
 		// 추출된 문자열 출력
 		const lastPart = match ? match[1] : null;
-		const websocketURL = `wss://${DOMAIN}:8000/ws/room/` + lastPart + '/?access_token=' + token;
+		const websocketURL = `wss://${DOMAIN_NAME}:8000/ws/room/` + lastPart + '/?access_token=' + token;
 
 		// WebSocket 객체 생성
 		const websocket = new WebSocket(websocketURL);
@@ -137,9 +137,8 @@ export default class extends AbstractComponent {
 		let playerNo = 0;
 
 		function dataUpdate(data) {
-
 			console.log(data["player_number"]);
-			console.log(typeof(data["player_number"]));
+			console.log(typeof (data["player_number"]));
 			switch (data["player_number"]) {
 				case 1:
 					const player1Node = document.querySelector("#player1");
@@ -187,17 +186,54 @@ export default class extends AbstractComponent {
 			}
 		};
 
+		function leaveUpdate(playerNo) {
+			switch (playerNo) {
+				case 1:
+					const player1Node = document.querySelector("#player1");
+					const player1NickNode = player1Node.querySelector(".card-title");
+					const player1Ready = player1Node.querySelector(".card-footer");
+					player1NickNode.innerText = "Nickname";
+					player1Ready.innerText = "Ready : ?";
+					break;
+				case 2:
+					const player2Node = document.querySelector("#player2");
+					const player2NickNode = player2Node.querySelector(".card-title");
+					const player2Ready = player2Node.querySelector(".card-footer");
+					player2NickNode.innerText = "Nickname";
+					player2Ready.innerText = "Ready : ?";
+					break;
+				case 3:
+					const player3Node = document.querySelector("#player3");
+					const player3NickNode = player3Node.querySelector(".card-title");
+					const player3Ready = player3Node.querySelector(".card-footer");
+					player3NickNode.innerText = "Nickname";
+					player3Ready.innerText = "Ready : ?";
+					break;
+				case 4:
+					const player4Node = document.querySelector("#player4");
+					const player4NickNode = player4Node.querySelector(".card-title");
+					const player4Ready = player4Node.querySelector(".card-footer");
+					player4NickNode.innerText = "Nickname";
+					player4Ready.innerText = "Ready : ?";
+					break;
+				default:
+					console.log("player number error\n");
+			}
+		};
+
 		websocket.onmessage = function (event) {
 			const data = JSON.parse(event.data);
 			console.log('받은 메시지의 action : ', data["action"]);
 			console.log(data);
 
+
 			if (data["action"] === "player_joined") {
+				console.log("룸 데이터 : ", data["room_data"]);
+				console.log("플레이어 아바타 : ", data["user_avatar"]);
 				if (playerNo === 0)
 					playerNo = data["player_number"];
-				console.log(localStorage.getItem('myUserUuid'));
 				dataUpdate(data);
-				if (data["players"]){
+				if (data["players"]) {
 					const players = data["players"];
 					players.forEach(player => {
 						dataUpdate(player);
@@ -211,20 +247,18 @@ export default class extends AbstractComponent {
 				console.log('방장이 방을 종료했습니다.');
 				alert("방이 종료되어 로비로 이동합니다.");
 				websocket.close();
-			} else if(data["action"] === "player_left") {
+			} else if (data["action"] === "player_left") {
 				const userUuid = data["user_uuid"];
 				const playerNum = data["player_number"];
-				// console.log(playerNum);
-				// console.log(playerNo);
 				console.log(`플레이어 ${userUuid}가 방에서 나갔습니다.`);
-				if(playerNo === playerNum) {
+				if (playerNo === playerNum) {
 					console.log('You have left the room. Closing WebSocket connection.');
 					alert("당신은 방에서 나갔습니다. 로비로 이동합니다.");
 					playerNo = 0;
 					websocket.close();
 				} else {
 					console.log(`Removing player ${userUuid} from the UI.`);
-					// removePlayerFromUI(playerNum);
+					leaveUpdate(playerNum);
 				}
 			}
 		};

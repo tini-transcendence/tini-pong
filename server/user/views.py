@@ -29,6 +29,7 @@ class UserProfileView(View):
                 "nickname": user.nickname,
                 "avatar": user.avatar,
                 "message": user.message,
+                "id_tag": str(user_uuid)[:4],
                 "self": user_uuid == request.user_uuid,
             }
         )

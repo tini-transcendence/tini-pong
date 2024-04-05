@@ -1,6 +1,6 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
-import {DOMAIN_NAME} from "../index.js";
+import {BACKEND_URL} from "../index.js";
 
 export default class extends AbstractComponent {
 	constructor() {
@@ -14,10 +14,11 @@ export default class extends AbstractComponent {
 			<div class="row row-cols-1 row-cols-md-2 m-md-3 mt-3">
 				<div class="col col-md-4 p-2 border" id="userpage-profile">
 					<div class="text-center mb-3">
-						<img id="userpage-profile-avatar" class="img-fluid" src="/src/img/default_profile.png" width="200px" height="200px" alt="profile thumbnail" style="border-radius: 20%;"/>
+						<img id="userpage-profile-avatar" src="/src/img/default_profile.png" width="200px" height="200px" alt="profile thumbnail" style="border-radius: 20%;"/>
 					</div>
 					<div class="text-center">
 						<h3 id="userpage-profile-nickname">Nickname</h3>
+						<h4 class="text-secondary" id="userpage-profile-idtag">Tag</h3>
 					</div>
 					<div class="mx-2 border">
 						<p id="userpage-profile-message">This is My Page.</p>
@@ -70,7 +71,7 @@ export default class extends AbstractComponent {
 				if (param.useruuid)
 					fetchString = `?uuid=${param.useruuid}`;
 				const fetchModule = new FetchModule();
-				const response = await fetchModule.request(new Request(`${DOMAIN_NAME}/user/profile${fetchString}`, {
+				const response = await fetchModule.request(new Request(`${BACKEND_URL}/user/profile${fetchString}`, {
 					method: 'GET',
 					credentials: "include",
 				}));
@@ -79,6 +80,7 @@ export default class extends AbstractComponent {
 					const userProfileNode = document.querySelector("#userpage-profile")
 
 					userProfileNode.querySelector("#userpage-profile-nickname").innerText = data.nickname;
+					userProfileNode.querySelector("#userpage-profile-idtag").innerText = "#" + data.id_tag;
 					userProfileNode.querySelector("#userpage-profile-message").innerText = data.message;
 					if (data.avatar)
 						userProfileNode.querySelector("#userpage-profile-avatar").src = data.avatar;
