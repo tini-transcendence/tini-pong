@@ -85,8 +85,8 @@ class JoinRoomView(APIView):
                     {"error": "방의 최대인원수를 초과하였습니다."},
                     status=status.HTTP_404_NOT_FOUND,
                 )
-            elif room.type == 2 and room.room_users.count() >= 4:
-                # 토너먼트 방에 인원이 이미 차 있을때
+            elif room.room_users.count() >= 4:
+                # 2vs2, 토너먼트 방에 인원이 이미 차 있을때
                 return JsonResponse(
                     {"error": "방의 최대인원수를 초과하였습니다."},
                     status=status.HTTP_404_NOT_FOUND,
