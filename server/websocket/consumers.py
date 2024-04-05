@@ -118,15 +118,21 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 await self.remove_user_from_room(self.user, self.room_uuid)
 
         elif action == "key_press":
-            await self.handle_key_press(text_data_json["event"], text_data_json["key"])
+            await self.handle_key_press(text_data_json["event"], text_data_json["key"], text_data_json["obj"])
 
     async def room_message(self, event):
         await self.send(text_data=json.dumps(event["message"]))
 
-    async def handle_key_press(self, event, key):
+    async def handle_key_press(self, event, key, obj):
         await self.channel_layer.group_send(
             self.room_group_name,
-            {"type": "player_key_press", "player_number": self.player_number, "event": event, "key": key},
+            {
+                "type": "player_key_press",
+                "player_number": self.player_number,
+                "event": event,
+                "key": key,
+                "obj": obj,
+            },
         )
 
     async def player_key_press(self, event):
@@ -137,6 +143,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     "player_number": event["player_number"],
                     "event": event["event"],
                     "key": event["key"],
+                    "obj": event["obj"],
                 }
             )
         )

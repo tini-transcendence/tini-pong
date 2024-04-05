@@ -241,6 +241,8 @@ function setEvent()
     {
       if (data["player_number"] === 1)
       {
+        // 플레이어의 paddle 위치 동기화
+        paddle1.position.x = (data["obj"]).paddle1_loc;
         if (data["key"] === ARROW_UP)
         {
           paddle1_spead = -PADDLE_SPEAD;
@@ -252,6 +254,8 @@ function setEvent()
       }
       else if (data["player_number"] === 2)
       {
+        // 플레이어의 paddle 위치 동기화
+        paddle2.position.x = (data["obj"]).paddle2_loc;
         if (data["key"] === ARROW_UP)
         {
           paddle2_spead = -PADDLE_SPEAD;
@@ -266,6 +270,8 @@ function setEvent()
     {
       if (data["player_number"] === 1)
       {
+        // 플레이어의 paddle 위치 동기화
+        paddle1.position.x = (data["obj"]).paddle1_loc;
         if (data["key"] === ARROW_UP)
         {
           if (paddle1_spead === -PADDLE_SPEAD)
@@ -279,6 +285,8 @@ function setEvent()
       }
       else if (data["player_number"] === 2)
       {
+        // 플레이어의 paddle 위치 동기화
+        paddle2.position.x = (data["obj"]).paddle2_loc;
         if (data["key"] === ARROW_UP)
         {
           if (paddle2_spead === -PADDLE_SPEAD)
@@ -298,6 +306,8 @@ function setEvent()
       updateScoreBoard();
       game = true;
     }
+    // 공 위치, 속도 동기화
+    ball.position.set(data["obj"].ball_loc);
   };
 }
 
@@ -309,7 +319,13 @@ function onlineContainerEventKeyDown(e)
     const dataToSend = {
       "action": "key_press",
       "event": "keydown",
-      "key": ARROW_UP
+      "key": ARROW_UP,
+      "obj": {
+        "ball_loc": ball.position,
+        "ball_vel": ball.$velocity,
+        "paddle1_loc": paddle1.position.x,
+        "paddle2_loc": paddle2.position.x,
+      }
     }
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
@@ -320,7 +336,13 @@ function onlineContainerEventKeyDown(e)
     const dataToSend = {
       "action": "key_press",
       "event": "keydown",
-      "key": ARROW_DOWN
+      "key": ARROW_DOWN,
+      "obj": {
+        "ball_loc": ball.position,
+        "ball_vel": ball.$velocity,
+        "paddle1_loc": paddle1.position.x,
+        "paddle2_loc": paddle2.position.x,
+      }
     }
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
@@ -337,7 +359,13 @@ function onlineContainerEventKeyUp(e)
     const dataToSend = {
       "action": "key_press",
       "event": "keyup",
-      "key": ARROW_UP
+      "key": ARROW_UP,
+      "obj": {
+        "ball_loc": ball.position,
+        "ball_vel": ball.$velocity,
+        "paddle1_loc": paddle1.position.x,
+        "paddle2_loc": paddle2.position.x,
+      }
     }
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
@@ -348,7 +376,13 @@ function onlineContainerEventKeyUp(e)
     const dataToSend = {
       "action": "key_press",
       "event": "keyup",
-      "key": ARROW_DOWN
+      "key": ARROW_DOWN,
+      "obj": {
+        "ball_loc": ball.position,
+        "ball_vel": ball.$velocity,
+        "paddle1_loc": paddle1.position.x,
+        "paddle2_loc": paddle2.position.x,
+      }
     }
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
