@@ -1,4 +1,3 @@
-import requests
 import os
 import json
 from http import HTTPStatus
@@ -11,12 +10,13 @@ from user.models import User
 
 from util.jwt import create, validate, decode
 from util.timestamp import get_timestamp
+from util.fetch import get, post
 from pyotp import random_base32, totp
 
 
 class OauthView(View):
-    def get(self, request: HttpRequest):
-        oauth_response = requests.post(
+    async def get(self, request: HttpRequest):
+        oauth_response = await post(
             "https://api.intra.42.fr/oauth/token",
             data={
                 "grant_type": "authorization_code",
@@ -26,18 +26,18 @@ class OauthView(View):
                 "redirect_uri": os.environ.get("OAUTH_REDIRECT_URI"),
             },
         )
-        if oauth_response.status_code != 200:
+        if oauth_response.status != 200:
             return HttpResponseBadRequest()
-        profile_response = requests.get(
+        profile_response = await get(
             "https://api.intra.42.fr/v2/me",
             headers={
-                "Authorization": "Bearer %s" % oauth_response.json().get("access_token")
+                "Authorization": "Bearer %s" % oauth_response.data.get("access_token")
             },
         )
-        if profile_response.status_code != 200:
+        if profile_response.status != 200:
             return HttpResponseBadRequest()
-        user_42_logged_in = profile_response.json().get("login")
-        (user_logged_in, created) = User.objects.get_or_create(
+        user_42_logged_in = profile_response.data.get("login")
+        (user_logged_in, created) = await User.objects.aget_or_create(
             id_42=user_42_logged_in,
             defaults={
                 "otp_secret": random_base32(),
