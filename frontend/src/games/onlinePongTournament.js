@@ -571,7 +571,7 @@ function updateScoreBoard()
   else if (score.player2 === 5)
   {
     scoreBoard.innerHTML = player2 + ' Win! [n] to next round';
-    addResult(roundText + ' : ' + player2 + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + score.player2);
+    addResult(roundText + ' : ' + player2 + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + ':' + score.player2);
     if (round === 1)
     {
       round = 2;
@@ -602,7 +602,7 @@ function updateScoreBoard()
   }
   else
   {
-    scoreBoard.innerHTML = player1 + ' : ' + score.player1 + ' ' + player2 + ': ' + score.player2;
+    scoreBoard.innerHTML = player1 + ' : ' + score.player1 + ' vs ' + player2 + ': ' + score.player2;
     end = false;
   }
 }

@@ -124,12 +124,21 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event["message"]))
 
     async def handle_key_press(self, event, key):
-        print("@@@")
-        print(f"Player {self.player_number} 키 누름 감지")
-        print("@@@")
         await self.channel_layer.group_send(
             self.room_group_name,
             {"type": "player_key_press", "player_number": self.player_number, "event": event, "key": key},
+        )
+
+    async def player_key_press(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "key_press",
+                    "player_number": event["player_number"],
+                    "event": event["event"],
+                    "key": event["key"],
+                }
+            )
         )
 
     async def disconnect(self, close_code):

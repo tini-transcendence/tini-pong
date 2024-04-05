@@ -542,9 +542,9 @@ function updateScoreBoard()
 {
   end = true;
   if (score.player_left === 5)
-    scoreBoard.innerHTML = 'Team left Win! team left ('+ player_1 + ' ' + player_2 + '):' + score.player_left + ', team right (' + player_3 + ' ' + player_4 + ') : ' + score.player_right;
+    scoreBoard.innerHTML = 'Team left Win! team left ('+ player_1 + ' ' + player_2 + ') :' + score.player_left + ', team right (' + player_3 + ' ' + player_4 + ') : ' + score.player_right;
   else if (score.player_right === 5)
-    scoreBoard.innerHTML = 'Team right Win! team left ('+ player_1 + ' ' + player_2 + '):' + score.player_left + ', team right (' + player_3 + ' ' + player_4 + ') : ' + score.player_right;
+    scoreBoard.innerHTML = 'Team right Win! team left ('+ player_1 + ' ' + player_2 + ') :' + score.player_left + ', team right (' + player_3 + ' ' + player_4 + ') : ' + score.player_right;
   else
   {
     scoreBoard.innerHTML = 'Player left: ' + score.player_left + ' Player right: ' + score.player_right;
