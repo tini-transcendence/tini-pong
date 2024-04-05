@@ -63,9 +63,13 @@ export default class extends AbstractComponent {
 						</div>
 					</div>
 				</div>
-				<div class="col-5 border p-2">
+				<div class="col-5 border p-2" id="room_status">
 					<div class="m-auto" style="background-color: #ced4da;" spacing="2.4rem">
-						<h4>TITLE</h4>
+						<h4 id="room_name">TITLE</h4>
+					</div>
+					<div style="text-align: left;">
+						<div id="room_difficulty"></div>
+						<div id="room_gametype"></div>
 					</div>
 				</div>
 			</div>
@@ -234,6 +238,7 @@ export default class extends AbstractComponent {
 				rName = room_data[0]["room_name"];
 				gt = room_data[0]["room_type"];
 				gd = room_data[0]["room_difficulty"];
+				changeRightDisplay();
 				console.log("플레이어 아바타 : ", data["user_avatar"]);
 				if (playerNo === 0)
 					playerNo = data["player_number"];
@@ -267,6 +272,28 @@ export default class extends AbstractComponent {
 				}
 			}
 		};
+
+		function changeRightDisplay() {
+			const roomStatusDiv = document.querySelector("#room_status");
+			const roomNameDiv = roomStatusDiv.querySelector("#room_name");
+			const roomDifficultyDiv = roomStatusDiv.querySelector("#room_difficulty");
+			const roomGametypeDiv = roomStatusDiv.querySelector("#room_gametype");
+			
+			if (rName)
+				roomNameDiv.innerHTML = rName;
+			if (gd === 1)
+				roomDifficultyDiv.innerHTML = "Difficurty : EASY";
+			else if (gd === 2)
+				roomDifficultyDiv.innerHTML = "Difficurty : NORMAL";
+			else if (gd === 3)
+				roomDifficultyDiv.innerHTML = "Difficurty : HARD";
+			if (gt === 1)
+				roomGametypeDiv.innerHTML = "Game type : 1vs1(2p)";
+			else if (gt === 2)
+				roomGametypeDiv.innerHTML = "Game type : 2vs2(4p)";
+			else if (gt === 3)
+				roomGametypeDiv.innerHTML = "Game type : tournament(4p)";
+		}
 
 		const startBtn = document.querySelector("#startBtn");
 		startBtn.addEventListener("click", event => {
