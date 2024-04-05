@@ -11,7 +11,7 @@ export default class extends AbstractComponent {
 
 	async getHtml() {
 		return `
-		<nav class="navbar navbar-expand-md sticky-top" style="background-color: #e3f2fd;">
+		<nav class="navbar navbar-expand-md sticky-top" style="background-color: #4D37C6;">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="/" data-href="/">TITLE</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
