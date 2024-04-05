@@ -602,7 +602,7 @@ function updateScoreBoard()
   }
   else
   {
-    scoreBoard.innerHTML = player1 + ' : ' + score.player1 + ' ' + player2 + ': ' + score.player2;
+    scoreBoard.innerHTML = player1 + ' : ' + score.player1 + ' vs ' + player2 + ': ' + score.player2;
     end = false;
   }
 }
