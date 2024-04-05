@@ -1,6 +1,14 @@
 import AbstractComponent from "./AbstractComponent.js";
 import {DOMAIN, navigateTo} from "../index.js";
 
+
+export let gt = 1;
+export let gd = 2;
+export let p1 = "none1";
+export let p2 = "none2";
+export let p3 = "none3";
+export let p4 = "none4";
+
 export default class extends AbstractComponent {
 	constructor() {
 		super();
@@ -61,8 +69,8 @@ export default class extends AbstractComponent {
 					</div>
 				</div>
 			</div>
-			<button type="button" class="btn btn-primary" id="startBtn"">시작</button>
-			<button type="button" class="btn btn-primary" id="readyBtn"">준비</button>
+			<button type="button" class="btn btn-primary" id="startBtn">시작</button>
+			<button type="button" class="btn btn-primary" id="readyBtn">준비</button>
 			<button type="button" class="btn btn-primary" id="exitBtn">나가기</button>
 		</div>
 		`;
@@ -137,21 +145,25 @@ export default class extends AbstractComponent {
 					const player1Node = document.querySelector("#player1");
 					const player1NickNode = player1Node.querySelector(".card-title");
 					player1NickNode.innerText = data["user_nickname"];
+					p1 = data["user_nickname"];
 					break;
 				case 2:
 					const player2Node = document.querySelector("#player2");
 					const player2NickNode = player2Node.querySelector(".card-title");
 					player2NickNode.innerText = data["user_nickname"];
+					p2 = data["user_nickname"];
 					break;
 				case 3:
 					const player3Node = document.querySelector("#player3");
 					const player3NickNode = player3Node.querySelector(".card-title");
 					player3NickNode.innerText = data["user_nickname"];
+					p3 = data["user_nickname"];
 					break;
 				case 4:
 					const player4Node = document.querySelector("#player4");
 					const player4NickNode = player4Node.querySelector(".card-title");
 					player4NickNode.innerText = data["user_nickname"];
+					p4 = data["user_nickname"];
 					break;
 				default:
 					console.log("player number error\n");
@@ -178,6 +190,7 @@ export default class extends AbstractComponent {
 		websocket.onmessage = function (event) {
 			const data = JSON.parse(event.data);
 			console.log('받은 메시지의 action : ', data["action"]);
+			console.log(data);
 
 			if (data["action"] === "player_joined") {
 				if (playerNo === 0)
