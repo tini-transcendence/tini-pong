@@ -220,6 +220,16 @@ function setEvent()
   document.addEventListener('keydown', onlineContainerEventKeyDown);
   document.addEventListener('keyup', onlineContainerEventKeyUp);
 
+  window.websocket.onclose = function (event) {
+    window.websocket = undefined;
+    if (game === true)
+      console.log('게임 진행 도중 WebSocket 연결이 닫혔습니다.');
+    else if (end === true)
+      console.log('게임 종료 이후 WebSocket 연결이 닫혔습니다.');
+    else
+      console.log('게임 시작 직전 WebSocket 연결이 닫혔습니다.');
+  };
+
   // 만약 창을 벗어난 유저를 식별할 수 있다면 disconnect 처리도 가능하지 않을까?
   window.websocket.onmessage = function (event) {
     const data = JSON.parse(event.data);
