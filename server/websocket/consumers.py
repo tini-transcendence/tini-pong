@@ -132,6 +132,18 @@ class RoomConsumer(AsyncWebsocketConsumer):
             {"type": "player_key_press", "player_number": self.player_number, "event": event, "key": key},
         )
 
+    async def player_key_press(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "key_press",
+                    "player_number": event["player_number"],
+                    "event": event["event"],
+                    "key": event["key"],
+                }
+            )
+        )
+
     async def disconnect(self, close_code):
         is_owner = await self.is_room_owner(self.user, self.room_uuid)
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)

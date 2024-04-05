@@ -228,6 +228,7 @@ function setEvent()
       console.log('게임 종료 이후 WebSocket 연결이 닫혔습니다.');
     else
       console.log('게임 시작 직전 WebSocket 연결이 닫혔습니다.');
+    end = true;
   };
 
   // 만약 창을 벗어난 유저를 식별할 수 있다면 disconnect 처리도 가능하지 않을까?
@@ -490,7 +491,8 @@ function updateScoreBoard()
     document.removeEventListener('keydown', onlineContainerEventKeyDown);
     document.removeEventListener('keyup', onlineContainerEventKeyUp);
     // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
-
+    console.log('결과 전송');
+    console.log(player_1, player_2, score);
   }
 }
 

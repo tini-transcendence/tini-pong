@@ -77,6 +77,7 @@ export default class extends AbstractComponent {
 	}
 
 	handleRoute() {
+		let rName;
 		let retryCount = 0;
 		const maxRetry = 3;
 		const retryDelay = 2000;
@@ -229,6 +230,10 @@ export default class extends AbstractComponent {
 
 			if (data["action"] === "player_joined") {
 				console.log("룸 데이터 : ", data["room_data"]);
+				const room_data = data["room_data"];
+				rName = room_data[0]["room_name"];
+				gt = room_data[0]["room_type"];
+				gd = room_data[0]["room_difficulty"];
 				console.log("플레이어 아바타 : ", data["user_avatar"]);
 				if (playerNo === 0)
 					playerNo = data["player_number"];
