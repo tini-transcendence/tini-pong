@@ -213,10 +213,12 @@ export default class extends AbstractComponent {
 			const data = JSON.parse(event.data);
 			console.log('받은 메시지의 action : ', data["action"]);
 
+
 			if (data["action"] === "player_joined") {
+				console.log("룸 데이터 : ", data["room_data"]);
+				console.log("플레이어 아바타 : ", data["user_avatar"]);
 				if (playerNo === 0)
 					playerNo = data["player_number"];
-				console.log(localStorage.getItem('myUserUuid'));
 				dataUpdate(data);
 				if (data["players"]) {
 					const players = data["players"];

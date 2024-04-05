@@ -3,7 +3,7 @@ import {init as basicPong} from "../games/onlinePongBasic.js"
 import {init as multiplePong} from "../games/onlinePongMultiple.js"
 import {init as tournamentPong} from "../games/onlinePongTournament.js"
 
-import {DOMAIN, navigateTo} from "../index.js";
+import {navigateTo} from "../index.js";
 import animateGame from "../utils/animateGameModule.js";
 
 export default class extends AbstractComponent {
