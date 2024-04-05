@@ -64,7 +64,7 @@ export default class extends AbstractComponent {
 			}
 		}
 		goBackButton.addEventListener("click", event => {
-			if (window.websocket === undefined && window.websocket.readyState === WebSocket.OPEN)
+			if (window.websocket !== undefined && window.websocket.readyState === WebSocket.OPEN)
 			{
 				window.websocket.close();
 				window.websocket = undefined;
