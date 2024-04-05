@@ -18,8 +18,9 @@ import NotFound from "./components/NotFound.js";
 import LoginModule from "./utils/loginmodule.js";
 import animateGame from "./utils/animateGameModule.js";
 
-export const DOMAIN_NAME = "localhost"
-export const BACKEND_URL = `https://${DOMAIN_NAME}:8000`
+export const DOMAIN_NAME = "localhost";
+export const BACKEND_URL = `https://${DOMAIN_NAME}:8000`;
+export const OAUTH_CLIENT = "oauth_uid";
 
 const ROUTE_PARAMETER_REGEX = /:(\w+)/g;
 const URL_FRAGMENT_REGEX = /\//g;

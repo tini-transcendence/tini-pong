@@ -1,5 +1,4 @@
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -9,7 +8,6 @@ from .serializers import RoomSerializer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.http import JsonResponse
-from django.db import transaction
 
 # Create your views here.
 
@@ -31,7 +29,10 @@ class CreateRoomView(APIView):
                 owner_uuid_id=request.user_uuid,
             )
             room_user = RoomUser.objects.create(
-                room_uuid=room, user_uuid_id=request.user_uuid, is_ready=False, player_number=1
+                room_uuid=room,
+                user_uuid_id=request.user_uuid,
+                is_ready=False,
+                player_number=1,
             )
 
             channel_layer = get_channel_layer()
