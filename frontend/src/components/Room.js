@@ -128,6 +128,7 @@ export default class extends AbstractComponent {
 
 		let playerNo = 0;
 
+		// Player 입장 시 Room 정보 업데이트
 		function dataUpdate(data) {
 			console.log(data["player_number"]);
 			console.log(typeof (data["player_number"]));
@@ -136,21 +137,33 @@ export default class extends AbstractComponent {
 					const player1Node = document.querySelector("#player1");
 					const player1NickNode = player1Node.querySelector(".card-title");
 					player1NickNode.innerText = data["user_nickname"];
+					if (data["user_avatar"]) {
+						player1Node.querySelector(".card-img-top").src = data["user_avatar"];
+					}
 					break;
 				case 2:
 					const player2Node = document.querySelector("#player2");
 					const player2NickNode = player2Node.querySelector(".card-title");
 					player2NickNode.innerText = data["user_nickname"];
+					if (data["user_avatar"]) {
+						player2Node.querySelector(".card-img-top").src = data["user_avatar"];
+					}
 					break;
 				case 3:
 					const player3Node = document.querySelector("#player3");
 					const player3NickNode = player3Node.querySelector(".card-title");
 					player3NickNode.innerText = data["user_nickname"];
+					if (data["user_avatar"]) {
+						player3Node.querySelector(".card-img-top").src = data["user_avatar"];
+					}
 					break;
 				case 4:
 					const player4Node = document.querySelector("#player4");
 					const player4NickNode = player4Node.querySelector(".card-title");
 					player4NickNode.innerText = data["user_nickname"];
+					if (data["user_avatar"]) {
+						player4Node.querySelector(".card-img-top").src = data["user_avatar"];
+					}
 					break;
 				default:
 					console.log("player number error\n");
@@ -182,6 +195,7 @@ export default class extends AbstractComponent {
 					const player1Ready = player1Node.querySelector(".card-footer");
 					player1NickNode.innerText = "Nickname";
 					player1Ready.innerText = "Ready : ?";
+					player1Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
 					break;
 				case 2:
 					const player2Node = document.querySelector("#player2");
@@ -189,6 +203,7 @@ export default class extends AbstractComponent {
 					const player2Ready = player2Node.querySelector(".card-footer");
 					player2NickNode.innerText = "Nickname";
 					player2Ready.innerText = "Ready : ?";
+					player2Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
 					break;
 				case 3:
 					const player3Node = document.querySelector("#player3");
@@ -196,6 +211,7 @@ export default class extends AbstractComponent {
 					const player3Ready = player3Node.querySelector(".card-footer");
 					player3NickNode.innerText = "Nickname";
 					player3Ready.innerText = "Ready : ?";
+					player3Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
 					break;
 				case 4:
 					const player4Node = document.querySelector("#player4");
@@ -203,6 +219,7 @@ export default class extends AbstractComponent {
 					const player4Ready = player4Node.querySelector(".card-footer");
 					player4NickNode.innerText = "Nickname";
 					player4Ready.innerText = "Ready : ?";
+					player4Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
 					break;
 				default:
 					console.log("player number error\n");
@@ -213,10 +230,9 @@ export default class extends AbstractComponent {
 			const data = JSON.parse(event.data);
 			console.log('받은 메시지의 action : ', data["action"]);
 
-
 			if (data["action"] === "player_joined") {
-				console.log("룸 데이터 : ", data["room_data"]);
-				console.log("플레이어 아바타 : ", data["user_avatar"]);
+				// console.log("룸 데이터 : ", data["room_data"]);
+				// console.log("플레이어 아바타 : ", data["user_avatar"]);
 				if (playerNo === 0)
 					playerNo = data["player_number"];
 				dataUpdate(data);
