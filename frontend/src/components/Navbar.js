@@ -13,20 +13,23 @@ export default class extends AbstractComponent {
 		return `
 		<nav class="navbar navbar-expand-md sticky-top" style="background-color: #4D37C6;">
 			<div class="container-fluid">
-				<a class="navbar-brand" href="/" data-href="/">TITLE</a>
+				<a class="navbar-brand" href="/" data-href="/">
+					<img src="./src/img/Logo_ball.png" alt="Logo" width="35" height="35" class="d-inline-block align-text-top">
+					<span style="font-weight: 700; color: white;">TINY PING PONG</span>
+				</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
 				<div class="collapse navbar-collapse justify-content-end" id="navbarToggler">
 					<ul class="navbar-nav mb-2 mb-md-0">
 						<li class="nav-item">
-							<a class="nav-link" href="/tdata" data-href="/tdata">MatchLog</a>
+							<a class="nav-link" href="/tdata" data-href="/tdata">MATCHLOG</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="/mypage" data-href="/mypage">MyPage</a>
+							<a class="nav-link" href="/mypage" data-href="/mypage">MYPAGE</a>
 						</li>
 						<li class="nav-item">
-							<button class="nav-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFriend" aria-controls="offcanvasFriend">Friend</button>
+							<button class="nav-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFriend" aria-controls="offcanvasFriend">FRIEND</button>
 						</li>
 					</ul>
 				</div>

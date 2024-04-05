@@ -25,7 +25,7 @@ export default class extends AbstractComponent {
 						</div>
 					</div>
 				</div>
-				<div class="col d-flex align-items-center justify-content-center border border-3" id="link-image" style="min-height: 500px; --bs-border-color: #4D37C6;">
+				<div class="col d-flex align-items-center justify-content-center border border-5" id="link-image" style="min-height: 500px; --bs-border-color: #4D37C6;">
 				</div>
 			</div>
 		</div>

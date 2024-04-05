@@ -41,6 +41,17 @@ input[type='number'] {
 	font-size: 5rem;
 }
 
+.navbar {
+	--bs-navbar-brand-font-size: 1.8rem;
+	--bs-navbar-toggler-border-color: white;
+}
+
+.nav-link {
+	font-size: 1.8rem;
+	font-weight: 700;
+	color: white;
+}
+
 @media (min-width: 1400px) {
 	.lobby-title {
 		font-size: 6rem;
