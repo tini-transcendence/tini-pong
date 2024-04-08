@@ -39,7 +39,6 @@ class CreateRoomView(APIView):
             channel_layer = get_channel_layer()
             group_name = f"room_{room.uuid}"
             async_to_sync(channel_layer.group_add)(group_name, request.user_uuid)
-            print("방 생성")
             return JsonResponse(
                 {"message": "Room created successfully", "room_uuid": str(room.uuid)},
                 status=status.HTTP_201_CREATED,
@@ -98,7 +97,6 @@ class JoinRoomView(APIView):
             group_name = f"room_{room_uuid}"
 
             async_to_sync(channel_layer.group_add)(group_name, user_uuid_id)
-            print("방 입장")
             return JsonResponse(
                 {"message": "Joined room successfully"}, status=status.HTTP_200_OK
             )
