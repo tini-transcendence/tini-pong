@@ -1,81 +1,59 @@
-from django.http import JsonResponse, HttpResponse
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import User, TournamentHistory, WinLoseHistory, OneVsOneHistory
+from .models import User, OneVsOneGameResult, TwoVsTwoGameResult, TournamentGameResult
 from .serializers import (
-    UserSerializer,
-    TournamentHistorySerializer,
-    WinLoseHistorySerializer,
-    OneVsOneHistorySerializer,
+    OneVsOneGameResultSerializer,
+    TwoVsTwoGameResultSerializer,
+    TournamentGameResultSerializer,
 )
-import json
-from django.utils import timezone
-from blockchain.executeFunction import retrieve_transaction, store_transaction
-import time
 
 
-class DashBoardView(APIView):
-    def get(self, request):
-        json_data = json.loads(retrieve_transaction())
+class OneVsOneGameResultsView(APIView):
+    def get(self, request, user_uuid):
+        try:
+            user = User.objects.get(uuid=user_uuid)
+        except User.DoesNotExist:
+            return Response(
+                {"message": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
 
-        return Response(json_data)
-
-    # def get(self, request, uuid, format=None):
-    #    user = User.objects.get(uuid=uuid)
-    #    user_data = UserSerializer(user).data
-
-    #    tournament_histories = (
-    #        TournamentHistory.objects.filter(user1=user)
-    #        | TournamentHistory.objects.filter(user2=user)
-    #        | TournamentHistory.objects.filter(user3=user)
-    #        | TournamentHistory.objects.filter(user4=user)
-    #    )
-    #    win_lose_histories = WinLoseHistory.objects.filter(user_uuid=user)
-    #    one_vs_one_histories = OneVsOneHistory.objects.filter(
-    #        user1=user
-    #    ) | OneVsOneHistory.objects.filter(user2=user)
-
-    #    user_data["tournament_histories"] = TournamentHistorySerializer(
-    #        tournament_histories, many=True
-    #    ).data
-    #    user_data["win_lose_histories"] = WinLoseHistorySerializer(
-    #        win_lose_histories, many=True
-    #    ).data
-    #    user_data["one_vs_one_histories"] = OneVsOneHistorySerializer(
-    #        one_vs_one_histories, many=True
-    #    ).data
-
-    #    return Response(user_data)
+        game_results = OneVsOneGameResult.objects.filter(
+            player1=user
+        ) | OneVsOneGameResult.objects.filter(player2=user)
+        serializer = OneVsOneGameResultSerializer(game_results, many=True)
+        return Response(serializer.data)
 
 
-class Tournament:
-    def __init__(self):
-        self.tournament = []
+class TwoVsTwoGameResultsView(APIView):
+    def get(self, request, user_uuid):
+        try:
+            user = User.objects.get(uuid=user_uuid)
+        except User.DoesNotExist:
+            return Response(
+                {"message": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
 
-    @staticmethod
-    def make_player(name, score):
-        return {"name": name, "score": score}
-
-    def add_game_log(self, playerA, playerB, index):
-        self.tournament.append({"index": index, "playerA": playerA, "playerB": playerB})
-
-    def add_timestamp(self):
-        self.tournament.append(int(time.time()))
-
-
-# retrieve_transaction()
-def test():
-    t = Tournament()
-    t.add_timestamp()
-    t.add_game_log(t.make_player("test player A", 1), t.make_player("b", 0), 1)
-    t.add_game_log(t.make_player("test player B", 2), t.make_player("b", 1), 2)
-    t.add_game_log(t.make_player("test player A", 3), t.make_player("b", 2), 3)
-
-    store_transaction(t.tournament)
+        game_results = TwoVsTwoGameResult.objects.filter(
+            Q(team1_player1=user)
+            | Q(team1_player2=user)
+            | Q(team2_player3=user)
+            | Q(team2_player4=user)
+        )
+        serializer = TwoVsTwoGameResultSerializer(game_results, many=True)
+        return Response(serializer.data)
 
 
-class StoreTransactionView(APIView):
-    def get(self, request):
-        test()
-        return Response("Data Saved")
+class TournamentGameResultsView(APIView):
+    def get(self, request, user_uuid):
+        try:
+            user = User.objects.get(uuid=user_uuid)
+        except User.DoesNotExist:
+            return Response(
+                {"message": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        game_results = TournamentGameResult.objects.filter(players=user)
+        serializer = TournamentGameResultSerializer(game_results, many=True)
+        return Response(serializer.data)

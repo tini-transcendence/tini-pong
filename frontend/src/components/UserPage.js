@@ -23,9 +23,10 @@ export default class extends AbstractComponent {
 					<div class="mx-2 border">
 						<p id="userpage-profile-message">This is My Page.</p>
 					</div>
+					<div id="userpage-edit"></div>
 				</div>
 				<div class="col col-md-8 p-2 border">
-					<h1>전적</h1>
+					<h3 style="font-weight: 700; color: #4D37C6;">MATCH</h3>
 					<div class="mx-xl-3">
 						<div class="row">
 							<div class="col">승률</div>
@@ -40,19 +41,25 @@ export default class extends AbstractComponent {
 							</div>
 						</div>
 					</div>
-					<ul class="mt-2 border overflow-auto" style="height: 500px; padding-left: 0;">
+					<ul class="mt-4 overflow-auto" style="height: 500px; padding-left: 0;">
 						<li class="d-flex align-items-center border">
 							<div class="align-self-stretch bg-primary text-white p-2">
 								승
 							</div>
-							<div class="d-inline-flex justify-content-around align-items-center p-2 border" style="width: 40rem;">
-								<div>nick1</div>
+							<div class="d-inline-flex justify-content-around align-items-center p-2" style="width: 40rem;">
+								<div>
+									<span>nick1</span>
+									<span class="text-secondary">#1234</span>
+								</div>
 								<div class="mx-2">
 									12 : 3
 								</div>
-								<div>nick2</div>
+								<div>
+									<span>nick2</span>
+									<span class="text-secondary">#abcd</span>
+								</div>
 							</div>
-							<div class="ms-auto p-2">
+							<div class="ms-auto p-2 text-end">
 								<div>2024:04:02 18:49</div>
 								<div><b>Hard</b></div>
 							</div>
@@ -121,5 +128,12 @@ export default class extends AbstractComponent {
 			}
 		}
 		profileSetting();
+		if (!param.useruuid) {
+			document.querySelector("#userpage-edit").insertAdjacentHTML("beforeend", `
+			<div class="m-3 text-end">
+				<a class="btn btn-primary btn-sm" href="/edit" data-href="/edit" role="button" style="--bs-btn-bg: #4D37C6; --bs-btn-border-color: #4D37C6;">edit</a>
+			</div>
+			`);
+		}
 	}
 }

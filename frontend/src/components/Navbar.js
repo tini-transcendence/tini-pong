@@ -11,30 +11,37 @@ export default class extends AbstractComponent {
 
 	async getHtml() {
 		return `
-		<nav class="navbar navbar-expand-md sticky-top" style="background-color: #e3f2fd;">
+		<nav class="navbar navbar-expand-md sticky-top" style="background-color: #4D37C6;">
 			<div class="container-fluid">
-				<a class="navbar-brand" href="/" data-href="/">TITLE</a>
+				<div class="navbar-brand">
+					<img src="./src/img/Logo_ball.png" alt="Logo" width="35" height="35" class="d-inline-block align-text-top">
+					<span>
+						<a class="link-underline link-underline-opacity-0" href="/" data-href="/" style="font-weight: 700; color: white;">
+							TINY PING PONG
+						</a>
+					</span>
+				</div>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
 				<div class="collapse navbar-collapse justify-content-end" id="navbarToggler">
 					<ul class="navbar-nav mb-2 mb-md-0">
 						<li class="nav-item">
-							<a class="nav-link" href="/tdata" data-href="/tdata">MatchLog</a>
+							<a class="nav-link" href="/tdata" data-href="/tdata">MATCHLOG</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="/mypage" data-href="/mypage">MyPage</a>
+							<a class="nav-link" href="/mypage" data-href="/mypage">MYPAGE</a>
 						</li>
 						<li class="nav-item">
-							<button class="nav-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFriend" aria-controls="offcanvasFriend">Friend</button>
+							<button class="nav-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFriend" aria-controls="offcanvasFriend">FRIEND</button>
 						</li>
 					</ul>
 				</div>
 			</div>
 		</nav>
 		<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFriend" aria-labelledby="offcanvasFriendLabel">
-			<div class="offcanvas-header" style="background-color: #e3f2fd;">
-				<h4 class="offcanvas-title" id="offcanvasFriendLabel">Friend</h5>
+			<div class="offcanvas-header" style="background-color: #4D37C6;">
+				<h4 class="offcanvas-title" id="offcanvasFriendLabel" style="font-weight: 700; color: white;">FRIEND</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 			</div>
 			<div class="offcanvas-body container">
@@ -49,7 +56,15 @@ export default class extends AbstractComponent {
 					</div>
 					<div id="resultSearchUser"></div>
 				</div>
-				<ul class="list-group row p-3" id="friend-list"></ul>
+				<div class="text-end">
+					<button type="button" class="btn" id="friend-list-reload">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+							<path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+							<path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+						</svg>
+					</button>
+				</div>
+				<ul class="list-group row pb-3 px-3" id="friend-list"></ul>
 			</div>
 		</div>
 		`;
@@ -166,7 +181,7 @@ export default class extends AbstractComponent {
 							searchUserListNode.insertAdjacentHTML("beforeend", `
 							<div class="d-flex align-items-center flex-wrap">
 								<div class="p-2">
-									<a href="/users/${element.uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.nickname}</a>
+									<a href="/users/${element.uuid}" data-href="/users/${element.uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.nickname}</a>
 								</div>
 								<div class="p-2 text-secondary">
 									#${element.id_tag}
@@ -225,10 +240,10 @@ export default class extends AbstractComponent {
 			}
 
 			newFriendListNode.insertAdjacentHTML("beforeend", `
-			<div class="d-flex flex-wrap">
+			<div class="d-flex flex-wrap align-items-center">
 				<div class="p-2 me-auto">
 					<img src=${element.avatar} width="40px" height="40px" style="border-radius: 20%;"/>
-					<a href="/users/${element.uuid}" data-value="${element.uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.nickname}</a>
+					<a href="/users/${element.uuid}" data-href="/users/${element.uuid}" data-value="${element.uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.nickname}</a>
 				</div>
 				<div class="p-2" id="online-status"></div>
 				<div>
@@ -261,6 +276,12 @@ export default class extends AbstractComponent {
 			const resultSearchUser = document.querySelector("#resultSearchUser");
 			resultSearchUser.replaceChildren();
 			fetchSearchFriend(foundUser, resultSearchUser);
+		})
+
+		const friendListReload = document.querySelector("#friend-list-reload");
+		friendListReload.addEventListener("click", event => {
+			friendList.replaceChildren();
+			fetchFriendList();
 		})
 	}
 }

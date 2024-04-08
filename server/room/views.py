@@ -8,6 +8,7 @@ from .serializers import RoomSerializer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.http import JsonResponse
+from util.sanitize import sanitize
 
 # Create your views here.
 
@@ -23,7 +24,7 @@ class CreateRoomView(APIView):
     def post(self, request, *args, **kwargs):
         try:
             room = Room.objects.create(
-                name=request.data.get("name"),
+                name=sanitize(request.data.get("name")),
                 type=request.data.get("type"),
                 difficulty=request.data.get("difficulty"),
                 owner_uuid_id=request.user_uuid,
@@ -38,7 +39,6 @@ class CreateRoomView(APIView):
             channel_layer = get_channel_layer()
             group_name = f"room_{room.uuid}"
             async_to_sync(channel_layer.group_add)(group_name, request.user_uuid)
-            print("방 생성")
             return JsonResponse(
                 {"message": "Room created successfully", "room_uuid": str(room.uuid)},
                 status=status.HTTP_201_CREATED,
@@ -85,8 +85,8 @@ class JoinRoomView(APIView):
                     {"error": "방의 최대인원수를 초과하였습니다."},
                     status=status.HTTP_404_NOT_FOUND,
                 )
-            elif room.type == 2 and room.room_users.count() >= 4:
-                # 토너먼트 방에 인원이 이미 차 있을때
+            elif room.room_users.count() >= 4:
+                # 2vs2, 토너먼트 방에 인원이 이미 차 있을때
                 return JsonResponse(
                     {"error": "방의 최대인원수를 초과하였습니다."},
                     status=status.HTTP_404_NOT_FOUND,
@@ -97,7 +97,6 @@ class JoinRoomView(APIView):
             group_name = f"room_{room_uuid}"
 
             async_to_sync(channel_layer.group_add)(group_name, user_uuid_id)
-            print("방 입장")
             return JsonResponse(
                 {"message": "Joined room successfully"}, status=status.HTTP_200_OK
             )
