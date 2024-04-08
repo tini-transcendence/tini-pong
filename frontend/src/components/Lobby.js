@@ -29,7 +29,7 @@ export default class extends AbstractComponent {
 							</div>
 							<div class="row">
 								<div class="col">
-									<label class="col-form-label">MODE</label>
+									<label class="col-form-label">DIFFICULTY</label>
 										<div class="form-check">
 											<input class="form-check-input" type="radio" name="flexRadioMode" id="flexRadioMode1" value="1" checked>
 											<label class="form-check-label" for="flexRadioMode1">
@@ -50,23 +50,23 @@ export default class extends AbstractComponent {
 										</div>
 								</div>
 								<div class="col">
-									<label class="col-form-label">PLAYER</label>
+									<label class="col-form-label">MODE</label>
 										<div class="form-check">
 											<input class="form-check-input" type="radio" name="flexRadioHC" id="flexRadioHC1" value="1" checked>
 											<label class="form-check-label" for="flexRadioHC1">
-												1vs1(2p)
+												1 vs 1
 											</label>
 										</div>
 										<div class="form-check">
 											<input class="form-check-input" type="radio" name="flexRadioHC" id="flexRadioHC2" value="2">
 											<label class="form-check-label" for="flexRadioHC2">
-												2vs2(4p)
+												2 vs 2
 											</label>
 										</div>
 										<div class="form-check">
 											<input class="form-check-input" type="radio" name="flexRadioHC" id="flexRadioHC3" value="3">
 											<label class="form-check-label" for="flexRadioHC3">
-												tournament(4p)
+												4-player tournament
 											</label>
 										</div>
 								</div>
@@ -80,23 +80,32 @@ export default class extends AbstractComponent {
 			</div>
 		</div>
 		<div class="container-fluid">
-			<div class="row m-3">
+			<div class="row row-cols-1 row-cols-md-2 m-3">
 				<div class="col">
 					<div class="d-flex align-items-center">
-						<div class="flex-grow-1 noto-sans" style="font-weight: 700; color: #4D37C6;">GAME ROOM</div>
-						<button type="button" class="btn btn-outline-dark" id="gameroom-list-reload">
+						<div class="flex-grow-1 noto-sans" style="font-weight: 900; color: #4D37C6; font-size: 1.5rem;">GAME ROOM</div>
+						<button type="button" class="btn" id="gameroom-list-reload">
 							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
 								<path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
 								<path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
 							</svg>
 						</button>
 					</div>
-					<div class="list-group" id="gameroom-list" role="tablist"></div>
+					<div class="border border-5 overflow-auto" style="height: 500px; --bs-border-color: #4D37C6;">
+						<div class="list-group" id="gameroom-list" role="tablist"></div>
+					</div>
 				</div>
 				<div class="col">
-					<div class="tab-content" id="gameroom-content"></div>
-					<button type="button" class="btn btn-outline-dark" id="gameroom-enter">방 참가</button>
-					<button type="button" class="btn btn-outline-dark" id="gameroom-open" data-bs-toggle="modal" data-bs-target="#openGameRoomModal">방 만들기</button>
+					<div class="text-end noto-sans" style="font-weight: 900; color: #FFC85D; font-size: 1.5rem;">INFO</div>
+					<div class="border border-5 overflow-auto p-2 mb-5" style="min-height: 200px; --bs-border-color: #FFC85D;">
+						<div class="tab-content" id="gameroom-content"></div>
+					</div>
+					<div class="text-end my-2">
+						<button type="button" class="btn common-btn" id="gameroom-enter">&nbsp&nbsp방 참가&nbsp&nbsp</button>
+					</div>
+					<div class="text-end my-2">
+						<button type="button" class="btn common-btn" id="gameroom-open" data-bs-toggle="modal" data-bs-target="#openGameRoomModal">방 만들기</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -123,11 +132,28 @@ export default class extends AbstractComponent {
 						gameRoomList.insertAdjacentHTML("beforeend", `
 						<a class="list-group-item list-group-item-action" id="gameroom-${gameRoomID}-list" data-bs-toggle="list" href="#gameroom-${gameRoomID}" role="tab" aria-controls="gameroom-${gameRoomID}">${gameRoomData.name}</a>
 						`);
+
+						let gameRoomType;
+						let gameRoomDifficulty;
+						if (gameRoomData.type === 1)
+							gameRoomType = "1 vs 1";
+						else if (gameRoomData.type === 2)
+							gameRoomType = "2 vs 2";
+						else
+							gameRoomType = "4-player tournament";
+						if (gameRoomData.difficulty === 1)
+							gameRoomDifficulty = "EASY";
+						else if (gameRoomData.difficulty === 2)
+							gameRoomDifficulty = "NORMAL";
+						else
+							gameRoomDifficulty = "HARD";
+
+
 						gameRoomContent.insertAdjacentHTML("beforeend", `
 						<div class="tab-pane fade" id="gameroom-${gameRoomID}" role="tabpanel" aria-labelledby="gameroom-${gameRoomID}-list">
 							<h3>${gameRoomData.name}</h3>
-							<p>Mode: ${gameRoomData.type}</p>
-							<p>Player: ${gameRoomData.difficulty} player</p>
+							<p>Difficulty: ${gameRoomDifficulty}</p>
+							<p>Mode: ${gameRoomType}</p>
 						</div>
 						`);
 					})
@@ -171,7 +197,6 @@ export default class extends AbstractComponent {
 							}));
 							if (response.ok) {
 								navigateTo(`room/${roomuuid[1]}`);
-								// callback(roomuuid[1]);
 							}
 							else if (response.status === 404)
 								throw new Error(response.error);
@@ -200,8 +225,8 @@ export default class extends AbstractComponent {
 						},
 						body: JSON.stringify({
 							name: openGameRoomModalBody.querySelector("#title-name").value,
-							type: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
-							difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
+							difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
+							type: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
 						}),
 					}));
 					if (response.ok) {

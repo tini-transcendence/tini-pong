@@ -52,6 +52,18 @@ input[type='number'] {
 	color: white;
 }
 
+.common-btn {
+	--bs-btn-font-weight: 700;
+	--bs-btn-font-size: 1.2rem;
+	--bs-btn-color: #4D37C6;
+	--bs-btn-border-color: #4D37C6;
+	--bs-btn-border-width: 5px;
+	--bs-btn-hover-color: #A193EF;
+	--bs-btn-hover-border-color: #A193EF;
+	--bs-btn-active-color: var(--bs-btn-hover-color);
+	--bs-btn-active-border-color: #A193EF;
+}
+
 @media (min-width: 1400px) {
 	.lobby-title {
 		font-size: 6rem;
