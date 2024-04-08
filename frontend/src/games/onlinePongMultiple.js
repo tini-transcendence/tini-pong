@@ -218,10 +218,19 @@ function setEvent()
     console.log('game : ', data["type"]);
     console.log(data);
   
-    if (data["event"] === "keydown")
+    if (data["player_number"] === 1)
     {
-      if (data["player_number"] === 1)
+      // 공 위치, 속도 동기화
+      if (!isNaN(data["obj"]["ball_loc"]))
       {
+        ball.position.x = data["obj"]["ball_loc"].x;
+        ball.position.z = data["obj"]["ball_loc"].z;
+        ball.$velocity = data["obj"]["ball_vel"];
+      }
+      if (data["event"] === "keydown")
+      {
+        // 플레이어의 paddle 위치 동기화
+        paddle1.position.x = (data["obj"]).paddle1_loc;
         if (data["key"] === ARROW_UP)
         {
           paddle1_spead = -PADDLE_SPEAD;
@@ -231,44 +240,10 @@ function setEvent()
           paddle1_spead = PADDLE_SPEAD;
         }
       }
-      else if (data["player_number"] === 2)
+      else if (data["event"] === "keyup")
       {
-        if (data["key"] === ARROW_UP)
-        {
-          paddle2_spead = -PADDLE_SPEAD;
-        }
-        else if (data["key"] === ARROW_DOWN)
-        {
-          paddle2_spead = PADDLE_SPEAD;
-        }
-      }
-      else if (data["player_number"] === 3)
-      {
-        if (data["key"] === ARROW_UP)
-        {
-          paddle3_spead = -PADDLE_SPEAD;
-        }
-        else if (data["key"] === ARROW_DOWN)
-        {
-          paddle3_spead = PADDLE_SPEAD;
-        }
-      }
-      else if (data["player_number"] === 4)
-      {
-        if (data["key"] === ARROW_UP)
-        {
-          paddle4_spead = -PADDLE_SPEAD;
-        }
-        else if (data["key"] === ARROW_DOWN)
-        {
-          paddle4_spead = PADDLE_SPEAD;
-        }
-      }
-    }
-    else if (data["event"] === "keyup")
-    {
-      if (data["player_number"] === 1)
-      {
+        // 플레이어의 paddle 위치 동기화
+        paddle1.position.x = (data["obj"]).paddle1_loc;
         if (data["key"] === ARROW_UP)
         {
           if (paddle1_spead === -PADDLE_SPEAD)
@@ -280,8 +255,26 @@ function setEvent()
             paddle1_spead = 0;
         }
       }
-      else if (data["player_number"] === 2)
+    }
+    else if (data["player_number"] === 2)
+    {
+      if (data["event"] === "keydown")
       {
+        // 플레이어의 paddle 위치 동기화
+        paddle2.position.x = (data["obj"]).paddle2_loc;
+        if (data["key"] === ARROW_UP)
+        {
+          paddle2_spead = -PADDLE_SPEAD;
+        }
+        else if (data["key"] === ARROW_DOWN)
+        {
+          paddle2_spead = PADDLE_SPEAD;
+        }
+      }
+      else if (data["event"] === "keyup")
+      {
+        // 플레이어의 paddle 위치 동기화
+        paddle2.position.x = (data["obj"]).paddle2_loc;
         if (data["key"] === ARROW_UP)
         {
           if (paddle2_spead === -PADDLE_SPEAD)
@@ -293,8 +286,26 @@ function setEvent()
             paddle2_spead = 0;
         }
       }
-      else if (data["player_number"] === 3)
+    }
+    else if (data["player_number"] === 3)
+    {
+      if (data["event"] === "keydown")
       {
+        // 플레이어의 paddle 위치 동기화
+        paddle3.position.x = (data["obj"]).paddle3_loc;
+        if (data["key"] === ARROW_UP)
+        {
+          paddle3_spead = -PADDLE_SPEAD;
+        }
+        else if (data["key"] === ARROW_DOWN)
+        {
+          paddle3_spead = PADDLE_SPEAD;
+        }
+      }
+      else if (data["event"] === "keyup")
+      {
+        // 플레이어의 paddle 위치 동기화
+        paddle3.position.x = (data["obj"]).paddle3_loc;
         if (data["key"] === ARROW_UP)
         {
           if (paddle3_spead === -PADDLE_SPEAD)
@@ -306,8 +317,26 @@ function setEvent()
             paddle3_spead = 0;
         }
       }
-      else if (data["player_number"] === 4)
+    }
+    else if (data["player_number"] === 4)
+    {
+      if (data["event"] === "keydown")
       {
+        // 플레이어의 paddle 위치 동기화
+        paddle4.position.x = (data["obj"]).paddle4_loc;
+        if (data["key"] === ARROW_UP)
+        {
+          paddle4_spead = -PADDLE_SPEAD;
+        }
+        else if (data["key"] === ARROW_DOWN)
+        {
+          paddle4_spead = PADDLE_SPEAD;
+        }
+      }
+      else if (data["event"] === "keyup")
+      {
+        // 플레이어의 paddle 위치 동기화
+        paddle4.position.x = (data["obj"]).paddle4_loc;
         if (data["key"] === ARROW_UP)
         {
           if (paddle4_spead === -PADDLE_SPEAD)
@@ -338,7 +367,13 @@ function onlineContainerEventKeyDown(e)
     const dataToSend = {
       "action": "key_press",
       "event": "keydown",
-      "key": ARROW_UP
+      "key": ARROW_UP,
+      "obj": {
+        "ball_loc": ball.position,
+        "ball_vel": ball.$velocity,
+        "paddle1_loc": paddle1.position.x,
+        "paddle2_loc": paddle2.position.x,
+      },
     }
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
@@ -349,7 +384,13 @@ function onlineContainerEventKeyDown(e)
     const dataToSend = {
       "action": "key_press",
       "event": "keydown",
-      "key": ARROW_DOWN
+      "key": ARROW_DOWN,
+      "obj": {
+        "ball_loc": ball.position,
+        "ball_vel": ball.$velocity,
+        "paddle1_loc": paddle1.position.x,
+        "paddle2_loc": paddle2.position.x,
+      },
     }
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
@@ -366,7 +407,13 @@ function onlineContainerEventKeyUp(e)
     const dataToSend = {
       "action": "key_press",
       "event": "keyup",
-      "key": ARROW_UP
+      "key": ARROW_UP,
+      "obj": {
+        "ball_loc": ball.position,
+        "ball_vel": ball.$velocity,
+        "paddle1_loc": paddle1.position.x,
+        "paddle2_loc": paddle2.position.x,
+      },
     }
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
@@ -377,7 +424,13 @@ function onlineContainerEventKeyUp(e)
     const dataToSend = {
       "action": "key_press",
       "event": "keyup",
-      "key": ARROW_DOWN
+      "key": ARROW_DOWN,
+      "obj": {
+        "ball_loc": ball.position,
+        "ball_vel": ball.$velocity,
+        "paddle1_loc": paddle1.position.x,
+        "paddle2_loc": paddle2.position.x,
+      },
     }
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
