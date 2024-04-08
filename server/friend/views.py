@@ -80,4 +80,4 @@ class SearchFriendView(View):
 
 
 def calculate_online_status(online_status: datetime):
-    return online_status + timedelta(seconds=5) > datetime.now(tz=timezone.utc)
+    return online_status + timedelta(seconds=35) > datetime.now(tz=timezone.utc)
