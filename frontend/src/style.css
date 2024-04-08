@@ -11,3 +11,64 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
 }
+
+.noto-sans {
+  font-family: "Noto Sans KR", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.white-blue {
+	color: #EFECFF;
+}
+
+.lobby-title {
+	font-size: calc(1.625rem + 5vw);
+	font-weight: 900;
+	line-height: 100%;
+}
+
+.lobby-btn {
+	--bs-btn-font-size: calc(0.5rem + 1.5vw);
+	--bs-btn-border-width: 5px;
+	font-weight: 900;
+}
+
+.main-link {
+	color: #4D37C6;
+	font-weight: 700;
+	font-size: 5rem;
+}
+
+.navbar {
+	--bs-navbar-brand-font-size: 1.8rem;
+	--bs-navbar-toggler-border-color: white;
+}
+
+.nav-link {
+	font-size: 1.8rem;
+	font-weight: 700;
+	color: white;
+}
+
+.common-btn {
+	--bs-btn-font-weight: 700;
+	--bs-btn-font-size: 1.2rem;
+	--bs-btn-color: #4D37C6;
+	--bs-btn-border-color: #4D37C6;
+	--bs-btn-border-width: 5px;
+	--bs-btn-hover-color: #A193EF;
+	--bs-btn-hover-border-color: #A193EF;
+	--bs-btn-active-color: var(--bs-btn-hover-color);
+	--bs-btn-active-border-color: #A193EF;
+}
+
+@media (min-width: 1400px) {
+	.lobby-title {
+		font-size: 6rem;
+	}
+	.lobby-btn {
+		--bs-btn-font-size: 2rem;
+	}
+}

@@ -11,30 +11,33 @@ export default class extends AbstractComponent {
 
 	async getHtml() {
 		return `
-		<nav class="navbar navbar-expand-md sticky-top" style="background-color: #e3f2fd;">
+		<nav class="navbar navbar-expand-md sticky-top" style="background-color: #4D37C6;">
 			<div class="container-fluid">
-				<a class="navbar-brand" href="/" data-href="/">TITLE</a>
+				<a class="navbar-brand" href="/" data-href="/">
+					<img src="./src/img/Logo_ball.png" alt="Logo" width="35" height="35" class="d-inline-block align-text-top">
+					<span style="font-weight: 700; color: white;">TINY PING PONG</span>
+				</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
 				<div class="collapse navbar-collapse justify-content-end" id="navbarToggler">
 					<ul class="navbar-nav mb-2 mb-md-0">
 						<li class="nav-item">
-							<a class="nav-link" href="/tdata" data-href="/tdata">MatchLog</a>
+							<a class="nav-link" href="/tdata" data-href="/tdata">MATCHLOG</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="/mypage" data-href="/mypage">MyPage</a>
+							<a class="nav-link" href="/mypage" data-href="/mypage">MYPAGE</a>
 						</li>
 						<li class="nav-item">
-							<button class="nav-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFriend" aria-controls="offcanvasFriend">Friend</button>
+							<button class="nav-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFriend" aria-controls="offcanvasFriend">FRIEND</button>
 						</li>
 					</ul>
 				</div>
 			</div>
 		</nav>
 		<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFriend" aria-labelledby="offcanvasFriendLabel">
-			<div class="offcanvas-header" style="background-color: #e3f2fd;">
-				<h4 class="offcanvas-title" id="offcanvasFriendLabel">Friend</h5>
+			<div class="offcanvas-header" style="background-color: #4D37C6;">
+				<h4 class="offcanvas-title" id="offcanvasFriendLabel" style="font-weight: 700; color: white;">FRIEND</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 			</div>
 			<div class="offcanvas-body container">
@@ -225,7 +228,7 @@ export default class extends AbstractComponent {
 			}
 
 			newFriendListNode.insertAdjacentHTML("beforeend", `
-			<div class="d-flex flex-wrap">
+			<div class="d-flex flex-wrap align-items-center">
 				<div class="p-2 me-auto">
 					<img src=${element.avatar} width="40px" height="40px" style="border-radius: 20%;"/>
 					<a href="/users/${element.uuid}" data-value="${element.uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.nickname}</a>
