@@ -75,6 +75,8 @@ difficulty = 0,
 game = false,
 end = false,
 
+start_date,
+
 player_1,
 player_2,
 
@@ -99,6 +101,7 @@ function init(d, pn1, pn2)
     "action": "init",
   }
   window.websocket.send(JSON.stringify(dataToSend));
+  start_date = Date();
   animateGame.setAnimateOn();
   loop();
 }
@@ -251,6 +254,7 @@ function setEvent()
       score.player1 = data["msg"]["score_p1"]
       score.player2 = data["msg"]["score_p2"]
       scoreBoard.innerHTML = win + ' Win! ' + player_1 + ':' + score.player1 + ", " + player_2 + ' : ' + score.player2;
+      stopBall();
       end = true;
     }
     else if (data["type"] === "scored")
@@ -259,7 +263,7 @@ function setEvent()
       score.player1 = data["msg"]["score_p1"]
       score.player2 = data["msg"]["score_p2"]
       scoreBoard.innerHTML = 'Player 1: ' + score.player1 + ' Player 2: ' + score.player2;
-      game = false;
+      stopBall();
     }
 
     if (isp1 === false && data["type"] === "sync" && data["player_number"] === 1)
@@ -545,7 +549,9 @@ function updateScoreBoard(playerName)
     const dataToSend = {
       "action": "win",
       "msg": {
+        "date": start_date,
         "winner": player_1,
+        "loser": player_2,
         "score_p1": score.player1,
         "score_p2": score.player2,
       },
@@ -557,7 +563,9 @@ function updateScoreBoard(playerName)
     const dataToSend = {
       "action": "win",
       "msg": {
+        "date": start_date,
         "winner": player_2,
+        "loser": player_1,
         "score_p1": score.player1,
         "score_p2": score.player2,
       },
