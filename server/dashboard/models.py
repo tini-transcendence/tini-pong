@@ -14,7 +14,7 @@ class GameResult(models.Model):
 
 class OneVsOneGameResult(GameResult):
     room = models.ForeignKey(
-        Room, on_delete=models.CASCADE, related_name="one_vs_one_game_results"
+        Room, on_delete=models.PROTECT, related_name="one_vs_one_game_results"
     )
     player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player1")
     player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player2")
@@ -24,7 +24,7 @@ class OneVsOneGameResult(GameResult):
 
 class TwoVsTwoGameResult(GameResult):
     room = models.ForeignKey(
-        Room, on_delete=models.CASCADE, related_name="two_vs_two_game_results"
+        Room, on_delete=models.PROTECT, related_name="two_vs_two_game_results"
     )
     team1_player1 = models.ForeignKey(
         User,
@@ -52,7 +52,7 @@ class TwoVsTwoGameResult(GameResult):
 
 class TournamentGameResult(GameResult):
     room = models.ForeignKey(
-        Room, on_delete=models.CASCADE, related_name="tournament_game_results"
+        Room, on_delete=models.PROTECT, related_name="tournament_game_results"
     )
     players = models.ManyToManyField(User, related_name="tournament_results")
     final_scores = models.JSONField()
