@@ -14,6 +14,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
         > /dev/null 2>&1
 
 sed -i "s#localhost#${DOMAIN_NAME}#g" /var/www/html/src/index.js
+sed -i "s#oauth_uid#${OAUTH_UID}#g" /var/www/html/src/index.js
 
 # Execute nginx
 exec nginx -g "daemon off;"

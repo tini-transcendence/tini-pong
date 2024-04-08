@@ -1,5 +1,4 @@
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -9,7 +8,6 @@ from .serializers import RoomSerializer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.http import JsonResponse
-from django.db import transaction
 
 # Create your views here.
 
@@ -31,7 +29,10 @@ class CreateRoomView(APIView):
                 owner_uuid_id=request.user_uuid,
             )
             room_user = RoomUser.objects.create(
-                room_uuid=room, user_uuid_id=request.user_uuid, is_ready=False, player_number=1
+                room_uuid=room,
+                user_uuid_id=request.user_uuid,
+                is_ready=False,
+                player_number=1,
             )
 
             channel_layer = get_channel_layer()
@@ -78,8 +79,14 @@ class JoinRoomView(APIView):
                     status=status.HTTP_404_NOT_FOUND,
                 )
 
-            if room.room_users.count() >= room.max_players:
-                # 방이 가득 찼을 때
+            if room.type == 1 and room.room_users.count() >= 2:
+                # 1vs1 방에 인원이 이미 차 있을때
+                return JsonResponse(
+                    {"error": "방의 최대인원수를 초과하였습니다."},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+            elif room.room_users.count() >= 4:
+                # 2vs2, 토너먼트 방에 인원이 이미 차 있을때
                 return JsonResponse(
                     {"error": "방의 최대인원수를 초과하였습니다."},
                     status=status.HTTP_404_NOT_FOUND,

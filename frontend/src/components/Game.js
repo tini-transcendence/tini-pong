@@ -2,7 +2,7 @@ import AbstractComponent from "./AbstractComponent.js";
 import {init as basicPong} from "../games/onlinePongBasic.js"
 import {init as multiplePong} from "../games/onlinePongMultiple.js"
 import {init as tournamentPong} from "../games/onlinePongTournament.js"
-
+import {gt, gd, p1, p2, p3, p4} from "./Room.js"
 import {navigateTo} from "../index.js";
 import animateGame from "../utils/animateGameModule.js";
 
@@ -39,15 +39,22 @@ export default class extends AbstractComponent {
 		else
 		{
 			// WebSocket이 열려 있는 경우에만 게임을 수행
-			if (window.websocket.readyState === WebSocket.OPEN) {
-			// 경우 1 : 1 vs 1
-		//	basicPong(3, "nick1", "nick2");
-			// 경우 2 : 2 vs 2
-		//	multiplePong(3, "nick1", "nick2", "nick3", "nick4");
-			// 경우 3 : tournament
-			tournamentPong(3, "nick1", "nick2", "nick3", "nick4");
-				// tournament_result의 display속성을 block으로 변경
-			console.log("Web socket이 살아있어요!");
+			if (window.websocket.readyState === WebSocket.OPEN)
+			{
+				// 경우 1 : 1 vs 1
+				if (gt === 1)
+					basicPong(gd, p1, p2);
+				//	basicPong(3, "nick1", "nick2");
+				// 경우 2 : 2 vs 2
+				else if (gt === 2)
+					multiplePong(gd, p1, p2, p3, p4);
+				//	multiplePong(3, "nick1", "nick2", "nick3", "nick4");
+				// 경우 3 : tournament
+				else if (gt === 3)
+					tournamentPong(gd, p1, p2, p3, p4);
+				//	tournamentPong(3, "nick1", "nick2", "nick3", "nick4");
+				console.log("Web socket이 살아있어요!");
+				console.log(gt,gd,p1,p2,p3,p4);
 			}
 			else
 			{
@@ -57,7 +64,7 @@ export default class extends AbstractComponent {
 			}
 		}
 		goBackButton.addEventListener("click", event => {
-			if (window.websocket === undefined && window.websocket.readyState === WebSocket.OPEN)
+			if (window.websocket !== undefined && window.websocket.readyState === WebSocket.OPEN)
 			{
 				window.websocket.close();
 				window.websocket = undefined;

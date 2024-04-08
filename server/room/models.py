@@ -14,10 +14,6 @@ class Room(models.Model):
         User, on_delete=models.CASCADE, related_name="owned_rooms"
     )
     is_active = models.BooleanField(default=False)
-    max_players = models.IntegerField(default=4)
-
-    def is_full(self):
-        return self.room_users.count() >= self.max_players
 
 
 class RoomUser(models.Model):
@@ -29,4 +25,3 @@ class RoomUser(models.Model):
     )
     is_ready = models.BooleanField(default=False)
     player_number = models.PositiveIntegerField(null=True, blank=True)
-

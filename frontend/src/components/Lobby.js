@@ -31,20 +31,20 @@ export default class extends AbstractComponent {
 								<div class="col">
 									<label class="col-form-label">DIFFICULTY</label>
 										<div class="form-check">
-											<input class="form-check-input" type="radio" name="flexRadioMode" id="flexRadioMode1" value="1" checked>
-											<label class="form-check-label" for="flexRadioMode1">
+											<input class="form-check-input" type="radio" name="flexRadioHC" id="flexRadioHC1" value="1" checked>
+											<label class="form-check-label" for="flexRadioHC1">
 												EASY
 											</label>
 										</div>
 										<div class="form-check">
-											<input class="form-check-input" type="radio" name="flexRadioMode" id="flexRadioMode2" value="2">
-											<label class="form-check-label" for="flexRadioMode2">
+											<input class="form-check-input" type="radio" name="flexRadioHC" id="flexRadioHC2" value="2">
+											<label class="form-check-label" for="flexRadioHC2">
 												NORMAL
 											</label>
 										</div>
 										<div class="form-check">
-											<input class="form-check-input" type="radio" name="flexRadioMode" id="flexRadioMode3" value="3">
-											<label class="form-check-label" for="flexRadioMode3">
+											<input class="form-check-input" type="radio" name="flexRadioHC" id="flexRadioHC3" value="3">
+											<label class="form-check-label" for="flexRadioHC3">
 												HARD
 											</label>
 										</div>
@@ -52,20 +52,20 @@ export default class extends AbstractComponent {
 								<div class="col">
 									<label class="col-form-label">MODE</label>
 										<div class="form-check">
-											<input class="form-check-input" type="radio" name="flexRadioHC" id="flexRadioHC1" value="1" checked>
-											<label class="form-check-label" for="flexRadioHC1">
-												1 vs 1
+											<input class="form-check-input" type="radio" name="flexRadioMode" id="flexRadioMode1" value="1" checked>
+											<label class="form-check-label" for="flexRadioMode1">
+												1 vs 1(2p)
 											</label>
 										</div>
 										<div class="form-check">
-											<input class="form-check-input" type="radio" name="flexRadioHC" id="flexRadioHC2" value="2">
-											<label class="form-check-label" for="flexRadioHC2">
-												2 vs 2
+											<input class="form-check-input" type="radio" name="flexRadioMode" id="flexRadioMode2" value="2">
+											<label class="form-check-label" for="flexRadioMode2">
+												2 vs 2(4p)
 											</label>
 										</div>
 										<div class="form-check">
-											<input class="form-check-input" type="radio" name="flexRadioHC" id="flexRadioHC3" value="3">
-											<label class="form-check-label" for="flexRadioHC3">
+											<input class="form-check-input" type="radio" name="flexRadioMode" id="flexRadioMode3" value="3">
+											<label class="form-check-label" for="flexRadioMode3">
 												4-player tournament
 											</label>
 										</div>
@@ -225,8 +225,8 @@ export default class extends AbstractComponent {
 						},
 						body: JSON.stringify({
 							name: openGameRoomModalBody.querySelector("#title-name").value,
-							difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
-							type: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
+							type: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
+							difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
 						}),
 					}));
 					if (response.ok) {
