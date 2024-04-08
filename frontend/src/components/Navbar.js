@@ -13,10 +13,14 @@ export default class extends AbstractComponent {
 		return `
 		<nav class="navbar navbar-expand-md sticky-top" style="background-color: #4D37C6;">
 			<div class="container-fluid">
-				<a class="navbar-brand" href="/" data-href="/">
+				<div class="navbar-brand">
 					<img src="./src/img/Logo_ball.png" alt="Logo" width="35" height="35" class="d-inline-block align-text-top">
-					<span style="font-weight: 700; color: white;">TINY PING PONG</span>
-				</a>
+					<span>
+						<a class="link-underline link-underline-opacity-0" href="/" data-href="/" style="font-weight: 700; color: white;">
+							TINY PING PONG
+						</a>
+					</span>
+				</div>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
@@ -169,7 +173,7 @@ export default class extends AbstractComponent {
 							searchUserListNode.insertAdjacentHTML("beforeend", `
 							<div class="d-flex align-items-center flex-wrap">
 								<div class="p-2">
-									<a href="/users/${element.uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.nickname}</a>
+									<a href="/users/${element.uuid}" data-href="/users/${element.uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.nickname}</a>
 								</div>
 								<div class="p-2 text-secondary">
 									#${element.id_tag}
@@ -231,7 +235,7 @@ export default class extends AbstractComponent {
 			<div class="d-flex flex-wrap align-items-center">
 				<div class="p-2 me-auto">
 					<img src=${element.avatar} width="40px" height="40px" style="border-radius: 20%;"/>
-					<a href="/users/${element.uuid}" data-value="${element.uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.nickname}</a>
+					<a href="/users/${element.uuid}" data-href="/users/${element.uuid}" data-value="${element.uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.nickname}</a>
 				</div>
 				<div class="p-2" id="online-status"></div>
 				<div>

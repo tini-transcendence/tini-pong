@@ -131,7 +131,7 @@ export default class extends AbstractComponent {
 		if (!param.useruuid) {
 			document.querySelector("#userpage-edit").insertAdjacentHTML("beforeend", `
 			<div class="m-3 text-end">
-				<a class="btn btn-primary btn-sm" href="/edit" role="button" style="--bs-btn-bg: #4D37C6; --bs-btn-border-color: #4D37C6;">edit</a>
+				<a class="btn btn-primary btn-sm" href="/edit" data-href="/edit" role="button" style="--bs-btn-bg: #4D37C6; --bs-btn-border-color: #4D37C6;">edit</a>
 			</div>
 			`);
 		}
