@@ -8,6 +8,7 @@ from .serializers import RoomSerializer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.http import JsonResponse
+from util.sanitize import sanitize
 
 # Create your views here.
 
@@ -23,7 +24,7 @@ class CreateRoomView(APIView):
     def post(self, request, *args, **kwargs):
         try:
             room = Room.objects.create(
-                name=request.data.get("name"),
+                name=sanitize(request.data.get("name")),
                 type=request.data.get("type"),
                 difficulty=request.data.get("difficulty"),
                 owner_uuid_id=request.user_uuid,
