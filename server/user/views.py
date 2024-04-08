@@ -13,6 +13,8 @@ from auth.models import RefreshToken
 from util.jwt import create
 from util.timestamp import get_timestamp
 
+from util.sanitize import sanitize, sanitize_tag
+
 
 class UserProfileView(View):
     def get(self, request: HttpRequest):
@@ -43,11 +45,11 @@ class EditUserView(View):
             return HttpResponseBadRequest()
         new_info_filtered = {}
         if "nickname" in new_info:
-            new_info_filtered["nickname"] = new_info["nickname"]
+            new_info_filtered["nickname"] = sanitize(new_info["nickname"])
         if "avatar" in new_info:
-            new_info_filtered["avatar"] = new_info["avatar"]
+            new_info_filtered["avatar"] = sanitize_tag(new_info["avatar"])
         if "message" in new_info:
-            new_info_filtered["message"] = new_info["message"]
+            new_info_filtered["message"] = sanitize(new_info["message"])
         if len(new_info_filtered) == 0:
             return HttpResponseBadRequest()
         user = User.objects.get(pk=request.user_uuid)
