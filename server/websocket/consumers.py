@@ -239,8 +239,15 @@ class RoomConsumer(AsyncWebsocketConsumer):
     def start_game(self):
         try:
             room = Room.objects.get(uuid=self.room_uuid)
+            player_count = room.room_users.count()
+
             if room.owner_uuid.uuid != self.user.uuid:
                 return False, "방장 플레이어만 게임을 시작할 수 있습니다."
+            
+            if room.type == 1 and player_count != 2:
+                return False, "2명의 플레이어가 필요합니다."
+            elif (room.type == 2 or room.type == 3) and player_count != 4:
+                return False, "4명의 플레이어가 필요합니다."
 
             if not all(room_user.is_ready for room_user in room.room_users.all()):
                 return False, "모든 플레이어가 준비상태여야 합니다."
