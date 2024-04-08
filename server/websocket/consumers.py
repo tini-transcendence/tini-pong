@@ -83,9 +83,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
             is_owner = await self.is_room_owner(self.user, self.room_uuid)
             
             if is_owner:
-                # print("@@@")
-                # print("방장이 나감")
-                # print("")
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -100,9 +97,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 
                 await self.delete_room_and_room_users(self.room_uuid)
             else:
-                # print("@@@")
-                # print("일반 유저가 나감")
-                # print("")
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -146,14 +140,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
         
         if is_owner:
-            # print("@@@")
-            # print("방장의 연결 끊김")
-            # print("")
             await self.delete_room_and_room_users(self.room_uuid)
         else:
-            # print("@@@")
-            # print("일반 유저의 연결 끊김")
-            # print("")
             await self.remove_user_from_room(self.user, self.room_uuid)
 
     @database_sync_to_async
@@ -184,9 +172,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def assign_player_number(self):
-        print("")
-        print("넘버 할당 로직 들어옴")
-        print("")
         with transaction.atomic():
             room = Room.objects.select_for_update().get(uuid=self.room_uuid)
 
@@ -202,9 +187,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         .values_list("player_number", flat=True)
                         .order_by("player_number")
                     )
-                    print("이미 있는 넘버들")
-                    print(occupied_numbers)
-                    print("")
 
                     player_number = 1
                     for occupied_number in occupied_numbers:
@@ -214,9 +196,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
                     room_user.player_number = player_number
                     room_user.save(update_fields=["player_number"])
-                    print("할당된 넘버")
-                    print(player_number)
-                    print("")
                     return player_number
                 else:
                     return room_user.player_number
