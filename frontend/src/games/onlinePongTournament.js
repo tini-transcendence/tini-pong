@@ -1,25 +1,12 @@
 import animateGame from "../utils/animateGameModule.js";
 
 let
-local = true,
-online = false,
 document = window.document,
 THREE = window.THREE,
 num = null,
 
-ARROW_LEFT = 37,
 ARROW_UP = 38,
-ARROW_RIGHT = 39,
 ARROW_DOWN = 40,
-KEY_W = 87,
-KEY_A = 65,
-KEY_R = 82,
-KEY_S = 83,
-KEY_D = 68,
-
-KEY_E = 69,
-KEY_N = 78,
-KEY_H = 72,
 
 WIDTH = 800,
 HEIGHT = 600,
@@ -86,6 +73,8 @@ difficulty = 0,
 game = false,
 end = false,
 
+start_date,
+
 nick1,
 nick2,
 nick3,
@@ -99,8 +88,7 @@ player1_num,
 player2_num,
 round1Winner,
 round1Winner_num,
-round2Winner,
-round2Winner_num,
+player_number = null,
 
 scoreBoard,
 score = {
@@ -117,6 +105,11 @@ function init(d, pn1, pn2, pn3, pn4)
   setGame();
   setDifficulty()
   setEvent();
+  const dataToSend = {
+    "action": "init",
+  }
+  window.websocket.send(JSON.stringify(dataToSend));
+  start_date = Date();
   animateGame.setAnimateOn();
   loop();
 }
@@ -251,10 +244,85 @@ function setEvent()
   document.addEventListener('keydown', onlineContainerEventKeyDown);
   document.addEventListener('keyup', onlineContainerEventKeyUp);
 
+  window.websocket.onclose = function (event) {
+    window.websocket = undefined;
+    if (game === true)
+      console.log('게임 진행 도중 WebSocket 연결이 닫혔습니다.');
+    else if (end === true)
+      console.log('게임 종료 이후 WebSocket 연결이 닫혔습니다.');
+    else
+      console.log('게임 시작 직전 WebSocket 연결이 닫혔습니다.');
+    end = true;
+  };
+
   window.websocket.onmessage = function (event) {
     const data = JSON.parse(event.data);
-    console.log('game : ', data["type"]);
-    console.log(data);
+    
+    if (data["type"] === "init")
+      player_number = data["player_number"];
+
+    if (data["type"] === "win")
+    {
+      let win_player = data["msg"]["winner"]
+      let win_player_number = data["msg"]["winner_number"]
+      score.player1 = data["msg"]["score_p1"]
+      score.player2 = data["msg"]["score_p2"]
+      scoreBoard.innerHTML = win_player + ' Win! ' + player_1 + ':' + score.player1 + ", " + player_2 + ' : ' + score.player2;
+      stopBall();
+      let roundText = 'Round 1';
+      if (round === 2)
+        roundText = 'Round 2';
+      if (round === 3)
+        roundText = 'Final round';
+      scoreBoard.innerHTML = win_player + ' Win! [n] to next round';
+      addResult(roundText + ' : ' + win_player + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + ' : ' + score.player2);
+      if (round === 1)
+      {
+        round = 2;
+        round1Winner = win_player;
+        round1Winner_num = win_player_number;
+        player1 = nick3;
+        player2 = nick4;
+        player1_num = 3;
+        player2_num = 4;
+        // 만약 필요하다면 roune 1 결과 전송
+      }
+      else if (round === 2)
+      {
+        round = 3;
+        player2 = win_player;
+        player2_num = win_player_number;
+        player1 = round1Winner;
+        player1_num = round1Winner_num;
+        // 만약 필요하다면 roune 2 결과 전송
+      }
+      else if (round === 3)
+      {
+        // 이벤트 제거
+        document.removeEventListener('keydown', onlineonlineContainerEventKeyDown);
+        document.removeEventListener('keyup', onlineonlineContainerEventKeyUp);
+        // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
+      }
+      end = true;
+    }
+
+    if (data["type"] === "scored")
+    {
+      last_winner = data["msg"]["scored_p"]
+      score.player1 = data["msg"]["score_p1"]
+      score.player2 = data["msg"]["score_p2"]
+      scoreBoard.innerHTML = 'Player 1: ' + score.player1 + ' Player 2: ' + score.player2;
+      stopBall();
+    }
+
+    if (player_number !== player1_num && data["type"] === "sync" && data["player_number"] === player1_num)
+    {
+      // 공 위치, 속도 동기화
+      ball.position.x = data["obj"]["ball_loc"].x;
+      ball.position.z = data["obj"]["ball_loc"].z;
+      ball.$velocity = data["obj"]["ball_vel"];
+    }
+
     if (end == true)
     {
       let roundText;
@@ -274,17 +342,10 @@ function setEvent()
       end = false;
       loop();
     }
-    else
+    else if (data["type"] === "key_press")
     {
-      if (data["player_number"] === 1)
+      if (data["player_number"] === player1_num)
       {
-        // 공 위치, 속도 동기화
-        if (!isNaN(data["obj"]["ball_loc"]))
-        {
-          ball.position.x = data["obj"]["ball_loc"].x;
-          ball.position.z = data["obj"]["ball_loc"].z;
-          ball.$velocity = data["obj"]["ball_vel"];
-        }
         if (data["event"] === "keydown")
         {
           // 플레이어의 paddle 위치 동기화
@@ -314,7 +375,7 @@ function setEvent()
           }
         }
       }
-      else if (data["player_number"] === 2)
+      else if (data["player_number"] === player2_num)
       {
         if (data["event"] === "keydown")
         {
@@ -349,7 +410,6 @@ function setEvent()
         return;
       if (end === false)
       {
-        updateScoreBoard();
         game = true;
       }
     }
@@ -366,8 +426,6 @@ function onlineContainerEventKeyDown(e)
       "event": "keydown",
       "key": ARROW_UP,
       "obj": {
-        "ball_loc": ball.position,
-        "ball_vel": ball.$velocity,
         "paddle1_loc": paddle1.position.x,
         "paddle2_loc": paddle2.position.x,
       },
@@ -383,8 +441,6 @@ function onlineContainerEventKeyDown(e)
       "event": "keydown",
       "key": ARROW_DOWN,
       "obj": {
-        "ball_loc": ball.position,
-        "ball_vel": ball.$velocity,
         "paddle1_loc": paddle1.position.x,
         "paddle2_loc": paddle2.position.x,
       },
@@ -406,8 +462,6 @@ function onlineContainerEventKeyUp(e)
       "event": "keyup",
       "key": ARROW_UP,
       "obj": {
-        "ball_loc": ball.position,
-        "ball_vel": ball.$velocity,
         "paddle1_loc": paddle1.position.x,
         "paddle2_loc": paddle2.position.x,
       },
@@ -423,8 +477,6 @@ function onlineContainerEventKeyUp(e)
       "event": "keyup",
       "key": ARROW_DOWN,
       "obj": {
-        "ball_loc": ball.position,
-        "ball_vel": ball.$velocity,
         "paddle1_loc": paddle1.position.x,
         "paddle2_loc": paddle2.position.x,
       },
@@ -432,6 +484,23 @@ function onlineContainerEventKeyUp(e)
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
   }
+}
+
+function addResult(res)
+{
+  const resultDiv = document.querySelector("#tournament_result");
+  resultDiv.style.display = 'block';
+  resultDiv.style.margin = '10px';
+  resultDiv.innerHTML = `
+        <br><br>
+        <h2>Game result</h2>
+        <p>local game does not save a result in server</p>
+        <h3><b>left</b> vs <b>right</b></h3>
+        <div id="resultT"></div>`
+  const resultBoard = resultDiv.querySelector('#resultT');
+  const result = document.createElement('div');
+  result.textContent = res;
+  resultBoard.appendChild(result);
 }
 
 function loop()
@@ -447,6 +516,19 @@ function loop()
     stopBall();
     cancelAnimationFrame(num);
     num = null;
+  }
+  if (player_number === player1_num)
+  {
+    const dataToSend = {
+      "action": "sync",
+      "obj": {
+        "ball_loc": ball.position,
+        "ball_vel": ball.$velocity,
+        "paddle1_loc": paddle1.position.x,
+        "paddle2_loc": paddle2.position.x,
+      }
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
   }
   renderer.render(scene, camera);
 }
@@ -487,13 +569,10 @@ function startOneGame()
   let direction = 1;
   if (last_scored_player === null)
     direction = Math.random() > 0.5 ? -1 : 1;
+  else if (last_scored_player === 'player1')
+    direction = -1;
   else
-  {
-    if (last_scored_player === 'player1')
-      direction = -1;
-    else
-      direction = 1;
-  }
+    direction = 1;
   ball.$velocity = {
     x: BALL_VELOCITY_X,
     z: direction * BALL_VELOCITY_Z
@@ -502,8 +581,10 @@ function startOneGame()
 
 function updateBallPosition()
 {
-  ball.position.x += ball.$velocity.x;
-  ball.position.z += ball.$velocity.z;
+  if (!isNaN(ball.$velocity.x))
+    ball.position.x += ball.$velocity.x;
+  if (!isNaN(ball.$velocity.z))
+    ball.position.z += ball.$velocity.z;
 }
 
 function isSideCollision()
@@ -549,99 +630,55 @@ function scoreBy(playerName)
   addPoint(playerName);
   last_scored_player = playerName;
   stopBall();
-  updateScoreBoard();
+  updateScoreBoard(playerName);
 }
 
-function addResult(res)
-{
-  const resultDiv = document.querySelector("#tournament_result");
-  resultDiv.style.display = 'block';
-  resultDiv.style.margin = '10px';
-  resultDiv.innerHTML = `
-        <br><br>
-        <h2>Game result</h2>
-        <p>local game does not save a result in server</p>
-        <h3><b>left</b> vs <b>right</b></h3>
-        <div id="resultT"></div>`
-  const resultBoard = resultDiv.querySelector('#resultT');
-  const result = document.createElement('div');
-  result.textContent = res;
-  resultBoard.appendChild(result);
-}
-
-function updateScoreBoard()
+function updateScoreBoard(playerName)
 {
   end = true;
-  let roundText = 'Round 1';
-  if (round === 2)
-    roundText = 'Round 2';
-  if (round === 3)
-    roundText = 'Final round';
   if (score.player1 === 5)
   {
-    scoreBoard.innerHTML = player1 + ' Win! [n] to next round';
-    addResult(roundText + ' : ' + player1 + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + ' : ' + score.player2);
-    if (round === 1)
-    {
-      round = 2;
-      round1Winner = player1;
-      round1Winner_num = player1_num;
-      player1 = nick3;
-      player2 = nick4;
-      player1_num = 3;
-      player2_num = 4;
+    const dataToSend = {
+      "action": "win",
+      "msg": {
+        "date": start_date,
+        "round": round,
+        "winner": player1,
+        "loser": player2,
+        "winner_number": player1_num,
+        "score_p1": score.player1,
+        "score_p2": score.player2,
+      },
     }
-    else if (round === 2)
-    {
-      round = 3;
-      player2 = player1;
-      player2_num = player1_num;
-      player1 = round1Winner;
-      player1_num = round1Winner_num
-    }
-    else if (round === 3)
-    {
-      // 이벤트 제거
-      document.removeEventListener('keydown', onlineonlineContainerEventKeyDown);
-      document.removeEventListener('keyup', onlineonlineContainerEventKeyUp);
-      // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
-    }
+    window.websocket.send(JSON.stringify(dataToSend));
   }
   else if (score.player2 === 5)
   {
-    scoreBoard.innerHTML = player2 + ' Win! [n] to next round';
-    addResult(roundText + ' : ' + player2 + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + ':' + score.player2);
-    if (round === 1)
-    {
-      round = 2;
-      round1Winner = player2;
-      round1Winner_num = player2_num;
-      player1 = nick3;
-      player2 = nick4;
-      player1_num = 3;
-      player2_num = 4;
-      // 만약 필요하다면 roune 1 결과 전송
+    const dataToSend = {
+      "action": "win",
+      "msg": {
+        "date": start_date,
+        "round": round,
+        "winner": player2,
+        "loser": player1,
+        "winner_number": player2_num,
+        "score_p1": score.player1,
+        "score_p2": score.player2,
+      },
     }
-    else if (round === 2)
-    {
-      round = 3;
-      player2 = player2;
-      player2_num = player2_num;
-      player1 = round1Winner;
-      player1_num = round1Winner_num
-      // 만약 필요하다면 roune 2 결과 전송
-    }
-    else if (round === 3)
-    {
-      // 이벤트 제거
-      document.removeEventListener('keydown', onlineonlineContainerEventKeyDown);
-      document.removeEventListener('keyup', onlineonlineContainerEventKeyUp);
-      // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
-    }
+    window.websocket.send(JSON.stringify(dataToSend));
   }
   else
   {
-    scoreBoard.innerHTML = player1 + ' : ' + score.player1 + ' vs ' + player2 + ': ' + score.player2;
+    const dataToSend = {
+      "action": "scored",
+      "msg": {
+        "scored_p": playerName,
+        "score_p1": score.player1,
+        "score_p2": score.player2,
+      },
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
     end = false;
   }
 }
