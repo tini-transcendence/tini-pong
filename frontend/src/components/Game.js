@@ -19,9 +19,15 @@ export default class extends AbstractComponent {
 			canvas {align-self: center; margin:auto;}
 		</style>
 		<div>
-			<h1>Pong</h1>
-	 		<h3 id="scoreBoard"></h3>
-	    	<div id="container"></div>
+			<div class="container-lg" id="gameHeader">
+				<div id="gameName">Basic Pong</div>
+				<div class="row" id="scoreLine">
+					<div class="col text-left" id="p1nickBoard"></div>
+					<div class="col" id="scoreBoard"></div>
+					<div class="col text-right" id="p2nickBoard"></div>
+				</div>
+			</div>
+			<div class="container-lg" id="container"></div>
 			<div id="tournament_result" style="display: none;"></div>
 			<button type="button" class="btn btn-primary" id="goBackButton">돌아가기</button>
 		</div>

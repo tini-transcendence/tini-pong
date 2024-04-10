@@ -36,7 +36,7 @@ BOARD_LENGTH = 3000,
 BOARD_LOCATION_X = 0,
 BOARD_LOCATION_Y = -50,
 BOARD_LOCATION_Z = 0,
-BOARD_COLOR = 0x6666ff,
+BOARD_COLOR = 0x4D37C6,
 
 BALL_DEFAULT_VELOCITY_Z = 20,
 BALL_RADIUS = 20,
@@ -45,7 +45,7 @@ BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z,
 BALL_LOCATION_X = 0,
 BALL_LOCATION_Y = 0,
 BALL_LOCATION_Z = 0,
-BALL_COLOR = 0xff0000,
+BALL_COLOR = 0xFFC85D,
 
 PADDLE_DEFAULT_WIDTH = 200,
 PADDLE_WIDTH = PADDLE_DEFAULT_WIDTH,
@@ -54,7 +54,7 @@ PADDLE_LENGTH = 30,
 PADDLE_LOCATION_X = 0,
 PADDLE_LOCATION_Y = 0,
 PADDLE_LOCATION_Z = 0,
-PADDLE_COLOR = 0xffffff,
+PADDLE_COLOR = 0xD30D5C,
 PADDLE_SPEAD = 10,
 
 container,
@@ -89,7 +89,10 @@ player_4,
 
 player_number = null,
 
+p1nickBoard,
 scoreBoard,
+p2nickBoard,
+
 score = {
   player_left: 0,
   player_right: 0
@@ -135,7 +138,13 @@ function setGameStatus(d, pn1, pn2, pn3, pn4)
 
 function setScoreBoard()
 {
-  scoreBoard = document.getElementById('scoreBoard');
+  scoreBoard = document.querySelector('#scoreBoard');
+  p1nickBoard = document.querySelector('#p1nickBoard');
+  p2nickBoard = document.querySelector('#p2nickBoard');
+  p1nickBoard.style.display = 'none';
+  p1nickBoard.style.textAlign = 'left';
+  p2nickBoard.style.display = 'none';
+  p2nickBoard.style.textAlign = 'right';
   scoreBoard.innerHTML = 'Welcome! team left ('+ player_1 + ' ' + player_2 + ') vs team right (' + player_3 + ' ' + player_4 + ')! [key:up,down]';
 }
 
@@ -155,7 +164,7 @@ function setRenderer()
   container = document.getElementById('container');
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(WIDTH, HEIGHT);
-  renderer.setClearColor(0x9999BB, 1);
+  renderer.setClearColor(0xffffff, 1);
   container.appendChild(renderer.domElement);
 }
 
@@ -271,9 +280,13 @@ function setEvent()
     if (data["type"] === "win")
     {
       let win = data["msg"]["winner"]
-      score.player1 = data["msg"]["score_p1"]
-      score.player2 = data["msg"]["score_p2"]
-      scoreBoard.innerHTML = win + ' Win! ' + player_1 + ':' + score.player1 + ", " + player_2 + ' : ' + score.player2;
+      score.player_left = data["msg"]["score_p1"]
+      score.player_right = data["msg"]["score_p2"]
+      p1nickBoard.innerHTML = '';
+      p1nickBoard.style.display = "none";
+      p2nickBoard.innerHTML = '';
+      p2nickBoard.style.display = "none";
+      scoreBoard.innerHTML = win + ' Win! ' + 'Team L (' + player_1 + ', ' + player_2 + ')' + ':' + score.player_left + ", " + 'Team R (' + player_3 + ', ' + player_4 + ')' + ' : ' + score.player_right;
       stopBall();
       end = true;
     }
@@ -281,9 +294,14 @@ function setEvent()
     if (data["type"] === "scored")
     {
       last_winner = data["msg"]["scored_p"]
-      score.player1 = data["msg"]["score_p1"]
-      score.player2 = data["msg"]["score_p2"]
-      scoreBoard.innerHTML = 'Player 1: ' + score.player1 + ' Player 2: ' + score.player2;
+      score.player_left = data["msg"]["score_p1"]
+      score.player_right = data["msg"]["score_p2"]
+      p1nickBoard.innerHTML = 'Team L (' + player_1 + ', ' + player_2 + ')';
+      p1nickBoard.style.display = "block";
+      scoreBoard.innerHTML = score.player_left + ' : ' + score.player_right;
+      scoreBoard.style.fontWeight = "bold";
+      p2nickBoard.innerHTML = 'Team R (' + player_3 + ', ' + player_4 + ')';
+      p2nickBoard.style.display = "block";
       stopBall();
     }
 
@@ -292,7 +310,10 @@ function setEvent()
       // 공 위치, 속도 동기화
       ball.position.x = data["obj"]["ball_loc"].x;
       ball.position.z = data["obj"]["ball_loc"].z;
-      ball.$velocity = data["obj"]["ball_vel"];
+      paddle1.position.x = (data["obj"]).paddle1_loc;
+      paddle2.position.x = (data["obj"]).paddle2_loc;
+      paddle3.position.x = (data["obj"]).paddle3_loc;
+      paddle4.position.x = (data["obj"]).paddle4_loc;
     }
 
     if (data["type"] === "key_press")
@@ -301,8 +322,6 @@ function setEvent()
       {
         if (data["event"] === "keydown")
         {
-          // 플레이어의 paddle 위치 동기화
-          paddle1.position.x = (data["obj"]).paddle1_loc;
           if (data["key"] === ARROW_UP)
           {
             paddle1_spead = -PADDLE_SPEAD;
@@ -314,8 +333,6 @@ function setEvent()
         }
         else if (data["event"] === "keyup")
         {
-          // 플레이어의 paddle 위치 동기화
-          paddle1.position.x = (data["obj"]).paddle1_loc;
           if (data["key"] === ARROW_UP)
           {
             if (paddle1_spead === -PADDLE_SPEAD)
@@ -332,8 +349,6 @@ function setEvent()
       {
         if (data["event"] === "keydown")
         {
-          // 플레이어의 paddle 위치 동기화
-          paddle2.position.x = (data["obj"]).paddle2_loc;
           if (data["key"] === ARROW_UP)
           {
             paddle2_spead = -PADDLE_SPEAD;
@@ -345,8 +360,6 @@ function setEvent()
         }
         else if (data["event"] === "keyup")
         {
-          // 플레이어의 paddle 위치 동기화
-          paddle2.position.x = (data["obj"]).paddle2_loc;
           if (data["key"] === ARROW_UP)
           {
             if (paddle2_spead === -PADDLE_SPEAD)
@@ -363,8 +376,6 @@ function setEvent()
       {
         if (data["event"] === "keydown")
         {
-          // 플레이어의 paddle 위치 동기화
-          paddle3.position.x = (data["obj"]).paddle3_loc;
           if (data["key"] === ARROW_UP)
           {
             paddle3_spead = -PADDLE_SPEAD;
@@ -376,8 +387,6 @@ function setEvent()
         }
         else if (data["event"] === "keyup")
         {
-          // 플레이어의 paddle 위치 동기화
-          paddle3.position.x = (data["obj"]).paddle3_loc;
           if (data["key"] === ARROW_UP)
           {
             if (paddle3_spead === -PADDLE_SPEAD)
@@ -394,8 +403,6 @@ function setEvent()
       {
         if (data["event"] === "keydown")
         {
-          // 플레이어의 paddle 위치 동기화
-          paddle4.position.x = (data["obj"]).paddle4_loc;
           if (data["key"] === ARROW_UP)
           {
             paddle4_spead = -PADDLE_SPEAD;
@@ -407,8 +414,6 @@ function setEvent()
         }
         else if (data["event"] === "keyup")
         {
-          // 플레이어의 paddle 위치 동기화
-          paddle4.position.x = (data["obj"]).paddle4_loc;
           if (data["key"] === ARROW_UP)
           {
             if (paddle4_spead === -PADDLE_SPEAD)
@@ -442,10 +447,6 @@ function onlineContainerEventKeyDown(e)
       "event": "keydown",
       "key": ARROW_UP,
       "obj": {
-        "paddle1_loc": paddle1.position.x,
-        "paddle2_loc": paddle2.position.x,
-        "paddle3_loc": paddle3.position.x,
-        "paddle4_loc": paddle4.position.x,
       },
     }
     window.websocket.send(JSON.stringify(dataToSend));
@@ -460,10 +461,6 @@ function onlineContainerEventKeyDown(e)
       "event": "keydown",
       "key": ARROW_DOWN,
       "obj": {
-        "paddle1_loc": paddle1.position.x,
-        "paddle2_loc": paddle2.position.x,
-        "paddle3_loc": paddle3.position.x,
-        "paddle4_loc": paddle4.position.x,
       },
     }
     window.websocket.send(JSON.stringify(dataToSend));
@@ -484,10 +481,6 @@ function onlineContainerEventKeyUp(e)
       "event": "keyup",
       "key": ARROW_UP,
       "obj": {
-        "paddle1_loc": paddle1.position.x,
-        "paddle2_loc": paddle2.position.x,
-        "paddle3_loc": paddle3.position.x,
-        "paddle4_loc": paddle4.position.x,
       },
     }
     window.websocket.send(JSON.stringify(dataToSend));
@@ -502,10 +495,6 @@ function onlineContainerEventKeyUp(e)
       "event": "keyup",
       "key": ARROW_DOWN,
       "obj": {
-        "paddle1_loc": paddle1.position.x,
-        "paddle2_loc": paddle2.position.x,
-        "paddle3_loc": paddle3.position.x,
-        "paddle4_loc": paddle4.position.x,
       },
     }
     window.websocket.send(JSON.stringify(dataToSend));
@@ -516,9 +505,12 @@ function onlineContainerEventKeyUp(e)
 function loop()
 {
   num = requestAnimationFrame(loop);
-  if (game === true && end === false)
-    simulation_ball();
-  simulation_paddle();
+  if (player_number === 1)
+  {
+    if (game === true && end === false)
+      simulation_ball();
+    simulation_paddle();
+  }
   if (animateGame.getAnimate() === false)
     end = true;
   if (end === true)
@@ -533,7 +525,6 @@ function loop()
       "action": "sync",
       "obj": {
         "ball_loc": ball.position,
-        "ball_vel": ball.$velocity,
         "paddle1_loc": paddle1.position.x,
         "paddle2_loc": paddle2.position.x,
         "paddle3_loc": paddle3.position.x,
