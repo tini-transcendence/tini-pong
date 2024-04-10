@@ -14,9 +14,9 @@ export default class extends AbstractComponent {
 
 	async getHtml() {
 		return `
-		<div class="container">
+		<div class="container mt-3">
 			<h3 class="m-3 text-center">
-				UserEdit
+				Edit Profile
 			</h3>
 			<div class="mb-3">
 				<label for="nickname-form" class="form-label">Nickname</label>
@@ -35,7 +35,7 @@ export default class extends AbstractComponent {
 				<input type="text" class="form-control" id="message-form" maxlength="100" placeholder="Enter your status message">
 			</div>
 			<div class="text-center">
-				<button class="btn btn-outline-primary btn-lg" id="editpage-submit">Submit</button>
+				<button class="btn common-radio-btn btn-lg" id="editpage-submit">Submit</button>
 			</div>
 		</div>
 		`;
