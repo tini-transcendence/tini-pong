@@ -8,6 +8,9 @@ num = null,
 ARROW_UP = 38,
 ARROW_DOWN = 40,
 
+isArrowUpKeyDown = false,
+isArrowDownKeyDown = false,
+
 WIDTH = 800,
 HEIGHT = 600,
 
@@ -348,8 +351,9 @@ function setEvent()
 
 function onlineContainerEventKeyDown(e)
 {
-  if (e.keyCode === ARROW_UP)
+  if (isArrowUpKeyDown === false && e.keyCode === ARROW_UP)
   {
+    isArrowUpKeyDown = true;
     // send key down arrow up
     const dataToSend = {
       "action": "key_press",
@@ -363,8 +367,9 @@ function onlineContainerEventKeyDown(e)
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
   }
-  else if (e.keyCode === ARROW_DOWN)
+  else if (isArrowDownKeyDown === false && e.keyCode === ARROW_DOWN)
   {
+    isArrowDownKeyDown = true;
     // send key down arrow down
     const dataToSend = {
       "action": "key_press",
@@ -384,8 +389,9 @@ function onlineContainerEventKeyDown(e)
 
 function onlineContainerEventKeyUp(e)
 {
-  if (e.keyCode === ARROW_UP)
+  if (isArrowUpKeyDown === true && e.keyCode === ARROW_UP)
   {
+    isArrowUpKeyDown = false;
     // send key up arrow up
     const dataToSend = {
       "action": "key_press",
@@ -399,8 +405,9 @@ function onlineContainerEventKeyUp(e)
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
   }
-  else if (e.keyCode === ARROW_DOWN)
+  else if (isArrowDownKeyDown === true && e.keyCode === ARROW_DOWN)
   {
+    isArrowDownKeyDown = false;
     // send key up arrow down
     const dataToSend = {
       "action": "key_press",

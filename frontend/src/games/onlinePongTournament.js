@@ -8,6 +8,9 @@ num = null,
 ARROW_UP = 38,
 ARROW_DOWN = 40,
 
+isArrowUpKeyDown = false,
+isArrowDownKeyDown = false,
+
 WIDTH = 800,
 HEIGHT = 600,
 
@@ -88,6 +91,9 @@ player1_num,
 player2_num,
 round1Winner,
 round1Winner_num,
+round2Winner,
+round2Winner_num,
+
 player_number = null,
 
 scoreBoard,
@@ -290,10 +296,12 @@ function setEvent()
       else if (round === 2)
       {
         round = 3;
-        player2 = win_player;
-        player2_num = win_player_number;
+        round2Winner = win_player;
+        round2Winner_num = win_player_number;
         player1 = round1Winner;
         player1_num = round1Winner_num;
+        player2 = round2Winner;
+        player2_num = round2Winner_num;
         // 만약 필요하다면 roune 2 결과 전송
       }
       else if (round === 3)
@@ -418,8 +426,9 @@ function setEvent()
 
 function onlineContainerEventKeyDown(e)
 {
-  if (e.keyCode === ARROW_UP)
+  if (isArrowUpKeyDown === false && e.keyCode === ARROW_UP)
   {
+    isArrowUpKeyDown = true;
     // send key down arrow up
     const dataToSend = {
       "action": "key_press",
@@ -433,8 +442,9 @@ function onlineContainerEventKeyDown(e)
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
   }
-  else if (e.keyCode === ARROW_DOWN)
+  else if (isArrowDownKeyDown === false && e.keyCode === ARROW_DOWN)
   {
+    isArrowDownKeyDown = true;
     // send key down arrow down
     const dataToSend = {
       "action": "key_press",
@@ -454,8 +464,9 @@ function onlineContainerEventKeyDown(e)
 
 function onlineContainerEventKeyUp(e)
 {
-  if (e.keyCode === ARROW_UP)
+  if (isArrowUpKeyDown === true && e.keyCode === ARROW_UP)
   {
+    isArrowUpKeyDown = false;
     // send key up arrow up
     const dataToSend = {
       "action": "key_press",
@@ -469,8 +480,9 @@ function onlineContainerEventKeyUp(e)
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
   }
-  else if (e.keyCode === ARROW_DOWN)
+  else if (isArrowDownKeyDown === true && e.keyCode === ARROW_DOWN)
   {
+    isArrowDownKeyDown = false;
     // send key up arrow down
     const dataToSend = {
       "action": "key_press",
