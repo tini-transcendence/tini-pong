@@ -26,7 +26,18 @@ export default class extends AbstractComponent {
 					<div id="userpage-edit"></div>
 				</div>
 				<div class="col col-md-8 p-2 border">
-					<h3 style="font-weight: 700; color: #4D37C6;">MATCH</h3>
+					<div class="text-center mb-3">
+						<div class="btn-group" id="log-btn-group" role="group" aria-label="Match Mode Select Btn">
+							<input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+							<label class="btn common-radio-btn" for="btnradio1">1 VS 1</label>
+
+							<input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+							<label class="btn common-radio-btn" for="btnradio2">2 VS 2</label>
+
+							<input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
+							<label class="btn common-radio-btn" for="btnradio3">Tournament</label>
+						</div>
+					</div>
 					<div class="mx-xl-3">
 						<div class="row">
 							<div class="col">승률</div>
@@ -41,30 +52,7 @@ export default class extends AbstractComponent {
 							</div>
 						</div>
 					</div>
-					<ul class="mt-4 overflow-auto" style="height: 500px; padding-left: 0;">
-						<li class="d-flex align-items-center border">
-							<div class="align-self-stretch bg-primary text-white p-2">
-								승
-							</div>
-							<div class="d-inline-flex justify-content-around align-items-center p-2" style="width: 40rem;">
-								<div>
-									<span>nick1</span>
-									<span class="text-secondary">#1234</span>
-								</div>
-								<div class="mx-2">
-									12 : 3
-								</div>
-								<div>
-									<span>nick2</span>
-									<span class="text-secondary">#abcd</span>
-								</div>
-							</div>
-							<div class="ms-auto p-2 text-end">
-								<div>2024:04:02 18:49</div>
-								<div><b>Hard</b></div>
-							</div>
-						</li>
-					</ul>
+					<ul class="mt-4 overflow-auto" id="log-pannel" style="height: 500px; padding-left: 0;"></ul>
 				</div>
 			</div>
 		</div>
@@ -77,6 +65,13 @@ export default class extends AbstractComponent {
 				let fetchString = "";
 				if (param.useruuid)
 					fetchString = `?uuid=${param.useruuid}`;
+				else {
+					document.querySelector("#userpage-edit").insertAdjacentHTML("beforeend", `
+					<div class="m-3 text-end">
+						<a class="btn btn-primary btn-sm" href="/edit" data-href="/edit" role="button" style="--bs-btn-bg: #4D37C6; --bs-btn-border-color: #4D37C6;">edit</a>
+					</div>
+					`);
+				}
 				const fetchModule = new FetchModule();
 				const response = await fetchModule.request(new Request(`${BACKEND_URL}/user/profile${fetchString}`, {
 					method: 'GET',
@@ -91,6 +86,7 @@ export default class extends AbstractComponent {
 					userProfileNode.querySelector("#userpage-profile-message").innerText = data.message;
 					if (data.avatar)
 						userProfileNode.querySelector("#userpage-profile-avatar").src = data.avatar;
+					LogSetting();
 					progressSetting();
 				}
 				else
@@ -104,6 +100,65 @@ export default class extends AbstractComponent {
 				</div>
 				`);
 			}
+		}
+
+		const LogSetting = () => {
+			const radioBtn = document.querySelector("#log-btn-group");
+			const logPannel = document.querySelector("#log-pannel");
+			const logSetting1vs1 = () => {
+				logPannel.replaceChildren();
+				const pannelNode = document.createElement("li");
+				pannelNode.setAttribute("class", "d-flex align-items-center border");
+				pannelNode.insertAdjacentHTML("beforeend", `
+				<div class="align-self-stretch bg-primary text-white p-2">
+					승
+				</div>
+				<div class="d-inline-flex justify-content-around align-items-center p-2" style="width: 40rem;">
+					<div>
+						<span>nick1</span>
+						<span class="text-secondary">#1234</span>
+					</div>
+					<div class="mx-2">
+						12 : 3
+					</div>
+					<div>
+						<span>nick2</span>
+						<span class="text-secondary">#abcd</span>
+					</div>
+				</div>
+				<div class="ms-auto p-2 text-end">
+					<div>2024:04:02 18:49</div>
+					<div><b>Hard</b></div>
+				</div>
+				`);
+				logPannel.appendChild(pannelNode);
+			}
+			const logSetting2vs2 = () => {
+				logPannel.replaceChildren();
+			}
+			const logSettingTournament = () => {
+				logPannel.replaceChildren();
+			}
+			
+			logSetting1vs1();
+			radioBtn.querySelector("#btnradio1").addEventListener("change", e => {
+				if (e.currentTarget.checked) {
+					console.log("1 vs 1");
+					logSetting1vs1();
+				}
+			})
+			radioBtn.querySelector("#btnradio2").addEventListener("change", e => {
+				if (e.currentTarget.checked) {
+					console.log("2 vs 2");
+					logSetting2vs2();
+				}
+			})
+			radioBtn.querySelector("#btnradio3").addEventListener("change", e => {
+				if (e.currentTarget.checked) {
+					console.log("Tournament");
+					logSettingTournament();
+				}
+			})
 		}
 
 		const progressSetting = () => {
@@ -127,13 +182,7 @@ export default class extends AbstractComponent {
 				document.querySelector("#rate-progress").innerText = `${winRate}%`;
 			}
 		}
+
 		profileSetting();
-		if (!param.useruuid) {
-			document.querySelector("#userpage-edit").insertAdjacentHTML("beforeend", `
-			<div class="m-3 text-end">
-				<a class="btn btn-primary btn-sm" href="/edit" data-href="/edit" role="button" style="--bs-btn-bg: #4D37C6; --bs-btn-border-color: #4D37C6;">edit</a>
-			</div>
-			`);
-		}
 	}
 }
