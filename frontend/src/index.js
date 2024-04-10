@@ -36,7 +36,7 @@ const routes = [
 	{ path: "/edit", component: [UserEdit], login: true},
 	{ path: "/lobby", component: [Lobby, Navbar], login: true},
 	{ path: "/local", component: [Local], login: true},
-	{ path: "/tdata", component: [Tdata], login: true},
+	{ path: "/tdata", component: [Tdata, Navbar], login: true},
 	{ path: "/room/:roomuuid", component: [Room], login: true},
 	{ path: "/game", component: [Game], login: true},
 	{ path: "/404", component: [NotFound], login: false},

@@ -86,3 +86,25 @@ input[type='number'] {
 		--bs-btn-font-size: 2rem;
 	}
 }
+
+/* ------------ */
+/* Room 관련 CSS */
+/* ------------ */
+
+.ready-style {
+    font-weight: bold;
+    color: rgb(32, 35, 159);
+}
+
+.vertical-buttons {
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+    position: bottom;
+	color: rgb(32, 35, 159);
+  }
+
+  .vertical-buttons button {
+    width: 100%;
+    margin-top: 5px;
+  }

@@ -26,9 +26,8 @@ export default class extends AbstractComponent {
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
 									<h5 class="card-title">Nickname</h5>
-									<p class="card-text">Win:0 Lose:0</p>
 								</div>
-								<div class="card-footer">Ready : ?</div>
+								<div class="card-footer">----</div>
 							</div>
 						</div>
 						<div class="col">
@@ -36,9 +35,8 @@ export default class extends AbstractComponent {
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
 									<h5 class="card-title">Nickname</h5>
-									<p class="card-text">Win:0 Lose:0</p>
 								</div>
-								<div class="card-footer">Ready : ?</div>
+								<div class="card-footer">---</div>
 							</div>
 						</div>
 						<div class="col">
@@ -46,9 +44,8 @@ export default class extends AbstractComponent {
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
 									<h5 class="card-title">Nickname</h5>
-									<p class="card-text">Win:0 Lose:0</p>
 								</div>
-								<div class="card-footer">Ready : ?</div>
+								<div class="card-footer">---</div>
 							</div>
 						</div>
 						<div class="col">
@@ -56,9 +53,8 @@ export default class extends AbstractComponent {
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
 									<h5 class="card-title">Nickname</h5>
-									<p class="card-text">Win:0 Lose:0</p>
 								</div>
-								<div class="card-footer">Ready : ?</div>
+								<div class="card-footer">---</div>
 							</div>
 						</div>
 					</div>
@@ -71,11 +67,13 @@ export default class extends AbstractComponent {
 						<div id="room_difficulty"></div>
 						<div id="room_gametype"></div>
 					</div>
+					<div class="vertical-buttons">
+						<button type="button" class="btn btn-outline-dark" id="startBtn">시작</button>
+						<button type="button" class="btn btn-outline-dark" id="readyBtn">준비</button>
+						<button type="button" class="btn btn-outline-dark" id="exitBtn">나가기</button>
+					</div>
 				</div>
 			</div>
-			<button type="button" class="btn btn-primary" id="startBtn">시작</button>
-			<button type="button" class="btn btn-primary" id="readyBtn">준비</button>
-			<button type="button" class="btn btn-primary" id="exitBtn">나가기</button>
 		</div>
 		`;
 	}
@@ -190,10 +188,14 @@ export default class extends AbstractComponent {
 		function readyUpdate(data) {
 			const playerNode = document.querySelector("#player" + data["player_number"]);
 			const playerReadyNode = playerNode.querySelector(".card-footer");
-			if (data["is_ready"])
-				playerReadyNode.innerText = "Ready : Yes";
-			else
-				playerReadyNode.innerText = "Ready : No";
+			if (data["is_ready"]) {
+				playerReadyNode.innerText = "Ready";
+				playerReadyNode.classList.add("ready-style");
+			}
+			else {
+				playerReadyNode.innerText = "---";
+				playerReadyNode.classList.remove("ready-style");
+			}
 		}
 
 		function startUpdate(data) {
