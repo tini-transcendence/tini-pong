@@ -271,9 +271,9 @@ function setEvent()
     if (data["type"] === "win")
     {
       let win = data["msg"]["winner"]
-      score.player1 = data["msg"]["score_p1"]
-      score.player2 = data["msg"]["score_p2"]
-      scoreBoard.innerHTML = win + ' Win! ' + player_1 + ':' + score.player1 + ", " + player_2 + ' : ' + score.player2;
+      score.player_left = data["msg"]["score_p1"]
+      score.player_right = data["msg"]["score_p2"]
+      scoreBoard.innerHTML = win + ' Win! ' + player_1 + ':' + score.player_left + ", " + player_2 + ' : ' + score.player2;
       stopBall();
       end = true;
     }
@@ -281,9 +281,9 @@ function setEvent()
     if (data["type"] === "scored")
     {
       last_winner = data["msg"]["scored_p"]
-      score.player1 = data["msg"]["score_p1"]
+      score.player_left = data["msg"]["score_p1"]
       score.player2 = data["msg"]["score_p2"]
-      scoreBoard.innerHTML = 'Player 1: ' + score.player1 + ' Player 2: ' + score.player2;
+      scoreBoard.innerHTML = 'Player 1: ' + score.player_left + ' Player 2: ' + score.player2;
       stopBall();
     }
 
