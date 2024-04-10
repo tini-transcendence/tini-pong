@@ -26,7 +26,7 @@ export default class extends AbstractComponent {
 			<div class="mb-3">
 				<label for="avatar-form" class="form-label">Avatar Image</label>
 				<div class="text-center mb-2">
-					<img id="image-preview" src="./src/img/default_profile.png" width="200px" height="200px" alt="avatar thumbnail" style="border-radius: 20%;"/>
+					<img id="image-preview" src="/src/img/default_profile.png" width="200px" height="200px" alt="avatar thumbnail" style="border-radius: 20%;"/>
 				</div>
 				<input class="form-control" type="file" id="avatar-form" accept="image/*">
 			</div>
