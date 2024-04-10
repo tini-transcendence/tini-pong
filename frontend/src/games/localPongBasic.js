@@ -485,7 +485,8 @@ function updateScoreBoard()
     scoreBoard.innerHTML = score.player1 + ' : ' + score.player2;
     scoreBoard.style.fontWeight = "bold";
     p2nickBoard.innerHTML = 'Player 2';
-    p2nickBoard.style.display = "block";end = false;
+    p2nickBoard.style.display = "block";
+    end = false;
   }
 }
 
