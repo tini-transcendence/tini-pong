@@ -189,9 +189,9 @@ function setBall()
 function setPaddle()
 {
   paddle1 = addPaddle();
-  paddle1.position.z = BOARD_LENGTH / 2;
+  paddle1.position.z = BOARD_LENGTH / 2 - PADDLE_LENGTH;
   paddle2 = addPaddle();
-  paddle2.position.z = -BOARD_LENGTH / 2;
+  paddle2.position.z = -BOARD_LENGTH / 2 + PADDLE_LENGTH;
 }
 
 function addPaddle()
@@ -272,7 +272,8 @@ function setEvent()
       // 공 위치, 속도 동기화
       ball.position.x = data["obj"]["ball_loc"].x;
       ball.position.z = data["obj"]["ball_loc"].z;
-      ball.$velocity = data["obj"]["ball_vel"];
+      paddle1.position.x = (data["obj"]).paddle1_loc;
+      paddle2.position.x = (data["obj"]).paddle2_loc;
     }
     
     if (data["type"] === "key_press")
@@ -282,7 +283,6 @@ function setEvent()
         if (data["event"] === "keydown")
         {
           // 플레이어의 paddle 위치 동기화
-          paddle1.position.x = (data["obj"]).paddle1_loc;
           if (data["key"] === ARROW_UP)
           {
             paddle1_spead = -PADDLE_SPEAD;
@@ -295,7 +295,6 @@ function setEvent()
         else if (data["event"] === "keyup")
         {
           // 플레이어의 paddle 위치 동기화
-          paddle1.position.x = (data["obj"]).paddle1_loc;
           if (data["key"] === ARROW_UP)
           {
             if (paddle1_spead === -PADDLE_SPEAD)
@@ -313,7 +312,6 @@ function setEvent()
         if (data["event"] === "keydown")
         {
           // 플레이어의 paddle 위치 동기화
-          paddle2.position.x = (data["obj"]).paddle2_loc;
           if (data["key"] === ARROW_UP)
           {
             paddle2_spead = -PADDLE_SPEAD;
@@ -326,7 +324,6 @@ function setEvent()
         else if (data["event"] === "keyup")
         {
           // 플레이어의 paddle 위치 동기화
-          paddle2.position.x = (data["obj"]).paddle2_loc;
           if (data["key"] === ARROW_UP)
           {
             if (paddle2_spead === -PADDLE_SPEAD)
@@ -360,8 +357,6 @@ function onlineContainerEventKeyDown(e)
       "event": "keydown",
       "key": ARROW_UP,
       "obj": {
-        "paddle1_loc": paddle1.position.x,
-        "paddle2_loc": paddle2.position.x,
       }
     }
     window.websocket.send(JSON.stringify(dataToSend));
@@ -376,8 +371,6 @@ function onlineContainerEventKeyDown(e)
       "event": "keydown",
       "key": ARROW_DOWN,
       "obj": {
-        "paddle1_loc": paddle1.position.x,
-        "paddle2_loc": paddle2.position.x,
       }
     }
     window.websocket.send(JSON.stringify(dataToSend));
@@ -398,8 +391,6 @@ function onlineContainerEventKeyUp(e)
       "event": "keyup",
       "key": ARROW_UP,
       "obj": {
-        "paddle1_loc": paddle1.position.x,
-        "paddle2_loc": paddle2.position.x,
       }
     }
     window.websocket.send(JSON.stringify(dataToSend));
@@ -414,8 +405,6 @@ function onlineContainerEventKeyUp(e)
       "event": "keyup",
       "key": ARROW_DOWN,
       "obj": {
-        "paddle1_loc": paddle1.position.x,
-        "paddle2_loc": paddle2.position.x,
       }
     }
     window.websocket.send(JSON.stringify(dataToSend));
@@ -426,9 +415,12 @@ function onlineContainerEventKeyUp(e)
 function loop()
 {
   num = requestAnimationFrame(loop);
-  if (game === true && end === false)
-    simulation_ball();
-  simulation_paddle();
+  if (player_number === 1)
+  {
+    if (game === true && end === false)
+      simulation_ball();
+    simulation_paddle();
+  }
   if (animateGame.getAnimate() === false)
     end = true;
   if (end === true)
@@ -443,7 +435,6 @@ function loop()
       "action": "sync",
       "obj": {
         "ball_loc": ball.position,
-        "ball_vel": ball.$velocity,
         "paddle1_loc": paddle1.position.x,
         "paddle2_loc": paddle2.position.x,
       }
