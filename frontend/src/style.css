@@ -64,6 +64,20 @@ input[type='number'] {
 	--bs-btn-active-border-color: #A193EF;
 }
 
+.common-radio-btn {
+	--bs-btn-font-weight: 700;
+	--bs-btn-font-size: 1rem;
+	--bs-btn-color: #4D37C6;
+	--bs-btn-bg: white;
+	--bs-btn-border-color: #4D37C6;
+	--bs-btn-hover-color: white;
+	--bs-btn-hover-bg: #4D37C6;
+	--bs-btn-hover-border-color: #4D37C6;
+	--bs-btn-active-color: var(--bs-btn-hover-color);
+	--bs-btn-active-bg: #4D37C6;
+	--bs-btn-active-border-color: #4D37C6;
+}
+
 @media (min-width: 1400px) {
 	.lobby-title {
 		font-size: 6rem;
@@ -72,3 +86,25 @@ input[type='number'] {
 		--bs-btn-font-size: 2rem;
 	}
 }
+
+/* ------------ */
+/* Room 관련 CSS */
+/* ------------ */
+
+.ready-style {
+    font-weight: bold;
+    color: rgb(32, 35, 159);
+}
+
+.vertical-buttons {
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+    position: bottom;
+	color: rgb(32, 35, 159);
+  }
+
+  .vertical-buttons button {
+    width: 100%;
+    margin-top: 5px;
+  }
