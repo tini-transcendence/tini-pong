@@ -12,7 +12,7 @@ export default class extends AbstractComponent {
 		return `
 		<div class="container-fluid">
 			<div class="row row-cols-1 row-cols-md-2 m-md-3 mt-3">
-				<div class="col col-md-4 p-2 border" id="userpage-profile">
+				<div class="col col-md-4 p-2" id="userpage-profile">
 					<div class="text-center mb-3">
 						<img id="userpage-profile-avatar" src="/src/img/default_profile.png" width="200px" height="200px" alt="profile thumbnail" style="border-radius: 20%;"/>
 					</div>
@@ -20,12 +20,10 @@ export default class extends AbstractComponent {
 						<h3 id="userpage-profile-nickname">Nickname</h3>
 						<h4 class="text-secondary" id="userpage-profile-idtag">Tag</h3>
 					</div>
-					<div class="mx-2 border">
-						<p id="userpage-profile-message">This is My Page.</p>
-					</div>
+					<div class="mx-2 border p-2" id="userpage-profile-message"></div>
 					<div id="userpage-edit"></div>
 				</div>
-				<div class="col col-md-8 p-2 border">
+				<div class="col col-md-8 p-2">
 					<div class="text-center mb-3">
 						<div class="btn-group" id="log-btn-group" role="group" aria-label="Match Mode Select Btn">
 							<input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
@@ -38,21 +36,23 @@ export default class extends AbstractComponent {
 							<label class="btn common-radio-btn" for="btnradio3">Tournament</label>
 						</div>
 					</div>
-					<div class="mx-xl-3">
-						<div class="row">
-							<div class="col">승률</div>
-							<div class="col" style="text-align: right" id="rate-progress">25%</div>
-						</div>
-						<div class="progress-stacked" id="winrate-progress">
-							<div class="progress" role="progressbar" aria-label="Segment-win" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" style="width: 15%">
-								<div class="progress-bar progress-bar-striped">15</div>
+					<div class="border border-3 p-2" style="--bs-border-color: #4D37C6;">
+						<div class="mx-xl-3">
+							<div class="row">
+								<div class="col">승률</div>
+								<div class="col" style="text-align: right" id="rate-progress">25%</div>
 							</div>
-							<div class="progress" role="progressbar" aria-label="Segment-lose" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 85%">
-								<div class="progress-bar progress-bar-striped bg-danger">85</div>
+							<div class="progress-stacked" id="winrate-progress">
+								<div class="progress" role="progressbar" aria-label="Segment-win" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" style="width: 15%">
+									<div class="progress-bar progress-bar-striped">15</div>
+								</div>
+								<div class="progress" role="progressbar" aria-label="Segment-lose" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 85%">
+									<div class="progress-bar progress-bar-striped bg-danger">85</div>
+								</div>
 							</div>
 						</div>
+						<ul class="mt-4 overflow-auto" id="log-pannel" style="height: 500px; padding-left: 0;"></ul>
 					</div>
-					<ul class="mt-4 overflow-auto" id="log-pannel" style="height: 500px; padding-left: 0;"></ul>
 				</div>
 			</div>
 		</div>
@@ -68,7 +68,7 @@ export default class extends AbstractComponent {
 				else {
 					document.querySelector("#userpage-edit").insertAdjacentHTML("beforeend", `
 					<div class="m-3 text-end">
-						<a class="btn btn-primary btn-sm" href="/edit" data-href="/edit" role="button" style="--bs-btn-bg: #4D37C6; --bs-btn-border-color: #4D37C6;">edit</a>
+						<a class="btn common-radio-btn" href="/edit" data-href="/edit" role="button">edit</a>
 					</div>
 					`);
 				}

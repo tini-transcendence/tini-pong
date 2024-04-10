@@ -16,11 +16,11 @@ export default class extends AbstractComponent {
 				<div class="col">
 					<div class="d-flex flex-column">
 						<div class="d-flex flex-nowrap align-items-center">
-							<img src="./src/img/racket.png" width="auto" height="100px" alt="racket" class="me-4"/>
+							<img src="/src/img/racket.png" width="auto" height="100px" alt="racket" class="me-4"/>
 							<a href="/local" data-href="/local" class="link-offset-2 link-underline link-underline-opacity-0 main-link ms-2" data-value="local">LOCAL</a>
 						</div>
 						<div class="d-flex flex-nowrap align-items-center">
-							<img src="./src/img/racket_reverse.png" width="auto" height="100px" alt="racket"  class="me-4"/>
+							<img src="/src/img/racket_reverse.png" width="auto" height="100px" alt="racket"  class="me-4"/>
 							<a href="/lobby" data-href="/lobby" class="link-offset-2 link-underline link-underline-opacity-0 main-link" data-value="online">ONLINE</a>
 						</div>
 					</div>
@@ -59,7 +59,7 @@ export default class extends AbstractComponent {
 			</svg>
 			`);
 			const linkImage = document.createElement("img");
-			linkImage.setAttribute("src", "./src/img/Main_Local.png");
+			linkImage.setAttribute("src", "/src/img/Main_Local.png");
 			linkImage.setAttribute("width", "450px");
 			linkImage.setAttribute("height", "450px");
 			linkImageNode.replaceChildren(linkImage);
@@ -78,7 +78,7 @@ export default class extends AbstractComponent {
 			</svg>
 			`);
 			const linkImage = document.createElement("img");
-			linkImage.setAttribute("src", "./src/img/Main_Online.png");
+			linkImage.setAttribute("src", "/src/img/Main_Online.png");
 			linkImage.setAttribute("width", "450px");
 			linkImage.setAttribute("height", "450px");
 			linkImageNode.replaceChildren(linkImage);
