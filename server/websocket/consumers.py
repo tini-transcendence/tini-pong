@@ -111,16 +111,87 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 
                 await self.remove_user_from_room(self.user, self.room_uuid)
 
+        elif action == "init":
+            if (self.player_number == 1):
+                await self.send(text_data=json.dumps({"type":"init", "isp1": True}))
+            else:
+                await self.send(text_data=json.dumps({"type":"init", "isp1": False}))
+
         elif action == "key_press":
-            await self.handle_key_press(text_data_json["event"], text_data_json["key"])
+            await self.handle_key_press(text_data_json["event"], text_data_json["key"], text_data_json["obj"])
+
+        elif action == "win":
+            await self.handle_win(text_data_json["msg"])
+
+        elif action == "scored":
+            print("scored")
+            print(text_data_json)
+            await self.handle_scored(text_data_json["msg"])
+
+        elif action == "sync":
+            await self.handle_sync(text_data_json["obj"])
+
+    async def handle_sync(self, obj):
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "sync",
+                "obj": obj,
+            },
+        )
+
+    async def sync(self, obj):
+        obj["player_number"] = self.player_number
+        await self.send(
+            text_data=json.dumps(obj)
+        )
+
+    async def handle_win(self, msg):
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "win",
+                "msg": msg,
+            },
+        )
+
+    async def win(self, msg):
+        msg["player_number"] = self.player_number
+        await self.send(
+            text_data=json.dumps(msg)
+        )
+    
+    async def handle_scored(self, msg):
+        print("handle")
+        print(msg)
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "scored",
+                "msg": msg,
+            },
+        )
+
+    async def scored(self, msg):
+        print("send")
+        msg["player_number"] = self.player_number
+        await self.send(
+            text_data=json.dumps(msg)
+        )
 
     async def room_message(self, event):
         await self.send(text_data=json.dumps(event["message"]))
 
-    async def handle_key_press(self, event, key):
+    async def handle_key_press(self, event, key, obj):
         await self.channel_layer.group_send(
             self.room_group_name,
-            {"type": "player_key_press", "player_number": self.player_number, "event": event, "key": key},
+            {
+                "type": "player_key_press",
+                "player_number": self.player_number,
+                "event": event,
+                "key": key,
+                "obj": obj,
+            },
         )
 
     async def player_key_press(self, event):
@@ -131,6 +202,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     "player_number": event["player_number"],
                     "event": event["event"],
                     "key": event["key"],
+                    "obj": event["obj"],
                 }
             )
         )
