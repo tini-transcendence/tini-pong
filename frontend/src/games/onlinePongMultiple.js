@@ -1,15 +1,12 @@
 import animateGame from "../utils/animateGameModule.js";
 
 let
-local = true,
-online = false,
 document = window.document,
 THREE = window.THREE,
 num = null,
 
 ARROW_UP = 38,
 ARROW_DOWN = 40,
-KEY_N = 78,
 
 WIDTH = 800,
 HEIGHT = 600,
@@ -80,10 +77,14 @@ difficulty = 0,
 game = false,
 end = false,
 
+start_date,
+
 player_1,
 player_2,
 player_3,
 player_4,
+
+player_number = null,
 
 scoreBoard,
 score = {
@@ -98,7 +99,13 @@ function init(d, pn1, pn2, pn3, pn4)
   setGameStatus(d, pn1, pn2, pn3, pn4);
   setScoreBoard()
   setGame();
+  setDifficulty();
   setEvent();
+  const dataToSend = {
+    "action": "init",
+  }
+  window.websocket.send(JSON.stringify(dataToSend));
+  start_date = Date();
   animateGame.setAnimateOn();
   loop();
 }
@@ -208,144 +215,207 @@ function addPaddle()
   return paddle;
 }
 
+function setDifficulty()
+{
+  if (difficulty === 1)
+  {
+    BALL_VELOCITY_Z *= 0.8;
+    PADDLE_WIDTH *= 1.2;
+    paddle1.scale.set(1.2, 1, 1);
+    paddle2.scale.set(1.2, 1, 1);
+    paddle3.scale.set(1.2, 1, 1);
+    paddle4.scale.set(1.2, 1, 1);
+  }
+  else if (difficulty === 2)
+  {
+    BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z;
+  }
+  else if (difficulty === 3)
+  {
+    BALL_VELOCITY_Z *= 1.2;
+    PADDLE_WIDTH *= 0.8;
+    paddle1.scale.set(0.8, 1, 1);
+    paddle2.scale.set(0.8, 1, 1);
+    paddle3.scale.set(0.8, 1, 1);
+    paddle4.scale.set(0.8, 1, 1);
+  }
+}
+
 function setEvent()
 {
   document.addEventListener('keydown', onlineContainerEventKeyDown);
   document.addEventListener('keyup', onlineContainerEventKeyUp);
 
+  window.websocket.onclose = function (event) {
+    window.websocket = undefined;
+    if (game === true)
+      console.log('게임 진행 도중 WebSocket 연결이 닫혔습니다.');
+    else if (end === true)
+      console.log('게임 종료 이후 WebSocket 연결이 닫혔습니다.');
+    else
+      console.log('게임 시작 직전 WebSocket 연결이 닫혔습니다.');
+    end = true;
+  };
+
   window.websocket.onmessage = function (event) {
     const data = JSON.parse(event.data);
     console.log('game : ', data["type"]);
     console.log(data);
-  
-    if (data["player_number"] === 1)
+    
+    if (data["type"] === "init")
+      player_number = data["player_number"];
+    
+    if (data["type"] === "win")
+    {
+      let win = data["msg"]["winner"]
+      score.player1 = data["msg"]["score_p1"]
+      score.player2 = data["msg"]["score_p2"]
+      scoreBoard.innerHTML = win + ' Win! ' + player_1 + ':' + score.player1 + ", " + player_2 + ' : ' + score.player2;
+      stopBall();
+      end = true;
+    }
+    
+    if (data["type"] === "scored")
+    {
+      last_winner = data["msg"]["scored_p"]
+      score.player1 = data["msg"]["score_p1"]
+      score.player2 = data["msg"]["score_p2"]
+      scoreBoard.innerHTML = 'Player 1: ' + score.player1 + ' Player 2: ' + score.player2;
+      stopBall();
+    }
+
+    if (player_number !== 1 && data["type"] === "sync" && data["player_number"] === 1)
     {
       // 공 위치, 속도 동기화
-      if (!isNaN(data["obj"]["ball_loc"]))
-      {
-        ball.position.x = data["obj"]["ball_loc"].x;
-        ball.position.z = data["obj"]["ball_loc"].z;
-        ball.$velocity = data["obj"]["ball_vel"];
-      }
-      if (data["event"] === "keydown")
-      {
-        // 플레이어의 paddle 위치 동기화
-        paddle1.position.x = (data["obj"]).paddle1_loc;
-        if (data["key"] === ARROW_UP)
-        {
-          paddle1_spead = -PADDLE_SPEAD;
-        }
-        else if (data["key"] === ARROW_DOWN)
-        {
-          paddle1_spead = PADDLE_SPEAD;
-        }
-      }
-      else if (data["event"] === "keyup")
-      {
-        // 플레이어의 paddle 위치 동기화
-        paddle1.position.x = (data["obj"]).paddle1_loc;
-        if (data["key"] === ARROW_UP)
-        {
-          if (paddle1_spead === -PADDLE_SPEAD)
-            paddle1_spead = 0;
-        }
-        else if (data["key"] === ARROW_DOWN)
-        {
-          if (paddle1_spead === PADDLE_SPEAD)
-            paddle1_spead = 0;
-        }
-      }
+      ball.position.x = data["obj"]["ball_loc"].x;
+      ball.position.z = data["obj"]["ball_loc"].z;
+      ball.$velocity = data["obj"]["ball_vel"];
     }
-    else if (data["player_number"] === 2)
+
+    if (data["type"] === "key_press")
     {
-      if (data["event"] === "keydown")
+      if (data["player_number"] === 1)
       {
-        // 플레이어의 paddle 위치 동기화
-        paddle2.position.x = (data["obj"]).paddle2_loc;
-        if (data["key"] === ARROW_UP)
+        if (data["event"] === "keydown")
         {
-          paddle2_spead = -PADDLE_SPEAD;
+          // 플레이어의 paddle 위치 동기화
+          paddle1.position.x = (data["obj"]).paddle1_loc;
+          if (data["key"] === ARROW_UP)
+          {
+            paddle1_spead = -PADDLE_SPEAD;
+          }
+          else if (data["key"] === ARROW_DOWN)
+          {
+            paddle1_spead = PADDLE_SPEAD;
+          }
         }
-        else if (data["key"] === ARROW_DOWN)
+        else if (data["event"] === "keyup")
         {
-          paddle2_spead = PADDLE_SPEAD;
+          // 플레이어의 paddle 위치 동기화
+          paddle1.position.x = (data["obj"]).paddle1_loc;
+          if (data["key"] === ARROW_UP)
+          {
+            if (paddle1_spead === -PADDLE_SPEAD)
+              paddle1_spead = 0;
+          }
+          else if (data["key"] === ARROW_DOWN)
+          {
+            if (paddle1_spead === PADDLE_SPEAD)
+              paddle1_spead = 0;
+          }
         }
       }
-      else if (data["event"] === "keyup")
+      else if (data["player_number"] === 2)
       {
-        // 플레이어의 paddle 위치 동기화
-        paddle2.position.x = (data["obj"]).paddle2_loc;
-        if (data["key"] === ARROW_UP)
+        if (data["event"] === "keydown")
         {
-          if (paddle2_spead === -PADDLE_SPEAD)
-            paddle2_spead = 0;
+          // 플레이어의 paddle 위치 동기화
+          paddle2.position.x = (data["obj"]).paddle2_loc;
+          if (data["key"] === ARROW_UP)
+          {
+            paddle2_spead = -PADDLE_SPEAD;
+          }
+          else if (data["key"] === ARROW_DOWN)
+          {
+            paddle2_spead = PADDLE_SPEAD;
+          }
         }
-        else if (data["key"] === ARROW_DOWN)
+        else if (data["event"] === "keyup")
         {
-          if (paddle2_spead === PADDLE_SPEAD)
-            paddle2_spead = 0;
+          // 플레이어의 paddle 위치 동기화
+          paddle2.position.x = (data["obj"]).paddle2_loc;
+          if (data["key"] === ARROW_UP)
+          {
+            if (paddle2_spead === -PADDLE_SPEAD)
+              paddle2_spead = 0;
+          }
+          else if (data["key"] === ARROW_DOWN)
+          {
+            if (paddle2_spead === PADDLE_SPEAD)
+              paddle2_spead = 0;
+          }
         }
       }
-    }
-    else if (data["player_number"] === 3)
-    {
-      if (data["event"] === "keydown")
+      else if (data["player_number"] === 3)
       {
-        // 플레이어의 paddle 위치 동기화
-        paddle3.position.x = (data["obj"]).paddle3_loc;
-        if (data["key"] === ARROW_UP)
+        if (data["event"] === "keydown")
         {
-          paddle3_spead = -PADDLE_SPEAD;
+          // 플레이어의 paddle 위치 동기화
+          paddle3.position.x = (data["obj"]).paddle3_loc;
+          if (data["key"] === ARROW_UP)
+          {
+            paddle3_spead = -PADDLE_SPEAD;
+          }
+          else if (data["key"] === ARROW_DOWN)
+          {
+            paddle3_spead = PADDLE_SPEAD;
+          }
         }
-        else if (data["key"] === ARROW_DOWN)
+        else if (data["event"] === "keyup")
         {
-          paddle3_spead = PADDLE_SPEAD;
+          // 플레이어의 paddle 위치 동기화
+          paddle3.position.x = (data["obj"]).paddle3_loc;
+          if (data["key"] === ARROW_UP)
+          {
+            if (paddle3_spead === -PADDLE_SPEAD)
+              paddle3_spead = 0;
+          }
+          else if (data["key"] === ARROW_DOWN)
+          {
+            if (paddle3_spead === PADDLE_SPEAD)
+              paddle3_spead = 0;
+          }
         }
       }
-      else if (data["event"] === "keyup")
+      else if (data["player_number"] === 4)
       {
-        // 플레이어의 paddle 위치 동기화
-        paddle3.position.x = (data["obj"]).paddle3_loc;
-        if (data["key"] === ARROW_UP)
+        if (data["event"] === "keydown")
         {
-          if (paddle3_spead === -PADDLE_SPEAD)
-            paddle3_spead = 0;
+          // 플레이어의 paddle 위치 동기화
+          paddle4.position.x = (data["obj"]).paddle4_loc;
+          if (data["key"] === ARROW_UP)
+          {
+            paddle4_spead = -PADDLE_SPEAD;
+          }
+          else if (data["key"] === ARROW_DOWN)
+          {
+            paddle4_spead = PADDLE_SPEAD;
+          }
         }
-        else if (data["key"] === ARROW_DOWN)
+        else if (data["event"] === "keyup")
         {
-          if (paddle3_spead === PADDLE_SPEAD)
-            paddle3_spead = 0;
-        }
-      }
-    }
-    else if (data["player_number"] === 4)
-    {
-      if (data["event"] === "keydown")
-      {
-        // 플레이어의 paddle 위치 동기화
-        paddle4.position.x = (data["obj"]).paddle4_loc;
-        if (data["key"] === ARROW_UP)
-        {
-          paddle4_spead = -PADDLE_SPEAD;
-        }
-        else if (data["key"] === ARROW_DOWN)
-        {
-          paddle4_spead = PADDLE_SPEAD;
-        }
-      }
-      else if (data["event"] === "keyup")
-      {
-        // 플레이어의 paddle 위치 동기화
-        paddle4.position.x = (data["obj"]).paddle4_loc;
-        if (data["key"] === ARROW_UP)
-        {
-          if (paddle4_spead === -PADDLE_SPEAD)
-            paddle4_spead = 0;
-        }
-        else if (data["key"] === ARROW_DOWN)
-        {
-          if (paddle4_spead === PADDLE_SPEAD)
-            paddle4_spead = 0;
+          // 플레이어의 paddle 위치 동기화
+          paddle4.position.x = (data["obj"]).paddle4_loc;
+          if (data["key"] === ARROW_UP)
+          {
+            if (paddle4_spead === -PADDLE_SPEAD)
+              paddle4_spead = 0;
+          }
+          else if (data["key"] === ARROW_DOWN)
+          {
+            if (paddle4_spead === PADDLE_SPEAD)
+              paddle4_spead = 0;
+          }
         }
       }
     }
@@ -353,7 +423,6 @@ function setEvent()
       return;
     if (end === false)
     {
-      updateScoreBoard();
       game = true;
     }
   };
@@ -369,8 +438,6 @@ function onlineContainerEventKeyDown(e)
       "event": "keydown",
       "key": ARROW_UP,
       "obj": {
-        "ball_loc": ball.position,
-        "ball_vel": ball.$velocity,
         "paddle1_loc": paddle1.position.x,
         "paddle2_loc": paddle2.position.x,
       },
@@ -386,8 +453,6 @@ function onlineContainerEventKeyDown(e)
       "event": "keydown",
       "key": ARROW_DOWN,
       "obj": {
-        "ball_loc": ball.position,
-        "ball_vel": ball.$velocity,
         "paddle1_loc": paddle1.position.x,
         "paddle2_loc": paddle2.position.x,
       },
@@ -409,8 +474,6 @@ function onlineContainerEventKeyUp(e)
       "event": "keyup",
       "key": ARROW_UP,
       "obj": {
-        "ball_loc": ball.position,
-        "ball_vel": ball.$velocity,
         "paddle1_loc": paddle1.position.x,
         "paddle2_loc": paddle2.position.x,
       },
@@ -426,8 +489,6 @@ function onlineContainerEventKeyUp(e)
       "event": "keyup",
       "key": ARROW_DOWN,
       "obj": {
-        "ball_loc": ball.position,
-        "ball_vel": ball.$velocity,
         "paddle1_loc": paddle1.position.x,
         "paddle2_loc": paddle2.position.x,
       },
@@ -450,6 +511,19 @@ function loop()
     stopBall();
     cancelAnimationFrame(num);
     num = null;
+  }
+  if (player_number === 1)
+  {
+    const dataToSend = {
+      "action": "sync",
+      "obj": {
+        "ball_loc": ball.position,
+        "ball_vel": ball.$velocity,
+        "paddle1_loc": paddle1.position.x,
+        "paddle2_loc": paddle2.position.x,
+      }
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
   }
   renderer.render(scene, camera);
 }
@@ -521,8 +595,10 @@ function startOneGame()
 
 function updateBallPosition()
 {
-  ball.position.x += ball.$velocity.x;
-  ball.position.z += ball.$velocity.z;
+  if (!isNaN(ball.$velocity.x))
+    ball.position.x += ball.$velocity.x;
+  if (!isNaN(ball.$velocity.z))
+    ball.position.z += ball.$velocity.z;
 }
 
 function isSideCollision()
@@ -588,19 +664,51 @@ function scoreBy(playerName)
   addPoint(playerName);
   last_winner = playerName;
   stopBall();
-  updateScoreBoard();
+  updateScoreBoard(playerName);
 }
 
-function updateScoreBoard()
+function updateScoreBoard(playerName)
 {
   end = true;
   if (score.player_left === 5)
-    scoreBoard.innerHTML = 'Team left Win! team left ('+ player_1 + ' ' + player_2 + ') :' + score.player_left + ', team right (' + player_3 + ' ' + player_4 + ') : ' + score.player_right;
+  {
+    const dataToSend = {
+      "action": "win",
+      "msg": {
+        "date": start_date,
+        "winner": player_left,
+        "loser": player_right,
+        "score_p1": score.player_left,
+        "score_p2": score.player_right,
+      },
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
+  }
   else if (score.player_right === 5)
-    scoreBoard.innerHTML = 'Team right Win! team left ('+ player_1 + ' ' + player_2 + ') :' + score.player_left + ', team right (' + player_3 + ' ' + player_4 + ') : ' + score.player_right;
+  {
+    const dataToSend = {
+      "action": "win",
+      "msg": {
+        "date": start_date,
+        "winner": player_right,
+        "loser": player_left,
+        "score_p1": score.player_left,
+        "score_p2": score.player_right,
+      },
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
+  }
   else
   {
-    scoreBoard.innerHTML = 'Player left: ' + score.player_left + ' Player right: ' + score.player_right;
+    const dataToSend = {
+      "action": "scored",
+      "msg": {
+        "scored_p": playerName,
+        "score_p1": score.player_left,
+        "score_p2": score.player_right,
+      },
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
     end = false;
   }
   if (end === true)
@@ -608,7 +716,6 @@ function updateScoreBoard()
     // 이벤트 제거
     document.removeEventListener('keydown', onlineContainerEventKeyDown);
     document.removeEventListener('keyup', onlineContainerEventKeyUp);
-    // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
   }
 }
 

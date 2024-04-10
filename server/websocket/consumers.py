@@ -112,10 +112,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 await self.remove_user_from_room(self.user, self.room_uuid)
 
         elif action == "init":
-            if (self.player_number == 1):
-                await self.send(text_data=json.dumps({"type":"init", "isp1": True}))
-            else:
-                await self.send(text_data=json.dumps({"type":"init", "isp1": False}))
+            await self.send(text_data=json.dumps({"type":"init", "player_number": self.player_number}))
 
         elif action == "key_press":
             await self.handle_key_press(text_data_json["event"], text_data_json["key"], text_data_json["obj"])

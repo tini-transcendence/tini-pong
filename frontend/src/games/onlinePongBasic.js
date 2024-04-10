@@ -5,9 +5,7 @@ document = window.document,
 THREE = window.THREE,
 num = null,
 
-ARROW_LEFT = 37,
 ARROW_UP = 38,
-ARROW_RIGHT = 39,
 ARROW_DOWN = 40,
 
 WIDTH = 800,
@@ -80,7 +78,7 @@ start_date,
 player_1,
 player_2,
 
-isp1 = false,
+player_number = null,
 
 scoreBoard,
 score = {
@@ -240,13 +238,12 @@ function setEvent()
     end = true;
   };
 
-  // 만약 창을 벗어난 유저를 식별할 수 있다면 disconnect 처리도 가능하지 않을까?
   window.websocket.onmessage = function (event) {
     const data = JSON.parse(event.data);
     console.log(data);
 
     if (data["type"] === "init")
-      isp1 = data["isp1"];
+      player_number = data["player_number"];
     
     if (data["type"] === "win")
     {
@@ -257,7 +254,8 @@ function setEvent()
       stopBall();
       end = true;
     }
-    else if (data["type"] === "scored")
+    
+    if (data["type"] === "scored")
     {
       last_winner = data["msg"]["scored_p"]
       score.player1 = data["msg"]["score_p1"]
@@ -266,7 +264,7 @@ function setEvent()
       stopBall();
     }
 
-    if (isp1 === false && data["type"] === "sync" && data["player_number"] === 1)
+    if (player_number !== 1 && data["type"] === "sync" && data["player_number"] === 1)
     {
       // 공 위치, 속도 동기화
       ball.position.x = data["obj"]["ball_loc"].x;
@@ -340,7 +338,7 @@ function setEvent()
       }
     }
     else
-        return;
+      return;
     if (end === false)
     {
       game = true;
@@ -432,16 +430,19 @@ function loop()
     cancelAnimationFrame(num);
     num = null;
   }
-  const dataToSend = {
-    "action": "sync",
-    "obj": {
-      "ball_loc": ball.position,
-      "ball_vel": ball.$velocity,
-      "paddle1_loc": paddle1.position.x,
-      "paddle2_loc": paddle2.position.x,
+  if (player_number === 1)
+  {
+    const dataToSend = {
+      "action": "sync",
+      "obj": {
+        "ball_loc": ball.position,
+        "ball_vel": ball.$velocity,
+        "paddle1_loc": paddle1.position.x,
+        "paddle2_loc": paddle2.position.x,
+      }
     }
+    window.websocket.send(JSON.stringify(dataToSend));
   }
-  window.websocket.send(JSON.stringify(dataToSend));
   renderer.render(scene, camera);
 }
 
@@ -479,8 +480,12 @@ function simulation_ball()
 function startOneGame()
 {
   let direction = 1;
-  if (last_winner === 'player1')
+  if (last_winner === null)
+    direction = Math.random() > 0.5 ? -1 : 1;
+  else if (last_winner === 'player1')
     direction = -1;
+  else
+    direction = 1;
   ball.$velocity = {
     x: BALL_VELOCITY_X,
     z: direction * BALL_VELOCITY_Z
@@ -558,7 +563,7 @@ function updateScoreBoard(playerName)
     }
     window.websocket.send(JSON.stringify(dataToSend));
   }
-    else if (score.player2 === 5)
+  else if (score.player2 === 5)
   {
     const dataToSend = {
       "action": "win",
@@ -572,7 +577,7 @@ function updateScoreBoard(playerName)
     }
     window.websocket.send(JSON.stringify(dataToSend));
   }
-    else
+  else
   {
     const dataToSend = {
       "action": "scored",
@@ -590,9 +595,6 @@ function updateScoreBoard(playerName)
     // 이벤트 제거
     document.removeEventListener('keydown', onlineContainerEventKeyDown);
     document.removeEventListener('keyup', onlineContainerEventKeyUp);
-    // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
-    console.log('결과 전송');
-    console.log(player_1, player_2, score);
   }
 }
 
