@@ -62,9 +62,15 @@ export default class extends AbstractComponent {
 			selecterDiv.style.display = 'block';
 			resultDiv.style.display = 'none';
 			selecterDiv.innerHTML = `
-			<h1>Basic Pong</h1>
-			<h3 id="scoreBoardB"></h3>
-			<div id="containerB"></div>`;
+			<div class="container-lg" id="gameHeader">
+				<div id="gameName">Basic Pong</div>
+				<div class="row" id="scoreLine">
+					<div class="col text-left" id="p1nickBoardB"></div>
+					<div class="col" id="scoreBoardB"></div>
+					<div class="col text-right" id="p2nickBoardB"></div>
+				</div>
+			</div>
+			<div class="container-lg" id="containerB"></div>`;
 			resultDiv.innerHTML = `
 			<br><br>
 			<h2>Game result</h2>
@@ -83,9 +89,15 @@ export default class extends AbstractComponent {
 			selecterDiv.style.display = 'block';
 			resultDiv.style.display = 'none';
 			selecterDiv.innerHTML = `
-			<h1>Multiple Pong</h1>
-			<h3 id="scoreBoardM"></h3>
-			<div id="containerM"></div>`;
+			<div class="container-lg" id="gameHeader">
+				<div id="gameName">Multiple Pong</div>
+				<div class="row" id="scoreLine">
+					<div class="col text-left" id="p1nickBoardM"></div>
+					<div class="col" id="scoreBoardM"></div>
+					<div class="col text-right" id="p2nickBoardM"></div>
+				</div>
+			</div>
+			<div class="container-lg" id="containerM"></div>`;
 			resultDiv.innerHTML = `
 			<br><br>
 			<h2>Game result</h2>
@@ -174,9 +186,15 @@ export default class extends AbstractComponent {
 					selecterDiv.style.display = 'block';
 					resultDiv.style.display = 'none';
 					selecterDiv.innerHTML = `
-					<h1>Tournament Pong</h1>
-					<h3 id="scoreBoardT"></h3>
-					<div id="containerT"></div>`;
+					<div class="container-lg" id="gameHeader">
+						<div id="gameName">Basic Pong</div>
+						<div class="row" id="scoreLine">
+							<div class="col text-left" id="p1nickBoardT"></div>
+							<div class="col" id="scoreBoardT"></div>
+							<div class="col text-right" id="p2nickBoardT"></div>
+						</div>
+					</div>
+					<div class="container-lg" id="containerT"></div>`;
 					resultDiv.innerHTML = `
 					<br><br>
 					<h2>Game result</h2>
