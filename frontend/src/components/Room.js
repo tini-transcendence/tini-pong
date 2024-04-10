@@ -26,7 +26,6 @@ export default class extends AbstractComponent {
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
 									<h5 class="card-title">Nickname</h5>
-									<p class="card-text">Win:0 Lose:0</p>
 								</div>
 								<div class="card-footer">Ready : ?</div>
 							</div>
@@ -36,7 +35,6 @@ export default class extends AbstractComponent {
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
 									<h5 class="card-title">Nickname</h5>
-									<p class="card-text">Win:0 Lose:0</p>
 								</div>
 								<div class="card-footer">Ready : ?</div>
 							</div>
@@ -46,7 +44,6 @@ export default class extends AbstractComponent {
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
 									<h5 class="card-title">Nickname</h5>
-									<p class="card-text">Win:0 Lose:0</p>
 								</div>
 								<div class="card-footer">Ready : ?</div>
 							</div>
@@ -56,7 +53,6 @@ export default class extends AbstractComponent {
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
 									<h5 class="card-title">Nickname</h5>
-									<p class="card-text">Win:0 Lose:0</p>
 								</div>
 								<div class="card-footer">Ready : ?</div>
 							</div>
