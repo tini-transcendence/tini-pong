@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import OneVsOneGameResult, TwoVsTwoGameResult, TournamentGameResult
+from .models import OneVsOneGameResult, TwoVsTwoGameResult
 
 
 class OneVsOneGameResultSerializer(serializers.ModelSerializer):
@@ -11,10 +11,4 @@ class OneVsOneGameResultSerializer(serializers.ModelSerializer):
 class TwoVsTwoGameResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = TwoVsTwoGameResult
-        fields = "__all__"
-
-
-class TournamentGameResultSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TournamentGameResult
         fields = "__all__"
