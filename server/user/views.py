@@ -4,22 +4,39 @@ from http import HTTPStatus
 from django.http import JsonResponse, HttpRequest, HttpResponseBadRequest, HttpResponse
 from django.views import View
 from django.db import IntegrityError
-
-from .models import User
-
+from .models import User, GameResult
 from util.sanitize import sanitize, sanitize_tag
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class UserProfileView(View):
     def get(self, request: HttpRequest):
         try:
-            user_uuid = request.GET["uuid"]
-        except:
-            user_uuid = request.user_uuid
-        try:
+            user_uuid = request.GET.get("uuid", request.user_uuid)
             user = User.objects.get(pk=user_uuid)
-        except:
+        except ObjectDoesNotExist:
             return HttpResponseBadRequest()
+
+        game_results = GameResult.objects.filter(players=user)
+
+        game_history = [
+            {
+                "type": game_result.type,
+                "difficulty": game_result.difficulty,
+                "score": game_result.score,
+                "win": game_result.win,
+                "start_time": game_result.start_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "players": [
+                    {
+                        "uuid": player.uuid,
+                        "nickname": player.nickname,
+                    }
+                    for player in game_result.players.all()
+                ],
+            }
+            for game_result in game_results
+        ]
+
         return JsonResponse(
             {
                 "nickname": user.nickname,
@@ -27,6 +44,7 @@ class UserProfileView(View):
                 "message": user.message,
                 "id_tag": str(user_uuid)[:4],
                 "self": user_uuid == request.user_uuid,
+                "game_history": game_history,
             }
         )
 

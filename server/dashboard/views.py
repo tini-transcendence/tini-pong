@@ -1,22 +1,7 @@
-from rest_framework import generics
-from .models import OneVsOneGameResult, TwoVsTwoGameResult
-from .serializers import (
-    OneVsOneGameResultSerializer,
-    TwoVsTwoGameResultSerializer,
-)
-from blockchain.executeFunction import retrieve_transaction, store_transaction
+from blockchain.executeFunction import retrieve_transaction
 import time, json
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-class OneVsOneGameResultList(generics.ListAPIView):
-    queryset = OneVsOneGameResult.objects.all()
-    serializer_class = OneVsOneGameResultSerializer
-
-
-class TwoVsTwoGameResultList(generics.ListAPIView):
-    queryset = TwoVsTwoGameResult.objects.all()
-    serializer_class = TwoVsTwoGameResultSerializer
 
 
 class TournamentGameResultList(APIView):
