@@ -14,6 +14,7 @@ class Room(models.Model):
         User, on_delete=models.CASCADE, related_name="owned_rooms"
     )
     is_active = models.BooleanField(default=False)
+    start_time = models.DateTimeField(null=True, blank=True)
 
 
 class RoomUser(models.Model):

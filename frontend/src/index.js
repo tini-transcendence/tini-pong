@@ -33,7 +33,7 @@ const routes = [
 	{ path: "/login/otp", component: [Otp], login: false},
 	{ path: "/mypage", component: [UserPage, Navbar], login: true},
 	{ path: "/users/:useruuid", component: [UserPage, Navbar], login: true},
-	{ path: "/edit", component: [UserEdit], login: true},
+	{ path: "/edit", component: [UserEdit, Navbar], login: true},
 	{ path: "/lobby", component: [Lobby, Navbar], login: true},
 	{ path: "/local", component: [Local], login: true},
 	{ path: "/tdata", component: [Tdata, Navbar], login: true},

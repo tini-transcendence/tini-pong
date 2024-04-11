@@ -256,7 +256,7 @@ function setEvent()
 
     if (data["type"] === "init")
       player_number = data["player_number"];
-    
+
     if (data["type"] === "win")
     {
       let win = data["msg"]["winner"]
@@ -270,7 +270,7 @@ function setEvent()
       stopBall();
       end = true;
     }
-    
+
     if (data["type"] === "scored")
     {
       last_winner = data["msg"]["scored_p"]
@@ -293,7 +293,7 @@ function setEvent()
       paddle1.position.x = (data["obj"]).paddle1_loc;
       paddle2.position.x = (data["obj"]).paddle2_loc;
     }
-    
+
     if (data["type"] === "key_press")
     {
       if (data["player_number"] === 1)
@@ -468,25 +468,25 @@ function simulation_ball()
     if(ball.$velocity == null) {
       startOneGame();
     }
-    
+
     updateBallPosition();
-    
+
     if(isSideCollision()) {
-      ball.$velocity.x *= -1; 
+      ball.$velocity.x *= -1;
     }
-    
+
     if(isPaddle1Collision()) {
       hitBallBack(paddle1);
     }
-    
+
     if(isPaddle2Collision()) {
       hitBallBack(paddle2);
     }
-    
+
     if(isPastPaddle1()) {
       scoreBy('player2');
     }
-    
+
     if(isPastPaddle2()) {
       scoreBy('player1');
     }
@@ -540,7 +540,7 @@ function isBallAlignedWithPaddle(paddle)
 
 function hitBallBack(paddle)
 {
-  ball.$velocity.x = (ball.position.x - paddle.position.x) / 5; 
+  ball.$velocity.x = (ball.position.x - paddle.position.x) / 5;
   ball.$velocity.z *= -1;
 }
 
@@ -571,8 +571,7 @@ function updateScoreBoard(playerName)
       "action": "win",
       "msg": {
         "date": start_date,
-        "winner": player_1,
-        "loser": player_2,
+        "winner": "player_1",
         "score_p1": score.player1,
         "score_p2": score.player2,
       },
@@ -585,8 +584,7 @@ function updateScoreBoard(playerName)
       "action": "win",
       "msg": {
         "date": start_date,
-        "winner": player_2,
-        "loser": player_1,
+        "winner": "player_2",
         "score_p1": score.player1,
         "score_p2": score.player2,
       },

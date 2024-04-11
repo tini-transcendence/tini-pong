@@ -37,7 +37,11 @@ export default class {
 				credentials: "include",
 			}));
 			if (response.ok) {
-				this.timerId = setTimeout(getLoginStatus, 30000, fetchModule);
+				if (this.loginStatus === false)
+				{
+					this.loginStatus = true;
+					this.timerId = setTimeout(getLoginStatus, 30000, fetchModule);
+				}
 				return true;
 			}
 			else

@@ -14,7 +14,7 @@ export default class extends AbstractComponent {
 		<nav class="navbar navbar-expand-md sticky-top" style="background-color: #4D37C6;">
 			<div class="container-fluid">
 				<div class="navbar-brand">
-					<img src="./src/img/Logo_ball.png" alt="Logo" width="35" height="35" class="d-inline-block align-text-top">
+					<img src="/src/img/Logo_ball.png" alt="Logo" width="35" height="35" class="d-inline-block align-text-top">
 					<span>
 						<a class="link-underline link-underline-opacity-0" href="/" data-href="/" style="font-weight: 700; color: white;">
 							TINY PING PONG

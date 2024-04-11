@@ -1,6 +1,5 @@
 from rest_framework.views import APIView
 from rest_framework import status
-from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .models import Room, RoomUser
 from user.models import User
@@ -23,6 +22,9 @@ class RoomListView(APIView):
 class CreateRoomView(APIView):
     def post(self, request, *args, **kwargs):
         try:
+            print("")
+            print("create 들어옴 !!")
+            print("")
             room = Room.objects.create(
                 name=sanitize(request.data.get("name")),
                 type=request.data.get("type"),
@@ -63,9 +65,11 @@ class DeleteRoomView(APIView):
             )
 
 
-@method_decorator(csrf_exempt, name="dispatch")
 class JoinRoomView(APIView):
     def post(self, request, *args, **kwargs):
+        print("")
+        print("join 들어옴 !!")
+        print("")
         room_uuid = request.data.get("room_uuid")
         user_uuid_id = request.user_uuid
         try:

@@ -67,6 +67,7 @@ ball,
 paddle1,
 paddle2,
 last_scored_player = null,
+last_winner = null,
 
 paddle1_spead = 0,
 paddle2_spead = 0,
@@ -84,7 +85,6 @@ nick3,
 nick4,
 
 round,
-
 player1,
 player2,
 player1_num,
@@ -104,6 +104,10 @@ score = {
   player1: 0,
   player2: 0
 };
+
+let tournamentResults = [];
+let tournamentGamesPlayed = 0;
+const totalTournamentGames = 3;
 
 function init(d, pn1, pn2, pn3, pn4)
 {
@@ -272,7 +276,7 @@ function setEvent()
 
   window.websocket.onmessage = function (event) {
     const data = JSON.parse(event.data);
-    
+
     if (data["type"] === "init")
       player_number = data["player_number"];
 
@@ -553,25 +557,25 @@ function simulation_ball()
     if(ball.$velocity == null) {
       startOneGame();
     }
-    
+
     updateBallPosition();
-    
+
     if(isSideCollision()) {
-      ball.$velocity.x *= -1; 
+      ball.$velocity.x *= -1;
     }
-    
+
     if(isPaddle1Collision()) {
       hitBallBack(paddle1);
     }
-    
+
     if(isPaddle2Collision()) {
       hitBallBack(paddle2);
     }
-    
+
     if(isPastPaddle1()) {
       scoreBy('player2');
     }
-    
+
     if(isPastPaddle2()) {
       scoreBy('player1');
     }
@@ -625,7 +629,7 @@ function isBallAlignedWithPaddle(paddle)
 
 function hitBallBack(paddle)
 {
-  ball.$velocity.x = (ball.position.x - paddle.position.x) / 5; 
+  ball.$velocity.x = (ball.position.x - paddle.position.x) / 5;
   ball.$velocity.z *= -1;
 }
 
@@ -647,43 +651,30 @@ function scoreBy(playerName)
   updateScoreBoard(playerName);
 }
 
-function updateScoreBoard(playerName)
-{
-  end = true;
-  if (score.player1 === 5)
-  {
-    const dataToSend = {
-      "action": "win",
-      "msg": {
-        "date": start_date,
-        "round": round,
-        "winner": player1,
-        "loser": player2,
-        "winner_number": player1_num,
-        "score_p1": score.player1,
-        "score_p2": score.player2,
-      },
+function updateScoreBoard(playerName) {
+  if (score.player1 === 5 || score.player2 === 5) {
+    const winner = score.player1 === 5 ? player1 : player2;
+    const loser = score.player1 === 5 ? player2 : player1;
+    tournamentGamesPlayed++;
+    const gameResult = {
+      "date": start_date,
+      "round": round,
+      "winner": winner,
+      "loser": loser,
+      "index": tournamentGamesPlayed,
+      "score_p1": score.player1,
+      "score_p2": score.player2,
+    };
+    tournamentResults.push(gameResult);
+
+    if (checkTournamentEnd()) {
+      const dataToSend = {
+        "action": "tournament_end",
+        "tournamentResults": tournamentResults,
+      };
+      window.websocket.send(JSON.stringify(dataToSend));
     }
-    window.websocket.send(JSON.stringify(dataToSend));
-  }
-  else if (score.player2 === 5)
-  {
-    const dataToSend = {
-      "action": "win",
-      "msg": {
-        "date": start_date,
-        "round": round,
-        "winner": player2,
-        "loser": player1,
-        "winner_number": player2_num,
-        "score_p1": score.player1,
-        "score_p2": score.player2,
-      },
-    }
-    window.websocket.send(JSON.stringify(dataToSend));
-  }
-  else
-  {
+  } else {
     const dataToSend = {
       "action": "scored",
       "msg": {
@@ -691,10 +682,13 @@ function updateScoreBoard(playerName)
         "score_p1": score.player1,
         "score_p2": score.player2,
       },
-    }
+    };
     window.websocket.send(JSON.stringify(dataToSend));
-    end = false;
   }
+}
+
+function checkTournamentEnd() {
+  return tournamentGamesPlayed === totalTournamentGames;
 }
 
 function stopBall()

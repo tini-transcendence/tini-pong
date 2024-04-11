@@ -18,6 +18,7 @@ channels = "*"
 daphne = "*"
 pyotp = "*"
 aiohttp = "*"
+pytz = "*"
 
 [dev-packages]
 
