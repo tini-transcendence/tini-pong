@@ -305,7 +305,7 @@ function setEvent()
       stopBall();
     }
 
-    if (player_number !== 1 && data["type"] === "sync" && data["player_number"] === 1)
+    if (player_number !== 1 && data["type"] === "sync")
     {
       // 공 위치, 속도 동기화
       ball.position.x = data["obj"]["ball_loc"].x;
