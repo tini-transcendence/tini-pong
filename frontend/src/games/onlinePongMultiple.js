@@ -684,7 +684,7 @@ function updateScoreBoard(playerName)
       "action": "win",
       "msg": {
         "date": start_date,
-        "winner": player_left,
+        "winner": "player_left",
         "score_p1": score.player_left,
         "score_p2": score.player_right,
       },
@@ -697,7 +697,7 @@ function updateScoreBoard(playerName)
       "action": "win",
       "msg": {
         "date": start_date,
-        "winner": player_right,
+        "winner": "player_right",
         "score_p1": score.player_left,
         "score_p2": score.player_right,
       },
