@@ -93,6 +93,11 @@ round1Winner,
 round1Winner_num,
 round2Winner,
 round2Winner_num,
+round1p1score,
+round1p2score,
+round2p1score,
+round2p2score,
+
 
 player_number = null,
 
@@ -304,7 +309,9 @@ function setEvent()
         player2 = nick4;
         player1_num = 3;
         player2_num = 4;
-        // 만약 필요하다면 roune 1 결과 전송
+        round1p1score = score.player1;
+        round1p2score = score.player2;
+        // 만약 필요하다면 roune 1 결과 전송 혹은 저장
       }
       else if (round === 2)
       {
@@ -315,7 +322,9 @@ function setEvent()
         player1_num = round1Winner_num;
         player2 = round2Winner;
         player2_num = round2Winner_num;
-        // 만약 필요하다면 roune 2 결과 전송
+        round2p1score = score.player1;
+        round2p2score = score.player2;
+        // 만약 필요하다면 roune 2 결과 전송 혹은 저장
       }
       else if (round === 3)
       {
@@ -323,6 +332,34 @@ function setEvent()
         document.removeEventListener('keydown', onlineonlineContainerEventKeyDown);
         document.removeEventListener('keyup', onlineonlineContainerEventKeyUp);
         // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
+        if (player_number === player1_num)
+        {
+          const dataToSend = {
+            "action": "result",
+            "tournament": {
+              "timestamp": start_date,
+              "1": {
+                "player1": nick1,
+                "player2": nick2,
+                "score_p1": round1p1score,
+                "score_p2": round1p2score,
+              },
+              "2": {
+                "player1": nick3,
+                "player2": nick4,
+                "score_p1": round2p1score,
+                "score_p2": round2p2score,
+              },
+              "3": {
+                "player1": round1Winner,
+                "player2": round2Winner,
+                "score_p1": score.player1,
+                "score_p2": score.player2,
+              },
+            },
+          }
+          window.websocket.send(JSON.stringify(dataToSend));
+        }
       }
       end = true;
     }
