@@ -1,8 +1,6 @@
 import animateGame from "../utils/animateGameModule.js";
 
 let
-local = true,
-online = false,
 document = window.document,
 THREE = window.THREE,
 num = null,
@@ -46,7 +44,7 @@ BOARD_LENGTH = 3000,
 BOARD_LOCATION_X = 0,
 BOARD_LOCATION_Y = -50,
 BOARD_LOCATION_Z = 0,
-BOARD_COLOR = 0x6666ff,
+BOARD_COLOR = 0x4D37C6,
 
 BALL_DEFAULT_VELOCITY_Z = 20,
 BALL_RADIUS = 20,
@@ -55,7 +53,7 @@ BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z,
 BALL_LOCATION_X = 0,
 BALL_LOCATION_Y = 0,
 BALL_LOCATION_Z = 0,
-BALL_COLOR = 0xff0000,
+BALL_COLOR = 0xFFC85D,
 
 PADDLE_DEFAULT_WIDTH = 200,
 PADDLE_WIDTH = PADDLE_DEFAULT_WIDTH,
@@ -64,7 +62,7 @@ PADDLE_LENGTH = 30,
 PADDLE_LOCATION_X = 0,
 PADDLE_LOCATION_Y = 0,
 PADDLE_LOCATION_Z = 0,
-PADDLE_COLOR = 0xffffff,
+PADDLE_COLOR = 0xD30D5C,
 PADDLE_SPEAD = 10,
 
 container,
@@ -90,7 +88,10 @@ difficulty = 0,
 game = false,
 end = false,
 
+p1nickBoard,
 scoreBoard,
+p2nickBoard,
+
 score = {
   player_left: 0,
   player_right: 0
@@ -122,7 +123,13 @@ function setGameStatus()
 
 function setScoreBoard()
 {
-  scoreBoard = document.getElementById('scoreBoardM');
+  scoreBoard = document.querySelector('#scoreBoardM');
+  p1nickBoard = document.querySelector('#p1nickBoardM');
+  p2nickBoard = document.querySelector('#p2nickBoardM');
+  p1nickBoard.style.display = 'none';
+  p1nickBoard.style.textAlign = 'left';
+  p2nickBoard.style.display = 'none';
+  p2nickBoard.style.textAlign = 'right';
   scoreBoard.innerHTML = 'Welcome! Select difficulty (E/N/H)';
 }
 
@@ -142,7 +149,7 @@ function setRenderer()
   container = document.getElementById('containerM');
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(WIDTH, HEIGHT);
-  renderer.setClearColor(0x9999BB, 1);
+  renderer.setClearColor(0xffffff, 1);
   container.appendChild(renderer.domElement);
 }
 
@@ -534,7 +541,12 @@ function updateScoreBoard()
   end = true;
   if (score.player_left === 5)
   {
+    p1nickBoard.innerHTML = '';
+    p1nickBoard.style.display = "none";
+    p2nickBoard.innerHTML = '';
+    p2nickBoard.style.display = "none";
     scoreBoard.innerHTML = 'Player left Win! [r] to regame';
+    scoreBoard.style.fontWeight = null;
     const resultDiv = document.querySelector(".result");
     resultDiv.style.display = 'block';
     const resultBoard = resultDiv.querySelector('#resultM');
@@ -544,7 +556,12 @@ function updateScoreBoard()
   }
   else if (score.player_right === 5)
   {
+    p1nickBoard.innerHTML = '';
+    p1nickBoard.style.display = "none";
+    p2nickBoard.innerHTML = '';
+    p2nickBoard.style.display = "none";
     scoreBoard.innerHTML = 'Player right Win! [r] to regame';
+    scoreBoard.style.fontWeight = null;
     const resultDiv = document.querySelector(".result");
     resultDiv.style.display = 'block';
     const resultBoard = resultDiv.querySelector('#resultM');
@@ -554,8 +571,12 @@ function updateScoreBoard()
   }
   else
   {
-    scoreBoard.innerHTML = 'Player left: ' + score.player_left + ' Player right: ' + score.player_right;
-    end = false;
+    p1nickBoard.innerHTML = 'Player left';
+    p1nickBoard.style.display = "block";
+    scoreBoard.innerHTML = score.player_left + ' : ' + score.player_right;
+    scoreBoard.style.fontWeight = "bold";
+    p2nickBoard.innerHTML = 'Player right';
+    p2nickBoard.style.display = "block";end = false;
   }
 }
 

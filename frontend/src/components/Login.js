@@ -12,7 +12,7 @@ export default class extends AbstractComponent {
 		return `
 		<style>
 		body {
-			background-image: url("./src/img/Login_Background.png");
+			background-image: url("/src/img/Login_Background.png");
 			background-repeat: no-repeat;
 			background-attachment: fixed;
 			background-size: cover;

@@ -92,19 +92,9 @@ input[type='number'] {
 /* ------------ */
 
 .ready-style {
-    font-weight: bold;
-    color: rgb(32, 35, 159);
+    background-color: #4D37C6;
 }
 
-.vertical-buttons {
-    display: flex; 
-    flex-direction: column;
-    align-items: center;
-    position: bottom;
-	color: rgb(32, 35, 159);
-  }
-
-  .vertical-buttons button {
-    width: 100%;
-    margin-top: 5px;
-  }
+.card-img-top {
+	height: 100%;
+}

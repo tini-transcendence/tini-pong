@@ -8,6 +8,9 @@ num = null,
 ARROW_UP = 38,
 ARROW_DOWN = 40,
 
+isArrowUpKeyDown = false,
+isArrowDownKeyDown = false,
+
 WIDTH = 800,
 HEIGHT = 600,
 
@@ -33,7 +36,7 @@ BOARD_LENGTH = 3000,
 BOARD_LOCATION_X = 0,
 BOARD_LOCATION_Y = -50,
 BOARD_LOCATION_Z = 0,
-BOARD_COLOR = 0x6666ff,
+BOARD_COLOR = 0x4D37C6,
 
 BALL_DEFAULT_VELOCITY_Z = 20,
 BALL_RADIUS = 20,
@@ -42,7 +45,7 @@ BALL_VELOCITY_Z = BALL_DEFAULT_VELOCITY_Z,
 BALL_LOCATION_X = 0,
 BALL_LOCATION_Y = 0,
 BALL_LOCATION_Z = 0,
-BALL_COLOR = 0xff0000,
+BALL_COLOR = 0xFFC85D,
 
 PADDLE_DEFAULT_WIDTH = 200,
 PADDLE_WIDTH = PADDLE_DEFAULT_WIDTH,
@@ -51,7 +54,7 @@ PADDLE_LENGTH = 30,
 PADDLE_LOCATION_X = 0,
 PADDLE_LOCATION_Y = 0,
 PADDLE_LOCATION_Z = 0,
-PADDLE_COLOR = 0xffffff,
+PADDLE_COLOR = 0xD30D5C,
 PADDLE_SPEAD = 10,
 
 container,
@@ -88,9 +91,15 @@ player1_num,
 player2_num,
 round1Winner,
 round1Winner_num,
+round2Winner,
+round2Winner_num,
+
 player_number = null,
 
+p1nickBoard,
 scoreBoard,
+p2nickBoard,
+
 score = {
   player1: 0,
   player2: 0
@@ -139,7 +148,13 @@ function setGameStatus(d, pn1, pn2, pn3, pn4)
 
 function setScoreBoard()
 {
-  scoreBoard = document.getElementById('scoreBoard');
+  scoreBoard = document.querySelector('#scoreBoard');
+  p1nickBoard = document.querySelector('#p1nickBoard');
+  p2nickBoard = document.querySelector('#p2nickBoard');
+  p1nickBoard.style.display = 'none';
+  p1nickBoard.style.textAlign = 'left';
+  p2nickBoard.style.display = 'none';
+  p2nickBoard.style.textAlign = 'right';
   scoreBoard.innerHTML = 'Round 1! Press the key to start! ' + player1 + ' vs ' + player2 + '(up,down)';
 }
 
@@ -159,7 +174,7 @@ function setRenderer()
   container = document.getElementById('container');
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(WIDTH, HEIGHT);
-  renderer.setClearColor(0x9999BB, 1);
+  renderer.setClearColor(0xffffff, 1);
   container.appendChild(renderer.domElement);
 }
 
@@ -203,9 +218,9 @@ function setBall()
 function setPaddle()
 {
   paddle1 = addPaddle();
-  paddle1.position.z = BOARD_LENGTH / 2;
+  paddle1.position.z = BOARD_LENGTH / 2 - PADDLE_LENGTH;
   paddle2 = addPaddle();
-  paddle2.position.z = -BOARD_LENGTH / 2;
+  paddle2.position.z = -BOARD_LENGTH / 2 + PADDLE_LENGTH;
 }
 
 function addPaddle()
@@ -267,6 +282,10 @@ function setEvent()
       let win_player_number = data["msg"]["winner_number"]
       score.player1 = data["msg"]["score_p1"]
       score.player2 = data["msg"]["score_p2"]
+      p1nickBoard.innerHTML = '';
+      p1nickBoard.style.display = "none";
+      p2nickBoard.innerHTML = '';
+      p2nickBoard.style.display = "none";
       scoreBoard.innerHTML = win_player + ' Win! ' + player_1 + ':' + score.player1 + ", " + player_2 + ' : ' + score.player2;
       stopBall();
       let roundText = 'Round 1';
@@ -290,10 +309,12 @@ function setEvent()
       else if (round === 2)
       {
         round = 3;
-        player2 = win_player;
-        player2_num = win_player_number;
+        round2Winner = win_player;
+        round2Winner_num = win_player_number;
         player1 = round1Winner;
         player1_num = round1Winner_num;
+        player2 = round2Winner;
+        player2_num = round2Winner_num;
         // 만약 필요하다면 roune 2 결과 전송
       }
       else if (round === 3)
@@ -311,7 +332,12 @@ function setEvent()
       last_winner = data["msg"]["scored_p"]
       score.player1 = data["msg"]["score_p1"]
       score.player2 = data["msg"]["score_p2"]
-      scoreBoard.innerHTML = 'Player 1: ' + score.player1 + ' Player 2: ' + score.player2;
+      p1nickBoard.innerHTML = 'Player 1';
+      p1nickBoard.style.display = "block";
+      scoreBoard.innerHTML = score.player1 + ' : ' + score.player2;
+      scoreBoard.style.fontWeight = "bold";
+      p2nickBoard.innerHTML = 'Player 2';
+      p2nickBoard.style.display = "block";
       stopBall();
     }
 
@@ -320,7 +346,8 @@ function setEvent()
       // 공 위치, 속도 동기화
       ball.position.x = data["obj"]["ball_loc"].x;
       ball.position.z = data["obj"]["ball_loc"].z;
-      ball.$velocity = data["obj"]["ball_vel"];
+      paddle1.position.x = (data["obj"]).paddle1_loc;
+      paddle2.position.x = (data["obj"]).paddle2_loc;
     }
 
     if (end == true)
@@ -348,8 +375,6 @@ function setEvent()
       {
         if (data["event"] === "keydown")
         {
-          // 플레이어의 paddle 위치 동기화
-          paddle1.position.x = (data["obj"]).paddle1_loc;
           if (data["key"] === ARROW_UP)
           {
             paddle1_spead = -PADDLE_SPEAD;
@@ -361,8 +386,6 @@ function setEvent()
         }
         else if (data["event"] === "keyup")
         {
-          // 플레이어의 paddle 위치 동기화
-          paddle1.position.x = (data["obj"]).paddle1_loc;
           if (data["key"] === ARROW_UP)
           {
             if (paddle1_spead === -PADDLE_SPEAD)
@@ -379,8 +402,6 @@ function setEvent()
       {
         if (data["event"] === "keydown")
         {
-          // 플레이어의 paddle 위치 동기화
-          paddle2.position.x = (data["obj"]).paddle2_loc;
           if (data["key"] === ARROW_UP)
           {
             paddle2_spead = -PADDLE_SPEAD;
@@ -392,8 +413,6 @@ function setEvent()
         }
         else if (data["event"] === "keyup")
         {
-          // 플레이어의 paddle 위치 동기화
-          paddle2.position.x = (data["obj"]).paddle2_loc;
           if (data["key"] === ARROW_UP)
           {
             if (paddle2_spead === -PADDLE_SPEAD)
@@ -418,31 +437,29 @@ function setEvent()
 
 function onlineContainerEventKeyDown(e)
 {
-  if (e.keyCode === ARROW_UP)
+  if (isArrowUpKeyDown === false && e.keyCode === ARROW_UP)
   {
+    isArrowUpKeyDown = true;
     // send key down arrow up
     const dataToSend = {
       "action": "key_press",
       "event": "keydown",
       "key": ARROW_UP,
       "obj": {
-        "paddle1_loc": paddle1.position.x,
-        "paddle2_loc": paddle2.position.x,
       },
     }
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
   }
-  else if (e.keyCode === ARROW_DOWN)
+  else if (isArrowDownKeyDown === false && e.keyCode === ARROW_DOWN)
   {
+    isArrowDownKeyDown = true;
     // send key down arrow down
     const dataToSend = {
       "action": "key_press",
       "event": "keydown",
       "key": ARROW_DOWN,
       "obj": {
-        "paddle1_loc": paddle1.position.x,
-        "paddle2_loc": paddle2.position.x,
       },
     }
     window.websocket.send(JSON.stringify(dataToSend));
@@ -454,31 +471,29 @@ function onlineContainerEventKeyDown(e)
 
 function onlineContainerEventKeyUp(e)
 {
-  if (e.keyCode === ARROW_UP)
+  if (isArrowUpKeyDown === true && e.keyCode === ARROW_UP)
   {
+    isArrowUpKeyDown = false;
     // send key up arrow up
     const dataToSend = {
       "action": "key_press",
       "event": "keyup",
       "key": ARROW_UP,
       "obj": {
-        "paddle1_loc": paddle1.position.x,
-        "paddle2_loc": paddle2.position.x,
       },
     }
     window.websocket.send(JSON.stringify(dataToSend));
     e.preventDefault();
   }
-  else if (e.keyCode === ARROW_DOWN)
+  else if (isArrowDownKeyDown === true && e.keyCode === ARROW_DOWN)
   {
+    isArrowDownKeyDown = false;
     // send key up arrow down
     const dataToSend = {
       "action": "key_press",
       "event": "keyup",
       "key": ARROW_DOWN,
       "obj": {
-        "paddle1_loc": paddle1.position.x,
-        "paddle2_loc": paddle2.position.x,
       },
     }
     window.websocket.send(JSON.stringify(dataToSend));
@@ -523,7 +538,6 @@ function loop()
       "action": "sync",
       "obj": {
         "ball_loc": ball.position,
-        "ball_vel": ball.$velocity,
         "paddle1_loc": paddle1.position.x,
         "paddle2_loc": paddle2.position.x,
       }
