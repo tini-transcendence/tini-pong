@@ -193,6 +193,57 @@ export default class extends AbstractComponent {
 			}
 			const logSetting2vs2 = () => {
 				logPannel.replaceChildren();
+				game2vs2.forEach(element => {
+					const pannelNode = document.createElement("li");
+					pannelNode.setAttribute("class", "d-flex align-items-center border");
+					if (element.result === "승") {
+						pannelNode.insertAdjacentHTML("beforeend", `
+						<div class="align-self-stretch bg-primary text-white p-2">승</div>
+						`);
+					} else {
+						pannelNode.insertAdjacentHTML("beforeend", `
+						<div class="align-self-stretch bg-danger text-white p-2">패</div>
+						`);
+					}
+					pannelNode.insertAdjacentHTML("beforeend", `
+					<div class="d-inline-flex justify-content-around align-items-center p-2" style="width: 40rem;">
+						<div class="d-flex flex-column justify-content-center">
+							<div>
+								<span>
+									<a href="/users/${element.players[0].uuid}" data-href="/users/${element.players[0].uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.players[0].nickname}</a>
+								</span>
+								<span class="text-secondary">#${element.players[0].id_tag}</span>
+							</div>
+							<div>
+								<span>
+									<a href="/users/${element.players[1].uuid}" data-href="/users/${element.players[1].uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.players[1].nickname}</a>
+								</span>
+								<span class="text-secondary">#${element.players[1].id_tag}</span>
+							</div>
+						</div>
+						<div class="mx-2">${element.score}</div>
+						<div class="d-flex flex-column justify-content-center">
+							<div>
+								<span>
+									<a href="/users/${element.players[2].uuid}" data-href="/users/${element.players[2].uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.players[2].nickname}</a>
+								</span>
+								<span class="text-secondary">#${element.players[2].id_tag}</span>
+							</div>
+							<div>
+								<span>
+									<a href="/users/${element.players[3].uuid}" data-href="/users/${element.players[3].uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.players[3].nickname}</a>
+								</span>
+								<span class="text-secondary">#${element.players[3].id_tag}</span>
+							</div>
+						</div>
+					</div>
+					<div class="ms-auto p-2 text-end">
+						<div>${element.time}</div>
+						<div><b>${element.difficulty}</b></div>
+					</div>
+					`);
+					logPannel.appendChild(pannelNode);
+				});
 				progressSetting(game2vs2Result.win, game2vs2Result.lose);
 			}
 			
