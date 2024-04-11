@@ -67,7 +67,6 @@ ball,
 paddle1,
 paddle2,
 last_scored_player = null,
-last_winner = null,
 
 paddle1_spead = 0,
 paddle2_spead = 0,
@@ -85,6 +84,7 @@ nick3,
 nick4,
 
 round,
+
 player1,
 player2,
 player1_num,
@@ -93,11 +93,6 @@ round1Winner,
 round1Winner_num,
 round2Winner,
 round2Winner_num,
-round1p1score,
-round1p2score,
-round2p1score,
-round2p2score,
-
 
 player_number = null,
 
@@ -109,10 +104,6 @@ score = {
   player1: 0,
   player2: 0
 };
-
-let tournamentResults = [];
-let tournamentGamesPlayed = 0;
-const totalTournamentGames = 3;
 
 function init(d, pn1, pn2, pn3, pn4)
 {
@@ -281,7 +272,7 @@ function setEvent()
 
   window.websocket.onmessage = function (event) {
     const data = JSON.parse(event.data);
-
+    
     if (data["type"] === "init")
       player_number = data["player_number"];
 
@@ -313,9 +304,7 @@ function setEvent()
         player2 = nick4;
         player1_num = 3;
         player2_num = 4;
-        round1p1score = score.player1;
-        round1p2score = score.player2;
-        // 만약 필요하다면 roune 1 결과 전송 혹은 저장
+        // 만약 필요하다면 roune 1 결과 전송
       }
       else if (round === 2)
       {
@@ -326,9 +315,7 @@ function setEvent()
         player1_num = round1Winner_num;
         player2 = round2Winner;
         player2_num = round2Winner_num;
-        round2p1score = score.player1;
-        round2p2score = score.player2;
-        // 만약 필요하다면 roune 2 결과 전송 혹은 저장
+        // 만약 필요하다면 roune 2 결과 전송
       }
       else if (round === 3)
       {
@@ -336,34 +323,6 @@ function setEvent()
         document.removeEventListener('keydown', onlineonlineContainerEventKeyDown);
         document.removeEventListener('keyup', onlineonlineContainerEventKeyUp);
         // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
-        if (player_number === player1_num)
-        {
-          const dataToSend = {
-            "action": "result",
-            "tournament": {
-              "timestamp": start_date,
-              "1": {
-                "player1": nick1,
-                "player2": nick2,
-                "score_p1": round1p1score,
-                "score_p2": round1p2score,
-              },
-              "2": {
-                "player1": nick3,
-                "player2": nick4,
-                "score_p1": round2p1score,
-                "score_p2": round2p2score,
-              },
-              "3": {
-                "player1": round1Winner,
-                "player2": round2Winner,
-                "score_p1": score.player1,
-                "score_p2": score.player2,
-              },
-            },
-          }
-          window.websocket.send(JSON.stringify(dataToSend));
-        }
       }
       end = true;
     }
@@ -594,25 +553,25 @@ function simulation_ball()
     if(ball.$velocity == null) {
       startOneGame();
     }
-
+    
     updateBallPosition();
-
+    
     if(isSideCollision()) {
-      ball.$velocity.x *= -1;
+      ball.$velocity.x *= -1; 
     }
-
+    
     if(isPaddle1Collision()) {
       hitBallBack(paddle1);
     }
-
+    
     if(isPaddle2Collision()) {
       hitBallBack(paddle2);
     }
-
+    
     if(isPastPaddle1()) {
       scoreBy('player2');
     }
-
+    
     if(isPastPaddle2()) {
       scoreBy('player1');
     }
@@ -666,7 +625,7 @@ function isBallAlignedWithPaddle(paddle)
 
 function hitBallBack(paddle)
 {
-  ball.$velocity.x = (ball.position.x - paddle.position.x) / 5;
+  ball.$velocity.x = (ball.position.x - paddle.position.x) / 5; 
   ball.$velocity.z *= -1;
 }
 
@@ -688,30 +647,43 @@ function scoreBy(playerName)
   updateScoreBoard(playerName);
 }
 
-function updateScoreBoard(playerName) {
-  if (score.player1 === 5 || score.player2 === 5) {
-    const winner = score.player1 === 5 ? player1 : player2;
-    const loser = score.player1 === 5 ? player2 : player1;
-    tournamentGamesPlayed++;
-    const gameResult = {
-      "date": start_date,
-      "round": round,
-      "winner": winner,
-      "loser": loser,
-      "index": tournamentGamesPlayed,
-      "score_p1": score.player1,
-      "score_p2": score.player2,
-    };
-    tournamentResults.push(gameResult);
-
-    if (checkTournamentEnd()) {
-      const dataToSend = {
-        "action": "tournament_end",
-        "tournamentResults": tournamentResults,
-      };
-      window.websocket.send(JSON.stringify(dataToSend));
+function updateScoreBoard(playerName)
+{
+  end = true;
+  if (score.player1 === 5)
+  {
+    const dataToSend = {
+      "action": "win",
+      "msg": {
+        "date": start_date,
+        "round": round,
+        "winner": player1,
+        "loser": player2,
+        "winner_number": player1_num,
+        "score_p1": score.player1,
+        "score_p2": score.player2,
+      },
     }
-  } else {
+    window.websocket.send(JSON.stringify(dataToSend));
+  }
+  else if (score.player2 === 5)
+  {
+    const dataToSend = {
+      "action": "win",
+      "msg": {
+        "date": start_date,
+        "round": round,
+        "winner": player2,
+        "loser": player1,
+        "winner_number": player2_num,
+        "score_p1": score.player1,
+        "score_p2": score.player2,
+      },
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
+  }
+  else
+  {
     const dataToSend = {
       "action": "scored",
       "msg": {
@@ -719,13 +691,10 @@ function updateScoreBoard(playerName) {
         "score_p1": score.player1,
         "score_p2": score.player2,
       },
-    };
+    }
     window.websocket.send(JSON.stringify(dataToSend));
+    end = false;
   }
-}
-
-function checkTournamentEnd() {
-  return tournamentGamesPlayed === totalTournamentGames;
 }
 
 function stopBall()
