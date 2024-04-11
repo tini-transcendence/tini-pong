@@ -182,10 +182,6 @@ export default class extends AbstractComponent {
 				gameRoomTitleDangerForm.innerText = "방 타이틀은 최소 1글자 이상으로 구성되어야 합니다.";
 				gameRoomSaveBtn.setAttribute("disabled", true);
 			}
-			else if (!defenseXss.validateNickname(value)) {
-				gameRoomTitleDangerForm.innerText = "방 타이틀은 한글과 알파벳, 숫자로만 구성될 수 있습니다.";
-				gameRoomSaveBtn.setAttribute("disabled", true);
-			}
 			else {
 				gameRoomTitleDangerForm.innerText = "\u00A0";
 				gameRoomSaveBtn.removeAttribute("disabled");
@@ -248,7 +244,7 @@ export default class extends AbstractComponent {
 							"Content-Type": "application/json",
 						},
 						body: JSON.stringify({
-							name: openGameRoomModalBody.querySelector("#title-name").value,
+							name: defenseXss.replaceSpecial(openGameRoomModalBody.querySelector("#title-name").value),
 							type: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
 							difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
 						}),
