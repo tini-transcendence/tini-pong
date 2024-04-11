@@ -1,17 +1,19 @@
 from django.contrib import admin
 from .models import Room
 import uuid
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ("uuid", "name", "type", "difficulty", "owner_uuid")
+    list_display = ("uuid", "name", "type", "difficulty", "owner_uuid", "start_time")
     list_filter = ("type", "difficulty", "owner_uuid")
     search_fields = (
         "name",
         "owner_uuid__username",
-    )  # User 모델의 username 필드를 검색 대상으로 설정
-    readonly_fields = ("uuid",)
+    )
+    readonly_fields = ("uuid", "start_time")
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

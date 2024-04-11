@@ -17,60 +17,62 @@ export default class extends AbstractComponent {
 
 	async getHtml() {
 		return `
-		<div class="container-md text-center">
+		<div class="container-md text-center mt-md-4">
 			<div class="row">
-				<div class="col-7 border p-2">
+				<div class="col-7 p-2">
 					<div class="row row-cols-1 row-cols-md-2 g-4">
 						<div class="col">
 							<div class="card h-100 w-75 m-auto" id="player1" style="max-width: 18rem;">
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
-									<h5 class="card-title">Nickname</h5>
+									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#1234</span>
 								</div>
-								<div class="card-footer">----</div>
+								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
 						</div>
 						<div class="col">
 							<div class="card h-100 w-75 m-auto" id="player2" style="max-width: 18rem;">
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
-									<h5 class="card-title">Nickname</h5>
+									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#1234</span>
 								</div>
-								<div class="card-footer">---</div>
+								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
 						</div>
 						<div class="col">
 							<div class="card h-100 w-75 m-auto" id="player3" style="max-width: 18rem;">
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
-									<h5 class="card-title">Nickname</h5>
+									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#1234</span>
 								</div>
-								<div class="card-footer">---</div>
+								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
 						</div>
 						<div class="col">
 							<div class="card h-100 w-75 m-auto" id="player4" style="max-width: 18rem;">
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
-									<h5 class="card-title">Nickname</h5>
+									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#1234</span>
 								</div>
-								<div class="card-footer">---</div>
+								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="col-5 border p-2" id="room_status">
-					<div class="m-auto" style="background-color: #ced4da;" spacing="2.4rem">
-						<h4 id="room_name">TITLE</h4>
+				<div class="col-5 p-2" id="room_status">
+					<div class="text-start p-3 mb-5" style="background-color: #4D37C6;">
+						<div id="room_name" class="mb-3" style="font-weight: 700; color: white; font-size: 2rem;">TITLE</div>
+						<div id="room_difficulty" style="font-weight: 700; color: white; font-size: 1.5rem;"></div>
+						<div id="room_gametype" style="font-weight: 700; color: white; font-size: 1.5rem;"></div>
 					</div>
-					<div style="text-align: left;">
-						<div id="room_difficulty"></div>
-						<div id="room_gametype"></div>
-					</div>
-					<div class="vertical-buttons">
-						<button type="button" class="btn btn-outline-dark" id="startBtn">시작</button>
-						<button type="button" class="btn btn-outline-dark" id="readyBtn">준비</button>
-						<button type="button" class="btn btn-outline-dark" id="exitBtn">나가기</button>
+					<div class="d-flex flex-column align-items-end">
+						<button type="button" class="btn common-btn my-2" id="startBtn" style="width: 40%;">시작</button>
+						<button type="button" class="btn common-btn my-2" id="readyBtn" style="width: 40%;">준비</button>
+						<button type="button" class="btn common-btn my-2" id="exitBtn" style="width: 40%;">나가기</button>
 					</div>
 				</div>
 			</div>
@@ -189,12 +191,12 @@ export default class extends AbstractComponent {
 			const playerNode = document.querySelector("#player" + data["player_number"]);
 			const playerReadyNode = playerNode.querySelector(".card-footer");
 			if (data["is_ready"]) {
-				playerReadyNode.innerText = "Ready";
+				playerReadyNode.classList.remove("bg-secondary");
 				playerReadyNode.classList.add("ready-style");
 			}
 			else {
-				playerReadyNode.innerText = "---";
 				playerReadyNode.classList.remove("ready-style");
+				playerReadyNode.classList.add("bg-secondary");
 			}
 		}
 
@@ -213,7 +215,8 @@ export default class extends AbstractComponent {
 					const player1NickNode = player1Node.querySelector(".card-title");
 					const player1Ready = player1Node.querySelector(".card-footer");
 					player1NickNode.innerText = "Nickname";
-					player1Ready.innerText = "Ready : ?";
+					player1Ready.classList.remove("ready-style");
+					player1Ready.classList.add("bg-secondary");
 					player1Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
 					break;
 				case 2:
@@ -221,7 +224,8 @@ export default class extends AbstractComponent {
 					const player2NickNode = player2Node.querySelector(".card-title");
 					const player2Ready = player2Node.querySelector(".card-footer");
 					player2NickNode.innerText = "Nickname";
-					player2Ready.innerText = "Ready : ?";
+					player2Ready.classList.remove("ready-style");
+					player2Ready.classList.add("bg-secondary");
 					player2Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
 					break;
 				case 3:
@@ -229,7 +233,8 @@ export default class extends AbstractComponent {
 					const player3NickNode = player3Node.querySelector(".card-title");
 					const player3Ready = player3Node.querySelector(".card-footer");
 					player3NickNode.innerText = "Nickname";
-					player3Ready.innerText = "Ready : ?";
+					player3Ready.classList.remove("ready-style");
+					player3Ready.classList.add("bg-secondary");
 					player3Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
 					break;
 				case 4:
@@ -237,7 +242,8 @@ export default class extends AbstractComponent {
 					const player4NickNode = player4Node.querySelector(".card-title");
 					const player4Ready = player4Node.querySelector(".card-footer");
 					player4NickNode.innerText = "Nickname";
-					player4Ready.innerText = "Ready : ?";
+					player4Ready.classList.remove("ready-style");
+					player4Ready.classList.add("bg-secondary");
 					player4Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
 					break;
 				default:
@@ -301,17 +307,17 @@ export default class extends AbstractComponent {
 			if (rName)
 				roomNameDiv.innerHTML = rName;
 			if (gd === 1)
-				roomDifficultyDiv.innerHTML = "Difficurty : EASY";
+				roomDifficultyDiv.innerHTML = "DIFFICULTY: EASY";
 			else if (gd === 2)
-				roomDifficultyDiv.innerHTML = "Difficurty : NORMAL";
+				roomDifficultyDiv.innerHTML = "DIFFICULTY: NORMAL";
 			else if (gd === 3)
-				roomDifficultyDiv.innerHTML = "Difficurty : HARD";
+				roomDifficultyDiv.innerHTML = "DIFFICULTY: HARD";
 			if (gt === 1)
-				roomGametypeDiv.innerHTML = "Game type : 1vs1(2p)";
+				roomGametypeDiv.innerHTML = "MODE: 1 VS 1 (2p)";
 			else if (gt === 2)
-				roomGametypeDiv.innerHTML = "Game type : 2vs2(4p)";
+				roomGametypeDiv.innerHTML = "MODE: 2 VS 2 (4p)";
 			else if (gt === 3)
-				roomGametypeDiv.innerHTML = "Game type : tournament(4p)";
+				roomGametypeDiv.innerHTML = "MODE: Tournament (4p)";
 		}
 
 		const startBtn = document.querySelector("#startBtn");

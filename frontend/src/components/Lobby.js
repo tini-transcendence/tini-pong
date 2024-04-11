@@ -1,5 +1,6 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
+import DefenseXss from "../utils/defenseXss.js";
 import {BACKEND_URL, navigateTo} from "../index.js";
 
 import {onlineContainerEventKeyUp, onlineContainerEventKeyDown} from "../games/onlinePongBasic.js"
@@ -22,10 +23,11 @@ export default class extends AbstractComponent {
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
-						<form>
+						<form onsubmit="return false">
 							<div class="mb-3">
 								<label for="title-name" class="col-form-label">TITLE</label>
-								<input type="text" class="form-control" id="title-name" placeholder="방 타이틀을 입력하세요.">
+								<input type="text" class="form-control" id="title-name" maxlength="20" placeholder="방 타이틀을 입력하세요.">
+								<p class="text-danger" id="gameroom-title-danger">&nbsp</p>
 							</div>
 							<div class="row">
 								<div class="col">
@@ -170,6 +172,25 @@ export default class extends AbstractComponent {
 
 	handleRoute() {
 		this.reloadGameRoomList();
+		
+		const defenseXss = new DefenseXss();
+		const gameRoomTitle = document.querySelector("#title-name");
+		const gameRoomTitleDangerForm = document.querySelector("#gameroom-title-danger");
+		const gameRoomSaveBtn = document.querySelector("#gameroom-save");
+		const gameRoomTitleXss = (value) => {
+			if (value.length < 1) {
+				gameRoomTitleDangerForm.innerText = "방 타이틀은 최소 1글자 이상으로 구성되어야 합니다.";
+				gameRoomSaveBtn.setAttribute("disabled", true);
+			}
+			else {
+				gameRoomTitleDangerForm.innerText = "\u00A0";
+				gameRoomSaveBtn.removeAttribute("disabled");
+			}
+		}
+		gameRoomTitleXss(gameRoomTitle.value);
+		gameRoomTitle.addEventListener("change", e => {
+			gameRoomTitleXss(e.target.value);
+		})
 
 		const gameRoomListReloadBtn = document.querySelector("#gameroom-list-reload");
 		gameRoomListReloadBtn.addEventListener("click", event => {
@@ -210,7 +231,6 @@ export default class extends AbstractComponent {
 			}
 		})
 
-		const gameRoomSaveBtn = document.querySelector("#gameroom-save");
 		gameRoomSaveBtn.addEventListener("click", event => {
 			event.preventDefault();
 			const openGameRoomModalBody = document.querySelector("#openGameRoomModal .modal-body");
@@ -224,7 +244,7 @@ export default class extends AbstractComponent {
 							"Content-Type": "application/json",
 						},
 						body: JSON.stringify({
-							name: openGameRoomModalBody.querySelector("#title-name").value,
+							name: defenseXss.replaceSpecial(openGameRoomModalBody.querySelector("#title-name").value),
 							type: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
 							difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
 						}),

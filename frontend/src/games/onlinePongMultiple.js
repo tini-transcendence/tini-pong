@@ -215,7 +215,7 @@ function setPaddle()
   paddle3.position.set(-BOARD_WIDTH / 4, 0, -BOARD_LENGTH / 2 + PADDLE_LENGTH);
   paddle4 = addPaddle();
   paddle4.position.set(BOARD_WIDTH / 4, 0, -BOARD_LENGTH / 2 + PADDLE_LENGTH);
-  
+
 }
 
 function addPaddle()
@@ -273,10 +273,10 @@ function setEvent()
     const data = JSON.parse(event.data);
     console.log('game : ', data["type"]);
     console.log(data);
-    
+
     if (data["type"] === "init")
       player_number = data["player_number"];
-    
+
     if (data["type"] === "win")
     {
       let win = data["msg"]["winner"]
@@ -290,7 +290,7 @@ function setEvent()
       stopBall();
       end = true;
     }
-    
+
     if (data["type"] === "scored")
     {
       last_winner = data["msg"]["scored_p"]
@@ -542,17 +542,17 @@ function simulation_ball()
     if(ball.$velocity == null) {
       startOneGame();
     }
-    
+
     updateBallPosition();
-    
+
     if(isSideCollision()) {
-      ball.$velocity.x *= -1; 
+      ball.$velocity.x *= -1;
     }
-    
+
     if(isPaddle1Collision()) {
       hitBallBack(paddle1);
     }
-    
+
     else if(isPaddle2Collision()) {
       hitBallBack(paddle2);
     }
@@ -560,11 +560,11 @@ function simulation_ball()
     if(isPaddle3Collision()) {
       hitBallBack(paddle3);
     }
-    
+
     else if(isPaddle4Collision()) {
       hitBallBack(paddle4);
     }
-    
+
     if(isPastPaddle1()) {
       scoreBy('player_right');
     }
@@ -572,7 +572,7 @@ function simulation_ball()
     else if(isPastPaddle2()) {
       scoreBy('player_right');
     }
-    
+
     if(isPastPaddle3()) {
       scoreBy('player_left');
     }
@@ -643,7 +643,7 @@ function isBallAlignedWithPaddle(paddle)
 
 function hitBallBack(paddle)
 {
-  ball.$velocity.x = (ball.position.x - paddle.position.x) / 5; 
+  ball.$velocity.x = (ball.position.x - paddle.position.x) / 5;
   ball.$velocity.z *= -1;
 }
 
@@ -684,8 +684,7 @@ function updateScoreBoard(playerName)
       "action": "win",
       "msg": {
         "date": start_date,
-        "winner": player_left,
-        "loser": player_right,
+        "winner": "player_left",
         "score_p1": score.player_left,
         "score_p2": score.player_right,
       },
@@ -698,8 +697,7 @@ function updateScoreBoard(playerName)
       "action": "win",
       "msg": {
         "date": start_date,
-        "winner": player_right,
-        "loser": player_left,
+        "winner": "player_right",
         "score_p1": score.player_left,
         "score_p2": score.player_right,
       },
