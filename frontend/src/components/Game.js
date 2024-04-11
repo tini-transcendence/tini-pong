@@ -17,6 +17,11 @@ export default class extends AbstractComponent {
 		<style>
 			div {margin:auto; text-align: center;}
 			canvas {align-self: center; margin:auto;}
+			#gameHeader { margin-top: 10px; font-size: 30px; border-bottom: solid black 2px; }
+			#gameName { font-size: 35px; font-weight: bold; }
+			#p1nickBoard { text-align: left; display: none; }
+			#scoreBoard { font-size: 30px; text-align: center; }
+			#p2nickBoard { text-align: right; display: none; }
 		</style>
 		<div>
 			<div class="container-lg" id="gameHeader">
