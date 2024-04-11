@@ -562,53 +562,47 @@ function scoreBy(playerName)
   updateScoreBoard(playerName);
 }
 
-function updateScoreBoard(playerName)
-{
-  end = true;
-  if (score.player1 === 5)
-  {
+function updateScoreBoard(playerName) {
+  let winner = '';
+  let score_p1 = score.player1;
+  let score_p2 = score.player2;
+
+  if (score_p1 === 5) {
+    winner = 1;
+    end = true;
+  } else if (score_p2 === 5) {
+    winner = 2;
+    end = true;
+  } else {
+    end = false;
+  }
+
+  if (end) {
     const dataToSend = {
       "action": "win",
       "msg": {
         "date": start_date,
-        "winner": "player_1",
-        "score_p1": score.player1,
-        "score_p2": score.player2,
+        "winner": winner,
+        "score_p1": score_p1,
+        "score_p2": score_p2,
       },
-    }
+    };
     window.websocket.send(JSON.stringify(dataToSend));
-  }
-  else if (score.player2 === 5)
-  {
-    const dataToSend = {
-      "action": "win",
-      "msg": {
-        "date": start_date,
-        "winner": "player_2",
-        "score_p1": score.player1,
-        "score_p2": score.player2,
-      },
-    }
-    window.websocket.send(JSON.stringify(dataToSend));
-  }
-  else
-  {
+
+
+    document.removeEventListener('keydown', onlineContainerEventKeyDown);
+    document.removeEventListener('keyup', onlineContainerEventKeyUp);
+  } else {
+
     const dataToSend = {
       "action": "scored",
       "msg": {
         "scored_p": playerName,
-        "score_p1": score.player1,
-        "score_p2": score.player2,
+        "score_p1": score_p1,
+        "score_p2": score_p2,
       },
-    }
+    };
     window.websocket.send(JSON.stringify(dataToSend));
-    end = false;
-  }
-  if (end === true)
-  {
-    // 이벤트 제거
-    document.removeEventListener('keydown', onlineContainerEventKeyDown);
-    document.removeEventListener('keyup', onlineContainerEventKeyUp);
   }
 }
 
