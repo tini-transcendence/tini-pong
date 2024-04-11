@@ -42,6 +42,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         "user_uuid": str(self.user.uuid),
                         "user_nickname": self.user.nickname,
                         "user_avatar": self.user.avatar,
+                        "id_tag": str(self.user.uuid)[:4],
                         "is_ready": False,
                         "player_number": player_number,
                         "players": existing_players,
@@ -324,6 +325,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 "user_uuid": str(room_user.user_uuid.uuid),
                 "user_nickname": room_user.user_uuid.nickname,
                 "is_ready": room_user.is_ready,
+                "id_tag": str(room_user.user_uuid.uuid)[:4],
                 "user_avatar": room_user.user_uuid.avatar,
                 "player_number": room_user.player_number,
             }
@@ -357,6 +359,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 game_result = GameResult(
                     start_time=current_room.start_time,
                     type=current_room.type,
+                    win=msg["winner"],
                     difficulty=current_room.difficulty,
                     score=f"{score_p1} - {score_p2}",
                 )
