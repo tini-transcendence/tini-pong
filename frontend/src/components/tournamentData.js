@@ -24,7 +24,7 @@ export default class extends AbstractComponent {
         </div>
         
         <div class="container">
-        <div class="text-end" id="btn">
+        <div class="texte" id="btn">
         <button type="button" class="btn btn-outline-dark" id="goBackButton">돌아가기</button>
         </div>
         <script src="tournamentData.js"></script>
@@ -69,7 +69,7 @@ export default class extends AbstractComponent {
                 if (matchData.hasOwnProperty('timestamp')) {
                 } else {
                     var game = document.createElement('div');
-                    game.classList.add('game', 'justify-content-between', 'align-items-center', 'my-2', 'row');
+                    game.classList.add('gameLine', 'justify-content-between', 'align-items-center', 'my-2', 'row');
 
                     var rankSpan = document.createElement('span');
                     rankSpan.classList.add('col-3', 'textAlign', 'game-rank');
