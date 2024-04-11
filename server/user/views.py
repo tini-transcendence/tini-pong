@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpRequest, HttpResponseBadRequest, HttpR
 from django.views import View
 from django.db import IntegrityError
 
-from .models import User
+from .models import User, GameResult
 
 from util.sanitize import sanitize, sanitize_tag
 
@@ -13,13 +13,23 @@ from util.sanitize import sanitize, sanitize_tag
 class UserProfileView(View):
     def get(self, request: HttpRequest):
         try:
-            user_uuid = request.GET["uuid"]
-        except:
-            user_uuid = request.user_uuid
-        try:
+            user_uuid = request.GET.get("uuid", request.user_uuid)
             user = User.objects.get(pk=user_uuid)
-        except:
+        except User.DoesNotExist:
             return HttpResponseBadRequest()
+
+        game_results = GameResult.objects.filter(players=user)
+
+        game_history = [
+            {
+                "type": game_result.type,
+                "difficulty": game_result.difficulty,
+                "score": game_result.score,
+                "start_time": game_result.start_time,
+            }
+            for game_result in game_results
+        ]
+
         return JsonResponse(
             {
                 "nickname": user.nickname,
@@ -27,6 +37,7 @@ class UserProfileView(View):
                 "message": user.message,
                 "id_tag": str(user_uuid)[:4],
                 "self": user_uuid == request.user_uuid,
+                "game_history": game_history,
             }
         )
 

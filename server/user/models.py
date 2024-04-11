@@ -11,3 +11,15 @@ class User(models.Model):
     message = models.CharField(max_length=100, default="")
     online_status = models.DateTimeField(auto_now=True)
     has_logged_in = models.BooleanField(default=False)
+    game_results = models.ManyToManyField("GameResult", related_name="users")
+
+    def __str__(self):
+        return self.nickname
+
+
+class GameResult(models.Model):
+    start_time = models.DateTimeField()
+    players = models.ManyToManyField("User", related_name="game_result")
+    type = models.IntegerField()
+    difficulty = models.IntegerField()
+    score = models.CharField()
