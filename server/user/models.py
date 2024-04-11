@@ -23,3 +23,4 @@ class GameResult(models.Model):
     type = models.IntegerField()
     difficulty = models.IntegerField()
     score = models.CharField()
+    win = models.IntegerField(default=0)
