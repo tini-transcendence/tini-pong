@@ -1,24 +1,16 @@
 from django.urls import path
 from .views import (
-    OneVsOneGameResultsView,
-    TwoVsTwoGameResultsView,
-    TournamentGameResultsView,
+    OneVsOneGameResultList,
+    TwoVsTwoGameResultList,
+    TournamentGameResultList,
 )
 
 urlpatterns = [
+    path("1vs1/", OneVsOneGameResultList.as_view(), name="1vs1_game_results"),
+    path("2vs2/", TwoVsTwoGameResultList.as_view(), name="2vs2_game_results"),
     path(
-        "user/<uuid:user_uuid>/results/1v1/",
-        OneVsOneGameResultsView.as_view(),
-        name="one-vs-one-game-results",
-    ),
-    path(
-        "user/<uuid:user_uuid>/results/2v2/",
-        TwoVsTwoGameResultsView.as_view(),
-        name="two-vs-two-game-results",
-    ),
-    path(
-        "user/<uuid:user_uuid>/results/tournament/",
-        TournamentGameResultsView.as_view(),
-        name="tournament-game-results",
+        "tournament/",
+        TournamentGameResultList.as_view(),
+        name="tournament_game_results",
     ),
 ]

@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import OneVsOneGameResult, TwoVsTwoGameResult
 
-# Register your models here.
+admin.site.register(OneVsOneGameResult)
+admin.site.register(TwoVsTwoGameResult)
