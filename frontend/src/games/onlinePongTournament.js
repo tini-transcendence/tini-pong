@@ -67,6 +67,7 @@ ball,
 paddle1,
 paddle2,
 last_scored_player = null,
+last_winner = null,
 
 paddle1_spead = 0,
 paddle2_spead = 0,
@@ -84,7 +85,6 @@ nick3,
 nick4,
 
 round,
-
 player1,
 player2,
 player1_num,
