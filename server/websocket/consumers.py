@@ -2,11 +2,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from room.models import Room, RoomUser
-from user.models import User
-from dashboard.models import (
-    OneVsOneGameResult,
-    TwoVsTwoGameResult,
-)
+from user.models import User, GameResult
 from django.db import transaction
 from util.timestamp import get_django_timestamp
 from dashboard.views import Tournament
@@ -210,13 +206,18 @@ class RoomConsumer(AsyncWebsocketConsumer):
         )
 
     async def disconnect(self, close_code):
-        is_owner = await self.is_room_owner(self.user, self.room_uuid)
-        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        try:
+            is_owner = await self.is_room_owner(self.user, self.room_uuid)
+            await self.channel_layer.group_discard(
+                self.room_group_name, self.channel_name
+            )
 
-        if is_owner:
-            await self.delete_room_and_room_users(self.room_uuid)
-        else:
-            await self.remove_user_from_room(self.user, self.room_uuid)
+            if is_owner:
+                await self.delete_room_and_room_users(self.room_uuid)
+            else:
+                await self.remove_user_from_room(self.user, self.room_uuid)
+        except Exception:
+            pass
 
     @database_sync_to_async
     def is_user_in_room(self, user, room_uuid):
@@ -349,83 +350,42 @@ class RoomConsumer(AsyncWebsocketConsumer):
     def save_game_result(self, msg):
         try:
             current_room = Room.objects.get(uuid=self.room_uuid)
-            score_p1 = msg["score_p1"]
-            score_p2 = msg["score_p2"]
-            if current_room.type == 1:
-                winner_number = msg["winner"]
-                if winner_number == "player_1":
-                    winner = RoomUser.objects.get(
-                        room_uuid=current_room, player_number=1
-                    )
-                    loser = RoomUser.objects.get(
-                        room_uuid=current_room, player_number=2
-                    )
-                elif winner_number == "player_2":
-                    winner = RoomUser.objects.get(
-                        room_uuid=current_room, player_number=2
-                    )
-                    loser = RoomUser.objects.get(
-                        room_uuid=current_room, player_number=1
-                    )
-                game_result = OneVsOneGameResult(
-                    room=current_room,
+            if current_room.type == 1 or current_room.type == 2:
+                score_p1 = msg["score_p1"]
+                score_p2 = msg["score_p2"]
+
+                game_result = GameResult(
+                    start_time=current_room.start_time,
                     type=current_room.type,
                     difficulty=current_room.difficulty,
-                    player1_nickname=winner.user_uuid.nickname,
-                    player1_avatar=winner.user_uuid.avatar,
-                    player2_nickname=loser.user_uuid.nickname,
-                    player2_avatar=loser.user_uuid.avatar,
-                    score_player1=score_p1 if winner_number == "player_1" else score_p2,
-                    score_player2=score_p2 if winner_number == "player_1" else score_p1,
-                    start_time=current_room.start_time,
+                    score=f"{score_p1} - {score_p2}",
                 )
                 game_result.save()
-            elif current_room.type == 2:
-                winner_team = msg["winner"]
-                if winner_team == "player_left":
-                    winner_1 = RoomUser.objects.get(
+                if current_room.type == 1:
+                    player1 = RoomUser.objects.get(
                         room_uuid=current_room, player_number=1
-                    )
-                    winner_2 = RoomUser.objects.get(
+                    ).user_uuid
+                    player2 = RoomUser.objects.get(
                         room_uuid=current_room, player_number=2
-                    )
-                    loser_1 = RoomUser.objects.get(
-                        room_uuid=current_room, player_number=3
-                    )
-                    loser_2 = RoomUser.objects.get(
-                        room_uuid=current_room, player_number=4
-                    )
-                elif winner_team == "player_right":
-                    winner_1 = RoomUser.objects.get(
-                        room_uuid=current_room, player_number=3
-                    )
-                    winner_2 = RoomUser.objects.get(
-                        room_uuid=current_room, player_number=4
-                    )
-                    loser_1 = RoomUser.objects.get(
+                    ).user_uuid
+                    game_result.players.add(player1, player2)
+                elif current_room.type == 2:
+                    team1_player1 = RoomUser.objects.get(
                         room_uuid=current_room, player_number=1
-                    )
-                    loser_2 = RoomUser.objects.get(
+                    ).user_uuid
+                    team1_player2 = RoomUser.objects.get(
                         room_uuid=current_room, player_number=2
+                    ).user_uuid
+                    team2_player1 = RoomUser.objects.get(
+                        room_uuid=current_room, player_number=3
+                    ).user_uuid
+                    team2_player2 = RoomUser.objects.get(
+                        room_uuid=current_room, player_number=4
+                    ).user_uuid
+                    game_result.players.add(
+                        team1_player1, team1_player2, team2_player1, team2_player2
                     )
-                game_result = TwoVsTwoGameResult(
-                    room=current_room,
-                    type=current_room.type,
-                    difficulty=current_room.difficulty,
-                    team1_player1_nickname=winner_1.user_uuid.nickname,
-                    team1_player1_avatar=winner_1.user_uuid.avatar,
-                    team1_player2_nickname=winner_2.user_uuid.nickname,
-                    team1_player2_avatar=winner_2.user_uuid.avatar,
-                    team2_player1_nickname=loser_1.user_uuid.nickname,
-                    team2_player1_avatar=loser_1.user_uuid.avatar,
-                    team2_player2_nickname=loser_2.user_uuid.nickname,
-                    team2_player2_avatar=loser_2.user_uuid.avatar,
-                    score_team1=score_p1 if winner_team == "player_left" else score_p2,
-                    score_team2=score_p2 if winner_team == "player_left" else score_p1,
-                    start_time=current_room.start_time,
-                )
-                game_result.save()
-            if current_room.type == 3:
+            elif current_room.type == 3:
                 t = Tournament()
                 for game_result in msg["tournamentResults"]:
                     playerA = Tournament.make_player(
