@@ -1,9 +1,16 @@
-import json, asyncio
+import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from room.models import Room, RoomUser
 from user.models import User
+from dashboard.models import (
+    OneVsOneGameResult,
+    TwoVsTwoGameResult,
+)
 from django.db import transaction
+from util.timestamp import get_django_timestamp
+from dashboard.views import Tournament
+from blockchain.executeFunction import store_transaction
 
 
 class RoomConsumer(AsyncWebsocketConsumer):
@@ -18,8 +25,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
-
-
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -81,7 +86,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         elif action == "leave":
             is_owner = await self.is_room_owner(self.user, self.room_uuid)
-            
+
             if is_owner:
                 await self.channel_layer.group_send(
                     self.room_group_name,
@@ -90,11 +95,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         "message": {
                             "action": "terminate",
                             "room_uuid": str(self.room_uuid),
-                            "is_owner": is_owner
+                            "is_owner": is_owner,
                         },
                     },
                 )
-                
+
                 await self.delete_room_and_room_users(self.room_uuid)
             else:
                 await self.channel_layer.group_send(
@@ -108,14 +113,20 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         },
                     },
                 )
-                
+
                 await self.remove_user_from_room(self.user, self.room_uuid)
 
         elif action == "init":
-            await self.send(text_data=json.dumps({"type":"init", "player_number": self.player_number}))
+            await self.send(
+                text_data=json.dumps(
+                    {"type": "init", "player_number": self.player_number}
+                )
+            )
 
         elif action == "key_press":
-            await self.handle_key_press(text_data_json["event"], text_data_json["key"], text_data_json["obj"])
+            await self.handle_key_press(
+                text_data_json["event"], text_data_json["key"], text_data_json["obj"]
+            )
 
         elif action == "win":
             await self.handle_win(text_data_json["msg"])
@@ -139,11 +150,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     async def sync(self, obj):
         obj["player_number"] = self.player_number
-        await self.send(
-            text_data=json.dumps(obj)
-        )
+        await self.send(text_data=json.dumps(obj))
 
     async def handle_win(self, msg):
+        await self.save_game_result(msg)
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -154,10 +164,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     async def win(self, msg):
         msg["player_number"] = self.player_number
-        await self.send(
-            text_data=json.dumps(msg)
-        )
-    
+        await self.send(text_data=json.dumps(msg))
+
     async def handle_scored(self, msg):
         print("handle")
         print(msg)
@@ -172,9 +180,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
     async def scored(self, msg):
         print("send")
         msg["player_number"] = self.player_number
-        await self.send(
-            text_data=json.dumps(msg)
-        )
+        await self.send(text_data=json.dumps(msg))
 
     async def room_message(self, event):
         await self.send(text_data=json.dumps(event["message"]))
@@ -207,7 +213,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         is_owner = await self.is_room_owner(self.user, self.room_uuid)
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-        
+
         if is_owner:
             await self.delete_room_and_room_users(self.room_uuid)
         else:
@@ -245,10 +251,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             room = Room.objects.select_for_update().get(uuid=self.room_uuid)
 
             try:
-                room_user = RoomUser.objects.get(
-                    room_uuid=room,
-                    user_uuid=self.user
-                )
+                room_user = RoomUser.objects.get(room_uuid=room, user_uuid=self.user)
                 if room_user.player_number == None:
                     occupied_numbers = (
                         RoomUser.objects.filter(room_uuid=room)
@@ -291,7 +294,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
             if room.owner_uuid.uuid != self.user.uuid:
                 return False, "방장 플레이어만 게임을 시작할 수 있습니다."
-            
+
             if room.type == 1 and player_count != 2:
                 return False, "2명의 플레이어가 필요합니다."
             elif (room.type == 2 or room.type == 3) and player_count != 4:
@@ -301,6 +304,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 return False, "모든 플레이어가 준비상태여야 합니다."
 
             room.is_active = True
+            room.start_time = get_django_timestamp()
             room.save()
 
             player_numbers = list(
@@ -313,21 +317,21 @@ class RoomConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_existing_players_info(self):
         room = Room.objects.get(uuid=self.room_uuid)
-        
-        room_users = room.room_users.all().select_related('user_uuid')
+
+        room_users = room.room_users.all().select_related("user_uuid")
         players_info = [
             {
-                'user_uuid': str(room_user.user_uuid.uuid),
-                'user_nickname': room_user.user_uuid.nickname,
-                'is_ready': room_user.is_ready,
-                'user_avatar': room_user.user_uuid.avatar,
-                'player_number': room_user.player_number,
+                "user_uuid": str(room_user.user_uuid.uuid),
+                "user_nickname": room_user.user_uuid.nickname,
+                "is_ready": room_user.is_ready,
+                "user_avatar": room_user.user_uuid.avatar,
+                "player_number": room_user.player_number,
             }
             for room_user in room_users
         ]
-        
+
         return players_info
-    
+
     @database_sync_to_async
     def send_room_data(self):
         room = Room.objects.get(uuid=self.room_uuid)
@@ -341,3 +345,103 @@ class RoomConsumer(AsyncWebsocketConsumer):
         ]
 
         return room_data
+
+    @database_sync_to_async
+    def save_game_result(self, msg):
+        try:
+            current_room = Room.objects.get(uuid=self.room_uuid)
+            score_p1 = msg["score_p1"]
+            score_p2 = msg["score_p2"]
+            if current_room.type == 1:
+                winner_number = msg["winner"]
+                if winner_number == "player_1":
+                    winner = RoomUser.objects.get(
+                        room_uuid=current_room, player_number=1
+                    )
+                    loser = RoomUser.objects.get(
+                        room_uuid=current_room, player_number=2
+                    )
+                elif winner_number == "player_2":
+                    winner = RoomUser.objects.get(
+                        room_uuid=current_room, player_number=2
+                    )
+                    loser = RoomUser.objects.get(
+                        room_uuid=current_room, player_number=1
+                    )
+                game_result = OneVsOneGameResult(
+                    room=current_room,
+                    type=current_room.type,
+                    difficulty=current_room.difficulty,
+                    player1_nickname=winner.user_uuid.nickname,
+                    player1_avatar=winner.user_uuid.avatar,
+                    player2_nickname=loser.user_uuid.nickname,
+                    player2_avatar=loser.user_uuid.avatar,
+                    score_player1=score_p1 if winner_number == "player_1" else score_p2,
+                    score_player2=score_p2 if winner_number == "player_1" else score_p1,
+                    start_time=current_room.start_time,
+                )
+                game_result.save()
+            elif current_room.type == 2:
+                winner_team = msg["winner"]
+                if winner_team == "player_left":
+                    winner_1 = RoomUser.objects.get(
+                        room_uuid=current_room, player_number=1
+                    )
+                    winner_2 = RoomUser.objects.get(
+                        room_uuid=current_room, player_number=2
+                    )
+                    loser_1 = RoomUser.objects.get(
+                        room_uuid=current_room, player_number=3
+                    )
+                    loser_2 = RoomUser.objects.get(
+                        room_uuid=current_room, player_number=4
+                    )
+                elif winner_team == "player_right":
+                    winner_1 = RoomUser.objects.get(
+                        room_uuid=current_room, player_number=3
+                    )
+                    winner_2 = RoomUser.objects.get(
+                        room_uuid=current_room, player_number=4
+                    )
+                    loser_1 = RoomUser.objects.get(
+                        room_uuid=current_room, player_number=1
+                    )
+                    loser_2 = RoomUser.objects.get(
+                        room_uuid=current_room, player_number=2
+                    )
+                game_result = TwoVsTwoGameResult(
+                    room=current_room,
+                    type=current_room.type,
+                    difficulty=current_room.difficulty,
+                    team1_player1_nickname=winner_1.user_uuid.nickname,
+                    team1_player1_avatar=winner_1.user_uuid.avatar,
+                    team1_player2_nickname=winner_2.user_uuid.nickname,
+                    team1_player2_avatar=winner_2.user_uuid.avatar,
+                    team2_player1_nickname=loser_1.user_uuid.nickname,
+                    team2_player1_avatar=loser_1.user_uuid.avatar,
+                    team2_player2_nickname=loser_2.user_uuid.nickname,
+                    team2_player2_avatar=loser_2.user_uuid.avatar,
+                    score_team1=score_p1 if winner_team == "player_left" else score_p2,
+                    score_team2=score_p2 if winner_team == "player_left" else score_p1,
+                    start_time=current_room.start_time,
+                )
+                game_result.save()
+            if current_room.type == 3:
+                t = Tournament()
+                for game_result in msg["tournamentResults"]:
+                    playerA = Tournament.make_player(
+                        game_result["winner"], game_result["score_p1"]
+                    )
+                    playerB = Tournament.make_player(
+                        game_result["loser"], game_result["score_p2"]
+                    )
+                    index = game_result["index"]
+                    t.add_game_log(playerA, playerB, index)
+                t.add_timestamp()
+                store_transaction(json.dumps(t.tournament))
+        except RoomUser.DoesNotExist:
+            pass
+        except User.DoesNotExist:
+            pass
+        except Room.DoesNotExist:
+            pass
