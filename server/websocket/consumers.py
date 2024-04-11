@@ -138,7 +138,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         )
 
     async def sync(self, obj):
-        obj["player_number"] = self.player_number
         await self.send(
             text_data=json.dumps(obj)
         )

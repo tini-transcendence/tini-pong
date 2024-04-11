@@ -286,7 +286,7 @@ function setEvent()
       p1nickBoard.style.display = "none";
       p2nickBoard.innerHTML = '';
       p2nickBoard.style.display = "none";
-      scoreBoard.innerHTML = win_player + ' Win! ' + player_1 + ':' + score.player1 + ", " + player_2 + ' : ' + score.player2;
+      scoreBoard.innerHTML = win_player + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + ' : ' + score.player2;
       stopBall();
       let roundText = 'Round 1';
       if (round === 2)
@@ -332,11 +332,11 @@ function setEvent()
       last_winner = data["msg"]["scored_p"]
       score.player1 = data["msg"]["score_p1"]
       score.player2 = data["msg"]["score_p2"]
-      p1nickBoard.innerHTML = 'Player 1';
+      p1nickBoard.innerHTML = player1;
       p1nickBoard.style.display = "block";
       scoreBoard.innerHTML = score.player1 + ' : ' + score.player2;
       scoreBoard.style.fontWeight = "bold";
-      p2nickBoard.innerHTML = 'Player 2';
+      p2nickBoard.innerHTML = player2;
       p2nickBoard.style.display = "block";
       stopBall();
     }
