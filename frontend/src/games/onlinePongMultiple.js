@@ -681,10 +681,10 @@ function updateScoreBoard(playerName) {
   let score_right = score.player_right;
 
   if (score_left === 5) {
-    winner = "team_left";
+    winner = 1;
     end = true;
   } else if (score_right === 5) {
-    winner = "team_right";
+    winner = 2;
     end = true;
   } else {
     end = false;

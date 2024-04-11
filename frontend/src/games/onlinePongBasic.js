@@ -568,10 +568,10 @@ function updateScoreBoard(playerName) {
   let score_p2 = score.player2;
 
   if (score_p1 === 5) {
-    winner = player_1;
+    winner = 1;
     end = true;
   } else if (score_p2 === 5) {
-    winner = player_2;
+    winner = 2;
     end = true;
   } else {
     end = false;
