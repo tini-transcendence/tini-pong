@@ -1,9 +1,6 @@
-// tournamentData.js
-
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
 import {BACKEND_URL} from "../index.js";
-
 
 export default class extends AbstractComponent {
     constructor() {
@@ -18,14 +15,18 @@ export default class extends AbstractComponent {
         
         <div class="container">
             <div class="b">
+                <div class="text-center" id="spinner">
+                    <div class="spinner-border" style="margin-top: 40px; width: 5rem; height: 5rem; border-width: 10px;" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
             <!-- 토너먼트 데이터가 입력되는 곳 -->
             </div>
-    
         </div>
         
         <div class="container">
         <div class="texte" id="btn">
-        <button type="button" class="btn btn-outline-dark" id="goBackButton">돌아가기</button>
+        <button type="button" class="btn common-btn" id="goBackButton">돌아가기</button>
         </div>
         <script src="tournamentData.js"></script>
         </div>
@@ -36,6 +37,7 @@ export default class extends AbstractComponent {
 
     populateFunction(data) {
         console.log(typeof(data));
+        document.getElementById('spinner').style.display = 'none';
 
         let tbody = document.querySelector('.b');
 
