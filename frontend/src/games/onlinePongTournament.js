@@ -331,7 +331,6 @@ function setEvent()
         document.removeEventListener('keydown', onlineonlineContainerEventKeyDown);
         document.removeEventListener('keyup', onlineonlineContainerEventKeyUp);
         // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
-        animateGame.setAnimateOff();
         openModal();
       }
       end = true;
