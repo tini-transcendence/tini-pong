@@ -129,8 +129,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
             await self.handle_win(text_data_json["msg"])
 
         elif action == "scored":
-            print("scored")
-            print(text_data_json)
+            msg = text_data_json.get("msg", {})
+            player_num = msg.get("scored_p")
+            score_p1 = msg.get("score_p1", 0)
+            score_p2 = msg.get("score_p2", 0)
+            await self.update_game_score(player_num, score_p1, score_p2)
             await self.handle_scored(text_data_json["msg"])
 
         elif action == "sync":
@@ -163,8 +166,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(msg))
 
     async def handle_scored(self, msg):
-        print("handle")
-        print(msg)
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -174,7 +175,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         )
 
     async def scored(self, msg):
-        print("send")
         msg["player_number"] = self.player_number
         await self.send(text_data=json.dumps(msg))
 
@@ -207,6 +207,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         )
 
     async def disconnect(self, close_code):
+        await self.update_game_on_disconnect()
         try:
             is_owner = await self.is_room_owner(self.user, self.room_uuid)
             await self.channel_layer.group_discard(
@@ -412,3 +413,61 @@ class RoomConsumer(AsyncWebsocketConsumer):
             pass
         except Room.DoesNotExist:
             pass
+
+    @database_sync_to_async
+    def initiate_game_result(self):
+        current_room = Room.objects.get(uuid=self.room_uuid)
+        game_result = GameResult(
+            start_time=current_room.start_time,
+            type=current_room.type,
+            score="0 - 0",
+            difficulty=current_room.difficulty
+        )
+        game_result.save()
+        
+        players = RoomUser.objects.filter(room_uuid=current_room).order_by('player_number')
+        for index, player in enumerate(players):
+            setattr(game_result, f'player{index + 1}', player.user_uuid)
+        game_result.save()
+
+        return game_result
+    
+    @database_sync_to_async
+    def update_game_score(self, player_num, score_p1, score_p2):
+        current_room = Room.objects.get(uuid=self.room_uuid)
+        game_result = GameResult.objects.filter(
+            start_time=current_room.start_time,
+            type=current_room.type,
+        ).last()
+        
+        if game_result:
+            game_result.score = f"{score_p1} - {score_p2}"
+            if player_num == 1:
+                game_result.win = 1 if score_p1 >= 5 else 0
+            elif player_num == 2:
+                game_result.win = 2 if score_p2 >= 5 else 0
+            game_result.save()
+
+
+    @database_sync_to_async
+    def update_game_on_disconnect(self):
+        try:
+            current_room = Room.objects.get(uuid=self.room_uuid)
+            game_result = GameResult.objects.filter(
+                start_time=current_room.start_time,
+                type=current_room.type,
+                completed=False
+            ).last()
+
+            if game_result:
+                active_players = RoomUser.objects.filter(
+                    room_uuid=current_room
+                ).count()
+                if active_players == 0:
+                    game_result.completed = True
+                    game_result.save()
+        except Room.DoesNotExist:
+            pass
+        except GameResult.DoesNotExist:
+            pass
+
