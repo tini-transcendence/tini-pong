@@ -13,12 +13,16 @@ COPY ./Pipfile ./Pipfile
 COPY ./Pipfile.lock ./Pipfile.lock
 
 RUN apk add --update --no-cache \
-    postgresql-client \
-    postgresql-dev \
-    gcc \
-    musl-dev \
-    libffi-dev
+        postgresql-client \
+        postgresql-dev \
+        gcc \
+        musl-dev \
+        libffi-dev
 RUN pip install pipenv && pipenv install --system --deploy --ignore-pipfile
+RUN chown django-user /server
 
 USER django-user
 COPY --chown=django-user:django-user ./ ./
+RUN chmod +x ./entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]

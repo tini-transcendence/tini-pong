@@ -5,18 +5,13 @@ services:
     container_name: backend
     build:
       context: ./server
-      args:
-        - DEV=true #개발 단계에서만 사용하는 requirements.dev.txt를 사용할 수 있음
     ports:
       - "9000:9000"
-    command: >
-      sh -c "python manage.py wait_for_db &&
-             python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:9000"
     env_file:
       - .env
     depends_on:
       - db
+      - broker
     # networks:
     #   - internal_network
 
@@ -41,6 +36,9 @@ services:
     env_file:
       - .env
 
+  broker:
+    container_name: broker
+    image: redis
 
 volumes:
   data:
