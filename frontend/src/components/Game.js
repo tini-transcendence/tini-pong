@@ -48,6 +48,7 @@ export default class extends AbstractComponent {
 					<div class="col text-right" id="p2nickBoard"></div>
 				</div>
 			</div>
+			<div class="container-lg" id="container"></div>
 		</div>
 		`;
 	}
