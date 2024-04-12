@@ -484,11 +484,11 @@ function simulation_ball()
     }
 
     if(isPastPaddle1()) {
-      scoreBy('player2');
+      scoreBy(2);
     }
 
     if(isPastPaddle2()) {
-      scoreBy('player1');
+      scoreBy(1);
     }
   }
 }
@@ -554,15 +554,15 @@ function isPastPaddle2()
   return ball.position.z < paddle2.position.z - PADDLE_LENGTH;
 }
 
-function scoreBy(playerName)
+function scoreBy(playerNum)
 {
-  addPoint(playerName);
-  last_winner = playerName;
+  addPoint(playerNum);
+  last_winner = playerNum;
   stopBall();
-  updateScoreBoard(playerName);
+  updateScoreBoard(playerNum);
 }
 
-function updateScoreBoard(playerName)
+function updateScoreBoard(playerNum)
 {
   end = true;
   if (score.player1 === 5)
@@ -571,7 +571,7 @@ function updateScoreBoard(playerName)
       "action": "win",
       "msg": {
         "date": start_date,
-        "winner": "player_1",
+        "winner": playerNum,
         "score_p1": score.player1,
         "score_p2": score.player2,
       },
@@ -584,7 +584,7 @@ function updateScoreBoard(playerName)
       "action": "win",
       "msg": {
         "date": start_date,
-        "winner": "player_2",
+        "winner": playerNum,
         "score_p1": score.player1,
         "score_p2": score.player2,
       },
@@ -596,7 +596,7 @@ function updateScoreBoard(playerName)
     const dataToSend = {
       "action": "scored",
       "msg": {
-        "scored_p": playerName,
+        "scored_p": playerNum,
         "score_p1": score.player1,
         "score_p2": score.player2,
       },
