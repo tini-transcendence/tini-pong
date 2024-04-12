@@ -356,21 +356,34 @@ export default class extends AbstractComponent {
 			const roomNameDiv = roomStatusDiv.querySelector("#room_name");
 			const roomDifficultyDiv = roomStatusDiv.querySelector("#room_difficulty");
 			const roomGametypeDiv = roomStatusDiv.querySelector("#room_gametype");
+
+			const player1Node = document.querySelector("#player1");
+			const player2Node = document.querySelector("#player2");
+			const player3Node = document.querySelector("#player3");
+			const player4Node = document.querySelector("#player4");
 			
 			if (rName)
-				roomNameDiv.innerHTML = rName;
+				roomNameDiv.innerText = rName;
 			if (gd === 1)
-				roomDifficultyDiv.innerHTML = "DIFFICULTY: EASY";
+				roomDifficultyDiv.innerText = "DIFFICULTY: EASY";
 			else if (gd === 2)
-				roomDifficultyDiv.innerHTML = "DIFFICULTY: NORMAL";
+				roomDifficultyDiv.innerText = "DIFFICULTY: NORMAL";
 			else if (gd === 3)
-				roomDifficultyDiv.innerHTML = "DIFFICULTY: HARD";
-			if (gt === 1)
-				roomGametypeDiv.innerHTML = "MODE: 1 VS 1 (2p)";
-			else if (gt === 2)
-				roomGametypeDiv.innerHTML = "MODE: 2 VS 2 (4p)";
+				roomDifficultyDiv.innerText = "DIFFICULTY: HARD";
+			if (gt === 1) {
+				roomGametypeDiv.innerText = "MODE: 1 VS 1";
+				player3Node.querySelector(".card-img-top").src = "/src/img/Room_block.png";
+				player4Node.querySelector(".card-img-top").src = "/src/img/Room_block.png";
+			}
+			else if (gt === 2) {
+				roomGametypeDiv.innerText = "MODE: 2 VS 2";
+				player1Node.querySelector(".card-body").classList.add("card-body-lteam");
+				player2Node.querySelector(".card-body").classList.add("card-body-lteam");
+				player3Node.querySelector(".card-body").classList.add("card-body-rteam");
+				player4Node.querySelector(".card-body").classList.add("card-body-rteam");
+			}
 			else if (gt === 3)
-				roomGametypeDiv.innerHTML = "MODE: Tournament (4p)";
+				roomGametypeDiv.innerText = "MODE: Tournament";
 		}
 
 		const startBtn = document.querySelector("#startBtn");

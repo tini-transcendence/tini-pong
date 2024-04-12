@@ -97,6 +97,14 @@ input[type='number'] {
 	height: 100%;
 }
 
+.card-body-lteam {
+	background-image: linear-gradient(to right, #D30D5C 5%, white 5%);
+}
+
+.card-body-rteam {
+	background-image: linear-gradient(to right, #4D37C6 5%, white 5%);
+}
+
 /* -----------------------------   Tdata 관련 CSS    -----------------------------*/
 
 .b {
