@@ -439,6 +439,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     t.add_game_log(playerA, playerB, index)
                 t.add_timestamp()
                 store_transaction(json.dumps(t.tournament))
+                # await loop.run_in_executor(none, store_transaction, json.dumps(t.tournament))
         except RoomUser.DoesNotExist:
             pass
         except User.DoesNotExist:
