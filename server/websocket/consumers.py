@@ -371,7 +371,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     player2 = RoomUser.objects.get(
                         room_uuid=current_room, player_number=2
                     ).user_uuid
-                    game_result.players.add(player1, player2)
+                    game_result.player1 = player1
+                    game_result.player2 = player2
+                    game_result.save()
                 elif current_room.type == 2:
                     team1_player1 = RoomUser.objects.get(
                         room_uuid=current_room, player_number=1
@@ -385,9 +387,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     team2_player2 = RoomUser.objects.get(
                         room_uuid=current_room, player_number=4
                     ).user_uuid
-                    game_result.players.add(
-                        team1_player1, team1_player2, team2_player1, team2_player2
-                    )
+                    game_result.player1 = team1_player1
+                    game_result.player2 = team1_player2
+                    game_result.player3 = team2_player1
+                    game_result.player4 = team2_player2
+                    game_result.save()
             elif current_room.type == 3:
                 t = Tournament()
                 for game_result in msg["tournamentResults"]:
