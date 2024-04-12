@@ -26,7 +26,7 @@ export default class extends AbstractComponent {
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
 									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
-									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#1234</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#0000</span>
 								</div>
 								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
@@ -36,7 +36,7 @@ export default class extends AbstractComponent {
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
 									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
-									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#1234</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#0000</span>
 								</div>
 								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
@@ -46,7 +46,7 @@ export default class extends AbstractComponent {
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
 									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
-									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#1234</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#0000</span>
 								</div>
 								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
@@ -56,7 +56,7 @@ export default class extends AbstractComponent {
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
 									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
-									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#1234</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#0000</span>
 								</div>
 								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
@@ -149,7 +149,9 @@ export default class extends AbstractComponent {
 				case 1:
 					const player1Node = document.querySelector("#player1");
 					const player1NickNode = player1Node.querySelector(".card-title");
+					const player1TagNode = player1Node.querySelector(".card-text");
 					player1NickNode.innerText = data["user_nickname"];
+					player1TagNode.innerText = "#" + data["id_tag"];
 					p1 = data["user_nickname"];
 					if (data["user_avatar"]) {
 						player1Node.querySelector(".card-img-top").src = data["user_avatar"];
@@ -158,7 +160,9 @@ export default class extends AbstractComponent {
 				case 2:
 					const player2Node = document.querySelector("#player2");
 					const player2NickNode = player2Node.querySelector(".card-title");
+					const player2TagNode = player2Node.querySelector(".card-text");
 					player2NickNode.innerText = data["user_nickname"];
+					player2TagNode.innerText = "#" + data["id_tag"];
 					p2 = data["user_nickname"];
 					if (data["user_avatar"]) {
 						player2Node.querySelector(".card-img-top").src = data["user_avatar"];
@@ -167,7 +171,9 @@ export default class extends AbstractComponent {
 				case 3:
 					const player3Node = document.querySelector("#player3");
 					const player3NickNode = player3Node.querySelector(".card-title");
+					const player3TagNode = player3Node.querySelector(".card-text");
 					player3NickNode.innerText = data["user_nickname"];
+					player3TagNode.innerText = "#" + data["id_tag"];
 					p3 = data["user_nickname"];
 					if (data["user_avatar"]) {
 						player3Node.querySelector(".card-img-top").src = data["user_avatar"];
@@ -176,7 +182,9 @@ export default class extends AbstractComponent {
 				case 4:
 					const player4Node = document.querySelector("#player4");
 					const player4NickNode = player4Node.querySelector(".card-title");
+					const player4TagNode = player4Node.querySelector(".card-text");
 					player4NickNode.innerText = data["user_nickname"];
+					player4TagNode.innerText = "#" + data["id_tag"];
 					p4 = data["user_nickname"];
 					if (data["user_avatar"]) {
 						player4Node.querySelector(".card-img-top").src = data["user_avatar"];
@@ -213,8 +221,10 @@ export default class extends AbstractComponent {
 				case 1:
 					const player1Node = document.querySelector("#player1");
 					const player1NickNode = player1Node.querySelector(".card-title");
+					const player1TagNode = player1Node.querySelector(".card-text");
 					const player1Ready = player1Node.querySelector(".card-footer");
 					player1NickNode.innerText = "Nickname";
+					player1TagNode.innerText = "#0000";
 					player1Ready.classList.remove("ready-style");
 					player1Ready.classList.add("bg-secondary");
 					player1Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
@@ -222,8 +232,10 @@ export default class extends AbstractComponent {
 				case 2:
 					const player2Node = document.querySelector("#player2");
 					const player2NickNode = player2Node.querySelector(".card-title");
+					const player2TagNode = player2Node.querySelector(".card-text");
 					const player2Ready = player2Node.querySelector(".card-footer");
 					player2NickNode.innerText = "Nickname";
+					player2TagNode.innerText = "#0000";
 					player2Ready.classList.remove("ready-style");
 					player2Ready.classList.add("bg-secondary");
 					player2Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
@@ -231,8 +243,10 @@ export default class extends AbstractComponent {
 				case 3:
 					const player3Node = document.querySelector("#player3");
 					const player3NickNode = player3Node.querySelector(".card-title");
+					const player3TagNode = player3Node.querySelector(".card-text");
 					const player3Ready = player3Node.querySelector(".card-footer");
 					player3NickNode.innerText = "Nickname";
+					player3TagNode.innerText = "#0000";
 					player3Ready.classList.remove("ready-style");
 					player3Ready.classList.add("bg-secondary");
 					player3Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
@@ -240,8 +254,10 @@ export default class extends AbstractComponent {
 				case 4:
 					const player4Node = document.querySelector("#player4");
 					const player4NickNode = player4Node.querySelector(".card-title");
+					const player4TagNode = player4Node.querySelector(".card-text");
 					const player4Ready = player4Node.querySelector(".card-footer");
 					player4NickNode.innerText = "Nickname";
+					player4TagNode.innerText = "#0000";
 					player4Ready.classList.remove("ready-style");
 					player4Ready.classList.add("bg-secondary");
 					player4Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";

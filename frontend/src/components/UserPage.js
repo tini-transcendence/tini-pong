@@ -31,9 +31,6 @@ export default class extends AbstractComponent {
 
 							<input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
 							<label class="btn common-radio-btn" for="btnradio2">2 VS 2</label>
-
-							<input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
-							<label class="btn common-radio-btn" for="btnradio3">Tournament</label>
 						</div>
 					</div>
 					<div class="border border-3 p-2" style="--bs-border-color: #4D37C6;">
@@ -86,8 +83,7 @@ export default class extends AbstractComponent {
 					userProfileNode.querySelector("#userpage-profile-message").innerText = data.message;
 					if (data.avatar)
 						userProfileNode.querySelector("#userpage-profile-avatar").src = data.avatar;
-					LogSetting();
-					progressSetting();
+					LogSetting(data.game_history, data.uuid);
 				}
 				else
 					throw new Error(response.statusText);
@@ -102,85 +98,184 @@ export default class extends AbstractComponent {
 			}
 		}
 
-		const LogSetting = () => {
+		const LogSetting = (game_history, uuid) => {
+			const game1vs1 = [];
+			const game1vs1Result = {
+				win: 0,
+				lose: 0
+			};
+			const game2vs2 = [];
+			const game2vs2Result = {
+				win: 0,
+				lose: 0
+			};
+
+			game_history.forEach(element => {
+				const node = {};
+				if (element.difficulty === 1)
+					node.difficulty = "EASY";
+				else if (element.difficulty === 2)
+					node.difficulty = "NORMAL";
+				else
+					node.difficulty = "HARD";
+				node.score = element.score;
+				node.time = element.start_time;
+				node.players = element.players;
+				node.players.forEach(e => {
+					e.id_tag = e.uuid.substr(0, 4);
+				})
+				const selfnum = node.players.findIndex(e => {
+					return (e.uuid === uuid);
+				});
+				if (element.type === 1) {
+					if (selfnum + 1 === element.win) {
+						node.result = "승";
+						game1vs1Result.win++;
+					}
+					else {
+						node.result = "패";
+						game1vs1Result.lose++;
+					}
+					game1vs1.unshift(node);
+				} else {
+					if (selfnum <= element.win) {
+						node.result = "승";
+						game2vs2Result.win++;
+					}
+					else {
+						node.result = "패";
+						game2vs2Result.lose++;
+					}
+					game2vs2.unshift(node);
+				}
+			});
+
 			const radioBtn = document.querySelector("#log-btn-group");
 			const logPannel = document.querySelector("#log-pannel");
 			const logSetting1vs1 = () => {
 				logPannel.replaceChildren();
-				const pannelNode = document.createElement("li");
-				pannelNode.setAttribute("class", "d-flex align-items-center border");
-				pannelNode.insertAdjacentHTML("beforeend", `
-				<div class="align-self-stretch bg-primary text-white p-2">
-					승
-				</div>
-				<div class="d-inline-flex justify-content-around align-items-center p-2" style="width: 40rem;">
-					<div>
-						<span>nick1</span>
-						<span class="text-secondary">#1234</span>
+				game1vs1.forEach(element => {
+					const pannelNode = document.createElement("li");
+					pannelNode.setAttribute("class", "d-flex align-items-center border");
+					if (element.result === "승") {
+						pannelNode.insertAdjacentHTML("beforeend", `
+						<div class="align-self-stretch bg-primary text-white p-2">승</div>
+						`);
+					} else {
+						pannelNode.insertAdjacentHTML("beforeend", `
+						<div class="align-self-stretch bg-danger text-white p-2">패</div>
+						`);
+					}
+					pannelNode.insertAdjacentHTML("beforeend", `
+					<div class="d-inline-flex justify-content-around align-items-center p-2" style="width: 40rem;">
+						<div>
+							<span>
+								<a href="/users/${element.players[0].uuid}" data-href="/users/${element.players[0].uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.players[0].nickname}</a>
+							</span>
+							<span class="text-secondary">#${element.players[0].id_tag}</span>
+						</div>
+						<div class="mx-2">${element.score}</div>
+						<div>
+							<span>
+								<a href="/users/${element.players[1].uuid}" data-href="/users/${element.players[1].uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.players[1].nickname}</a>
+							</span>
+							<span class="text-secondary">#${element.players[1].id_tag}</span>
+						</div>
 					</div>
-					<div class="mx-2">
-						12 : 3
+					<div class="ms-auto p-2 text-end">
+						<div>${element.time}</div>
+						<div><b>${element.difficulty}</b></div>
 					</div>
-					<div>
-						<span>nick2</span>
-						<span class="text-secondary">#abcd</span>
-					</div>
-				</div>
-				<div class="ms-auto p-2 text-end">
-					<div>2024:04:02 18:49</div>
-					<div><b>Hard</b></div>
-				</div>
-				`);
-				logPannel.appendChild(pannelNode);
+					`);
+					logPannel.appendChild(pannelNode);
+				});
+				progressSetting(game1vs1Result.win, game1vs1Result.lose);
 			}
 			const logSetting2vs2 = () => {
 				logPannel.replaceChildren();
-			}
-			const logSettingTournament = () => {
-				logPannel.replaceChildren();
+				game2vs2.forEach(element => {
+					const pannelNode = document.createElement("li");
+					pannelNode.setAttribute("class", "d-flex align-items-center border");
+					if (element.result === "승") {
+						pannelNode.insertAdjacentHTML("beforeend", `
+						<div class="align-self-stretch bg-primary text-white p-2">승</div>
+						`);
+					} else {
+						pannelNode.insertAdjacentHTML("beforeend", `
+						<div class="align-self-stretch bg-danger text-white p-2">패</div>
+						`);
+					}
+					pannelNode.insertAdjacentHTML("beforeend", `
+					<div class="d-inline-flex justify-content-around align-items-center p-2" style="width: 40rem;">
+						<div class="d-flex flex-column justify-content-center">
+							<div>
+								<span>
+									<a href="/users/${element.players[0].uuid}" data-href="/users/${element.players[0].uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.players[0].nickname}</a>
+								</span>
+								<span class="text-secondary">#${element.players[0].id_tag}</span>
+							</div>
+							<div>
+								<span>
+									<a href="/users/${element.players[1].uuid}" data-href="/users/${element.players[1].uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.players[1].nickname}</a>
+								</span>
+								<span class="text-secondary">#${element.players[1].id_tag}</span>
+							</div>
+						</div>
+						<div class="mx-2">${element.score}</div>
+						<div class="d-flex flex-column justify-content-center">
+							<div>
+								<span>
+									<a href="/users/${element.players[2].uuid}" data-href="/users/${element.players[2].uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.players[2].nickname}</a>
+								</span>
+								<span class="text-secondary">#${element.players[2].id_tag}</span>
+							</div>
+							<div>
+								<span>
+									<a href="/users/${element.players[3].uuid}" data-href="/users/${element.players[3].uuid}" class="link-offset-2 link-underline link-underline-opacity-0 link-dark">${element.players[3].nickname}</a>
+								</span>
+								<span class="text-secondary">#${element.players[3].id_tag}</span>
+							</div>
+						</div>
+					</div>
+					<div class="ms-auto p-2 text-end">
+						<div>${element.time}</div>
+						<div><b>${element.difficulty}</b></div>
+					</div>
+					`);
+					logPannel.appendChild(pannelNode);
+				});
+				progressSetting(game2vs2Result.win, game2vs2Result.lose);
 			}
 			
 			logSetting1vs1();
 			radioBtn.querySelector("#btnradio1").addEventListener("change", e => {
 				if (e.currentTarget.checked) {
-					console.log("1 vs 1");
 					logSetting1vs1();
 				}
 			})
 			radioBtn.querySelector("#btnradio2").addEventListener("change", e => {
 				if (e.currentTarget.checked) {
-					console.log("2 vs 2");
 					logSetting2vs2();
-				}
-			})
-			radioBtn.querySelector("#btnradio3").addEventListener("change", e => {
-				if (e.currentTarget.checked) {
-					console.log("Tournament");
-					logSettingTournament();
 				}
 			})
 		}
 
-		const progressSetting = () => {
+		const progressSetting = (winNum, loseNum) => {
 			const progressBar = document.querySelector("#winrate-progress");
-			const saveLog = localStorage.getItem("log");
-			if (saveLog !== null) {
-				const parsedLog = JSON.parse(saveLog);
-				const winNum = parsedLog.win;
-				const loseNum = parsedLog.lose;
-				const winRate = Math.round((winNum / (winNum + loseNum)) * 100);
-				const loseRate = 100 - winRate;
+			let winRate = 0;
+			if (winNum > 0 || loseNum > 0)
+				winRate = Math.round((winNum / (winNum + loseNum)) * 100);
+			const loseRate = 100 - winRate;
 
-				const progressBarWin = progressBar.children[0];
-				progressBarWin.setAttribute("aria-valuenow", `${winRate}`);
-				progressBarWin.setAttribute("style", `width: ${winRate}%`);
-				progressBarWin.children[0].innerText = `${winNum}`;
-				const progressBarLose = progressBar.children[1];
-				progressBarLose.setAttribute("aria-valuenow", `${loseRate}`);
-				progressBarLose.setAttribute("style", `width: ${loseRate}%`);
-				progressBarLose.children[0].innerText = `${loseNum}`;
-				document.querySelector("#rate-progress").innerText = `${winRate}%`;
-			}
+			const progressBarWin = progressBar.children[0];
+			progressBarWin.setAttribute("aria-valuenow", `${winRate}`);
+			progressBarWin.setAttribute("style", `width: ${winRate}%`);
+			progressBarWin.children[0].innerText = `${winNum}`;
+			const progressBarLose = progressBar.children[1];
+			progressBarLose.setAttribute("aria-valuenow", `${loseRate}`);
+			progressBarLose.setAttribute("style", `width: ${loseRate}%`);
+			progressBarLose.children[0].innerText = `${loseNum}`;
+			document.querySelector("#rate-progress").innerText = `${winRate}%`;
 		}
 
 		profileSetting();
