@@ -11,8 +11,8 @@ ARROW_DOWN = 40,
 isArrowUpKeyDown = false,
 isArrowDownKeyDown = false,
 
-WIDTH = 800,
-HEIGHT = 600,
+WIDTH = 1200,
+HEIGHT = 900,
 
 CAMERA_LOCATION_X = 1000,
 CAMERA_LOCATION_Y = 3000,
@@ -67,7 +67,6 @@ ball,
 paddle1,
 paddle2,
 last_scored_player = null,
-last_winner = null,
 
 paddle1_spead = 0,
 paddle2_spead = 0,
@@ -85,6 +84,7 @@ nick3,
 nick4,
 
 round,
+
 player1,
 player2,
 player1_num,
@@ -276,7 +276,7 @@ function setEvent()
 
   window.websocket.onmessage = function (event) {
     const data = JSON.parse(event.data);
-
+    
     if (data["type"] === "init")
       player_number = data["player_number"];
 
@@ -507,7 +507,7 @@ function onlineContainerEventKeyUp(e)
 
 function addResult(res)
 {
-  const resultDiv = document.querySelector("#tournament_result");
+  const resultDiv = document.querySelector("#result");
   resultDiv.style.display = 'block';
   resultDiv.style.margin = '10px';
   resultDiv.innerHTML = `
@@ -557,25 +557,25 @@ function simulation_ball()
     if(ball.$velocity == null) {
       startOneGame();
     }
-
+    
     updateBallPosition();
-
+    
     if(isSideCollision()) {
-      ball.$velocity.x *= -1;
+      ball.$velocity.x *= -1; 
     }
-
+    
     if(isPaddle1Collision()) {
       hitBallBack(paddle1);
     }
-
+    
     if(isPaddle2Collision()) {
       hitBallBack(paddle2);
     }
-
+    
     if(isPastPaddle1()) {
       scoreBy('player2');
     }
-
+    
     if(isPastPaddle2()) {
       scoreBy('player1');
     }
@@ -629,7 +629,7 @@ function isBallAlignedWithPaddle(paddle)
 
 function hitBallBack(paddle)
 {
-  ball.$velocity.x = (ball.position.x - paddle.position.x) / 5;
+  ball.$velocity.x = (ball.position.x - paddle.position.x) / 5; 
   ball.$velocity.z *= -1;
 }
 
@@ -651,10 +651,13 @@ function scoreBy(playerName)
   updateScoreBoard(playerName);
 }
 
-function updateScoreBoard(playerName) {
+function updateScoreBoard(playerName)
+{
+  end = true;
   if (score.player1 === 5 || score.player2 === 5) {
     const winner = score.player1 === 5 ? player1 : player2;
     const loser = score.player1 === 5 ? player2 : player1;
+    const winner_number = score.player1 === 5 ? player1 : player2;
     tournamentGamesPlayed++;
     const gameResult = {
       "date": start_date,
@@ -674,7 +677,20 @@ function updateScoreBoard(playerName) {
       };
       window.websocket.send(JSON.stringify(dataToSend));
     }
-  } else {
+
+    const dataToSend = {
+      "action": "win",
+      "msg": {
+        "winner": winner,
+        "winner_number": winner_number,
+        "score_p1": score.player1,
+        "score_p2": score.player2,
+      },
+    }
+    window.websocket.send(JSON.stringify(dataToSend));
+  }
+  else
+  {
     const dataToSend = {
       "action": "scored",
       "msg": {
@@ -682,8 +698,9 @@ function updateScoreBoard(playerName) {
         "score_p1": score.player1,
         "score_p2": score.player2,
       },
-    };
+    }
     window.websocket.send(JSON.stringify(dataToSend));
+    end = false;
   }
 }
 

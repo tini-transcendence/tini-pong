@@ -11,8 +11,8 @@ ARROW_DOWN = 40,
 isArrowUpKeyDown = false,
 isArrowDownKeyDown = false,
 
-WIDTH = 800,
-HEIGHT = 600,
+WIDTH = 1200,
+HEIGHT = 900,
 
 CAMERA_LOCATION_X = 1000,
 CAMERA_LOCATION_Y = 3000,

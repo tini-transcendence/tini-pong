@@ -23,6 +23,22 @@ export default class extends AbstractComponent {
 			#scoreBoard { font-size: 30px; text-align: center; }
 			#p2nickBoard { text-align: right; display: none; }
 		</style>
+		<!-- Result Modal -->
+		<div class="modal fade" id="resultModal" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header modal-header-background-color">
+						<h1 class="modal-title fs-5" id="staticBackdropLabel">Game Result</h1>
+					</div>
+					<div class="modal-body">
+						<div class="result"></div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary common-radio-btn" id="closeResultModalBtn">나가기</button>
+					</div>
+				</div>
+			</div>
+		</div>
 		<div>
 			<div class="container-lg" id="gameHeader">
 				<div id="gameName">Basic Pong</div>
@@ -43,6 +59,22 @@ export default class extends AbstractComponent {
 		animateGame.setAnimateOff();
 
 		const goBackButton = document.querySelector("#goBackButton");
+
+		let resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+
+		function openResultModal() {
+			resultModal.show();
+		}
+		
+		// 모달 닫기
+		function closeResultModal() {
+			resultModal.hide();
+		}
+		
+		// 모달 닫기 버튼 클릭 시
+		document.getElementById('closeResultModalBtn').addEventListener('click', function() {
+			closeResultModal();
+		});
 
 		// WebSocket이 존재하는가?
 		if (window.websocket === undefined)
