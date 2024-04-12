@@ -134,11 +134,11 @@ function init(d, pn1, pn2, pn3, pn4, openModalFunc)
 function setGameStatus(d, pn1, pn2, pn3, pn4)
 {
   difficulty = d;
-  round = 1;
   nick1 = pn1;
   nick2 = pn2;
   nick3 = pn3;
   nick4 = pn4;
+  round = 1;
   player1 = nick1;
   player2 = nick2;
   player1_num = 1;
@@ -331,6 +331,7 @@ function setEvent()
         document.removeEventListener('keydown', onlineonlineContainerEventKeyDown);
         document.removeEventListener('keyup', onlineonlineContainerEventKeyUp);
         // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
+        animateGame.setAnimateOff();
         openModal();
       }
       end = true;
@@ -516,7 +517,6 @@ function addResult(res)
   resultDiv.style.display = 'block';
   resultDiv.style.margin = '10px';
   resultDiv.innerHTML = `
-        <br><br>
         <h2>Game result</h2>
         <p>local game does not save a result in server</p>
         <h3><b>left</b> vs <b>right</b></h3>
@@ -530,9 +530,12 @@ function addResult(res)
 function loop()
 {
   num = requestAnimationFrame(loop);
-  if (game === true && end === false)
-    simulation_ball();
-  simulation_paddle();
+  if (player_number === player1_num)
+  {
+    if (game === true && end === false)
+      simulation_ball();
+    simulation_paddle();
+  }
   if (animateGame.getAnimate() === false)
     end = true;
   if (end === true)
@@ -549,7 +552,7 @@ function loop()
         "ball_loc": ball.position,
         "paddle1_loc": paddle1.position.x,
         "paddle2_loc": paddle2.position.x,
-      }
+      },
     }
     window.websocket.send(JSON.stringify(dataToSend));
   }
