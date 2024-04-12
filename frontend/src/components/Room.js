@@ -24,40 +24,40 @@ export default class extends AbstractComponent {
 						<div class="col">
 							<div class="card h-100 w-75 m-auto" id="player1" style="max-width: 18rem;">
 								<img src="/src/img/Room_crown.png" class="z-1 position-absolute m-2" style="width: 25%">
-								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+								<img src="/src/img/Room_null.png" class="card-img-top" alt="profile">
 								<div class="card-body">
-									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
-									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#0000</span>
+									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">&nbsp</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">&nbsp</span>
 								</div>
 								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
 						</div>
 						<div class="col">
 							<div class="card h-100 w-75 m-auto" id="player2" style="max-width: 18rem;">
-								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+								<img src="/src/img/Room_null.png" class="card-img-top" alt="profile">
 								<div class="card-body">
-									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
-									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#0000</span>
+									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">&nbsp</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">&nbsp</span>
 								</div>
 								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
 						</div>
 						<div class="col">
 							<div class="card h-100 w-75 m-auto" id="player3" style="max-width: 18rem;">
-								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+								<img src="/src/img/Room_null.png" class="card-img-top" alt="profile">
 								<div class="card-body">
-									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
-									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#0000</span>
+									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">&nbsp</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">&nbsp</span>
 								</div>
 								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
 						</div>
 						<div class="col">
 							<div class="card h-100 w-75 m-auto" id="player4" style="max-width: 18rem;">
-								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+								<img src="/src/img/Room_null.png" class="card-img-top" alt="profile">
 								<div class="card-body">
-									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
-									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#0000</span>
+									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">&nbsp</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">&nbsp</span>
 								</div>
 								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
@@ -260,44 +260,44 @@ export default class extends AbstractComponent {
 					const player1NickNode = player1Node.querySelector(".card-title");
 					const player1TagNode = player1Node.querySelector(".card-text");
 					const player1Ready = player1Node.querySelector(".card-footer");
-					player1NickNode.innerText = "Nickname";
-					player1TagNode.innerText = "#0000";
+					player1NickNode.innerHTML = "&nbsp";
+					player1TagNode.innerHTML = "&nbsp";
 					player1Ready.classList.remove("ready-style");
 					player1Ready.classList.add("bg-secondary");
-					player1Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
+					player1Node.querySelector(".card-img-top").src = "/src/img/Room_null.png";
 					break;
 				case 2:
 					const player2Node = document.querySelector("#player2");
 					const player2NickNode = player2Node.querySelector(".card-title");
 					const player2TagNode = player2Node.querySelector(".card-text");
 					const player2Ready = player2Node.querySelector(".card-footer");
-					player2NickNode.innerText = "Nickname";
-					player2TagNode.innerText = "#0000";
+					player2NickNode.innerHTML = "&nbsp";
+					player2TagNode.innerHTML = "&nbsp";
 					player2Ready.classList.remove("ready-style");
 					player2Ready.classList.add("bg-secondary");
-					player2Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
+					player2Node.querySelector(".card-img-top").src = "/src/img/Room_null.png";
 					break;
 				case 3:
 					const player3Node = document.querySelector("#player3");
 					const player3NickNode = player3Node.querySelector(".card-title");
 					const player3TagNode = player3Node.querySelector(".card-text");
 					const player3Ready = player3Node.querySelector(".card-footer");
-					player3NickNode.innerText = "Nickname";
-					player3TagNode.innerText = "#0000";
+					player3NickNode.innerHTML = "&nbsp";
+					player3TagNode.innerHTML = "&nbsp";
 					player3Ready.classList.remove("ready-style");
 					player3Ready.classList.add("bg-secondary");
-					player3Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
+					player3Node.querySelector(".card-img-top").src = "/src/img/Room_null.png";
 					break;
 				case 4:
 					const player4Node = document.querySelector("#player4");
 					const player4NickNode = player4Node.querySelector(".card-title");
 					const player4TagNode = player4Node.querySelector(".card-text");
 					const player4Ready = player4Node.querySelector(".card-footer");
-					player4NickNode.innerText = "Nickname";
-					player4TagNode.innerText = "#0000";
+					player4NickNode.innerHTML = "&nbsp";
+					player4TagNode.innerHTML = "&nbsp";
 					player4Ready.classList.remove("ready-style");
 					player4Ready.classList.add("bg-secondary");
-					player4Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
+					player4Node.querySelector(".card-img-top").src = "/src/img/Room_null.png";
 					break;
 				default:
 					console.log("player number error\n");
