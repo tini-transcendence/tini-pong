@@ -12,8 +12,8 @@ KEY_S = 83,
 
 KEY_N = 78,
 
-WIDTH = 800,
-HEIGHT = 600,
+WIDTH = 1200,
+HEIGHT = 900,
 
 CAMERA_LOCATION_X = 1000,
 CAMERA_LOCATION_Y = 3000,
@@ -92,13 +92,16 @@ p1nickBoard,
 scoreBoard,
 p2nickBoard,
 
+openModal,
+
 score = {
   player1: 0,
   player2: 0
 };
 
-function init(d, pn1, pn2, pn3, pn4)
+function init(d, pn1, pn2, pn3, pn4, openModalFunc)
 {
+  openModal = openModalFunc;
   if (num)
     cancelAnimationFrame(num);
   setGameStatus(d, pn1, pn2, pn3, pn4);
@@ -490,6 +493,7 @@ function updateScoreBoard()
       tournamentPongButton.style.display = 'inline';
       window.document.removeEventListener('keydown', containerEventKeyDown);
       window.document.removeEventListener('keyup', containerEventKeyUp);
+      openModal();
     }
   }
   else if (score.player2 === 5)
@@ -527,6 +531,7 @@ function updateScoreBoard()
       tournamentPongButton.style.display = 'inline';
       window.document.removeEventListener('keydown', containerEventKeyDown);
       window.document.removeEventListener('keyup', containerEventKeyUp);
+      openModal();
     }
   }
   else

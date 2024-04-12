@@ -15,8 +15,8 @@ KEY_E = 69,
 KEY_N = 78,
 KEY_H = 72,
 
-WIDTH = 800,
-HEIGHT = 600,
+WIDTH = 1200,
+HEIGHT = 900,
 
 CAMERA_LOCATION_X = 1000,
 CAMERA_LOCATION_Y = 3000,
@@ -84,13 +84,16 @@ p1nickBoard,
 scoreBoard,
 p2nickBoard,
 
+openModal,
+
 score = {
   player1: 0,
   player2: 0
 };
 
-function init()
+function init(openModalFunc)
 {
+  openModal = openModalFunc;
   if (num)
     cancelAnimationFrame(num);
   setGameStatus();
@@ -462,6 +465,7 @@ function updateScoreBoard()
     const result = document.createElement('div');
     result.textContent = 'Player 1 Win!';
     resultBoard.appendChild(result);
+    openModal();
   }
   else if (score.player2 === 5)
   {
@@ -477,6 +481,7 @@ function updateScoreBoard()
     const result = document.createElement('div');
     result.textContent = 'Player 2 Win!';
     resultBoard.appendChild(result);
+    openModal();
   }
   else
   {

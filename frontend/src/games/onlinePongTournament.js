@@ -11,8 +11,8 @@ ARROW_DOWN = 40,
 isArrowUpKeyDown = false,
 isArrowDownKeyDown = false,
 
-WIDTH = 800,
-HEIGHT = 600,
+WIDTH = 1200,
+HEIGHT = 900,
 
 CAMERA_LOCATION_X = 1000,
 CAMERA_LOCATION_Y = 3000,
@@ -503,7 +503,7 @@ function onlineContainerEventKeyUp(e)
 
 function addResult(res)
 {
-  const resultDiv = document.querySelector("#tournament_result");
+  const resultDiv = document.querySelector("#result");
   resultDiv.style.display = 'block';
   resultDiv.style.margin = '10px';
   resultDiv.innerHTML = `
