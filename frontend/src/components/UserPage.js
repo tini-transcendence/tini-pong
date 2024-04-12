@@ -138,7 +138,7 @@ export default class extends AbstractComponent {
 					}
 					game1vs1.unshift(node);
 				} else {
-					if (selfnum <= element.win) {
+					if ((element.win === 1 && selfnum <= element.win) || (element.win === 2 && selfnum >= element.win)) {
 						node.result = "승";
 						game2vs2Result.win++;
 					}
