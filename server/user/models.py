@@ -19,7 +19,30 @@ class User(models.Model):
 
 class GameResult(models.Model):
     start_time = models.DateTimeField()
-    players = models.ManyToManyField("User", related_name="game_result")
+    player1 = models.ForeignKey(
+        User,
+        related_name="game_results_as_player1",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    player2 = models.ForeignKey(
+        User,
+        related_name="game_results_as_player2",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    player3 = models.ForeignKey(
+        User,
+        related_name="game_results_as_player3",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    player4 = models.ForeignKey(
+        User,
+        related_name="game_results_as_player4",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
     type = models.IntegerField()
     difficulty = models.IntegerField()
     score = models.CharField()
