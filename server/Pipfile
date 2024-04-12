@@ -19,6 +19,8 @@ daphne = "*"
 pyotp = "*"
 aiohttp = "*"
 pytz = "*"
+celery = {extras = ["redis"], version = "*"}
+django-celery-results = "*"
 
 [dev-packages]
 
