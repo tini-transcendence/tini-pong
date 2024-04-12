@@ -23,40 +23,41 @@ export default class extends AbstractComponent {
 					<div class="row row-cols-1 row-cols-md-2 g-4">
 						<div class="col">
 							<div class="card h-100 w-75 m-auto" id="player1" style="max-width: 18rem;">
-								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+								<img src="/src/img/Room_crown.png" class="z-1 position-absolute m-2" style="width: 25%">
+								<img src="/src/img/Room_null.png" class="card-img-top" alt="profile">
 								<div class="card-body">
-									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
-									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#0000</span>
+									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">&nbsp</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">&nbsp</span>
 								</div>
 								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
 						</div>
 						<div class="col">
 							<div class="card h-100 w-75 m-auto" id="player2" style="max-width: 18rem;">
-								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+								<img src="/src/img/Room_null.png" class="card-img-top" alt="profile">
 								<div class="card-body">
-									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
-									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#0000</span>
+									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">&nbsp</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">&nbsp</span>
 								</div>
 								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
 						</div>
 						<div class="col">
 							<div class="card h-100 w-75 m-auto" id="player3" style="max-width: 18rem;">
-								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+								<img src="/src/img/Room_null.png" class="card-img-top" alt="profile">
 								<div class="card-body">
-									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
-									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#0000</span>
+									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">&nbsp</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">&nbsp</span>
 								</div>
 								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
 						</div>
 						<div class="col">
 							<div class="card h-100 w-75 m-auto" id="player4" style="max-width: 18rem;">
-								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
+								<img src="/src/img/Room_null.png" class="card-img-top" alt="profile">
 								<div class="card-body">
-									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
-									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">#0000</span>
+									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">&nbsp</span>
+									<span class="card-text text-secondary" style="font-weight: 700; font-size: 1.3rem;">&nbsp</span>
 								</div>
 								<div class="card-footer noto-sans bg-secondary" style="font-weight: 900; color: white; font-size: 1.5rem;">READY</div>
 							</div>
@@ -156,6 +157,15 @@ export default class extends AbstractComponent {
 					if (data["user_avatar"]) {
 						player1Node.querySelector(".card-img-top").src = data["user_avatar"];
 					}
+					const player1ReadyNode = player1Node.querySelector(".card-footer");
+					if (data["is_ready"]) {
+						player1ReadyNode.classList.remove("bg-secondary");
+						player1ReadyNode.classList.add("ready-style");
+					}
+					else {
+						player1ReadyNode.classList.remove("ready-style");
+						player1ReadyNode.classList.add("bg-secondary");
+					}
 					break;
 				case 2:
 					const player2Node = document.querySelector("#player2");
@@ -166,6 +176,15 @@ export default class extends AbstractComponent {
 					p2 = data["user_nickname"];
 					if (data["user_avatar"]) {
 						player2Node.querySelector(".card-img-top").src = data["user_avatar"];
+					}
+					const player2ReadyNode = player2Node.querySelector(".card-footer");
+					if (data["is_ready"]) {
+						player2ReadyNode.classList.remove("bg-secondary");
+						player2ReadyNode.classList.add("ready-style");
+					}
+					else {
+						player2ReadyNode.classList.remove("ready-style");
+						player2ReadyNode.classList.add("bg-secondary");
 					}
 					break;
 				case 3:
@@ -178,6 +197,15 @@ export default class extends AbstractComponent {
 					if (data["user_avatar"]) {
 						player3Node.querySelector(".card-img-top").src = data["user_avatar"];
 					}
+					const player3ReadyNode = player3Node.querySelector(".card-footer");
+					if (data["is_ready"]) {
+						player3ReadyNode.classList.remove("bg-secondary");
+						player3ReadyNode.classList.add("ready-style");
+					}
+					else {
+						player3ReadyNode.classList.remove("ready-style");
+						player3ReadyNode.classList.add("bg-secondary");
+					}
 					break;
 				case 4:
 					const player4Node = document.querySelector("#player4");
@@ -188,6 +216,15 @@ export default class extends AbstractComponent {
 					p4 = data["user_nickname"];
 					if (data["user_avatar"]) {
 						player4Node.querySelector(".card-img-top").src = data["user_avatar"];
+					}
+					const player4ReadyNode = player4Node.querySelector(".card-footer");
+					if (data["is_ready"]) {
+						player4ReadyNode.classList.remove("bg-secondary");
+						player4ReadyNode.classList.add("ready-style");
+					}
+					else {
+						player4ReadyNode.classList.remove("ready-style");
+						player4ReadyNode.classList.add("bg-secondary");
 					}
 					break;
 				default:
@@ -223,44 +260,44 @@ export default class extends AbstractComponent {
 					const player1NickNode = player1Node.querySelector(".card-title");
 					const player1TagNode = player1Node.querySelector(".card-text");
 					const player1Ready = player1Node.querySelector(".card-footer");
-					player1NickNode.innerText = "Nickname";
-					player1TagNode.innerText = "#0000";
+					player1NickNode.innerHTML = "&nbsp";
+					player1TagNode.innerHTML = "&nbsp";
 					player1Ready.classList.remove("ready-style");
 					player1Ready.classList.add("bg-secondary");
-					player1Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
+					player1Node.querySelector(".card-img-top").src = "/src/img/Room_null.png";
 					break;
 				case 2:
 					const player2Node = document.querySelector("#player2");
 					const player2NickNode = player2Node.querySelector(".card-title");
 					const player2TagNode = player2Node.querySelector(".card-text");
 					const player2Ready = player2Node.querySelector(".card-footer");
-					player2NickNode.innerText = "Nickname";
-					player2TagNode.innerText = "#0000";
+					player2NickNode.innerHTML = "&nbsp";
+					player2TagNode.innerHTML = "&nbsp";
 					player2Ready.classList.remove("ready-style");
 					player2Ready.classList.add("bg-secondary");
-					player2Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
+					player2Node.querySelector(".card-img-top").src = "/src/img/Room_null.png";
 					break;
 				case 3:
 					const player3Node = document.querySelector("#player3");
 					const player3NickNode = player3Node.querySelector(".card-title");
 					const player3TagNode = player3Node.querySelector(".card-text");
 					const player3Ready = player3Node.querySelector(".card-footer");
-					player3NickNode.innerText = "Nickname";
-					player3TagNode.innerText = "#0000";
+					player3NickNode.innerHTML = "&nbsp";
+					player3TagNode.innerHTML = "&nbsp";
 					player3Ready.classList.remove("ready-style");
 					player3Ready.classList.add("bg-secondary");
-					player3Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
+					player3Node.querySelector(".card-img-top").src = "/src/img/Room_null.png";
 					break;
 				case 4:
 					const player4Node = document.querySelector("#player4");
 					const player4NickNode = player4Node.querySelector(".card-title");
 					const player4TagNode = player4Node.querySelector(".card-text");
 					const player4Ready = player4Node.querySelector(".card-footer");
-					player4NickNode.innerText = "Nickname";
-					player4TagNode.innerText = "#0000";
+					player4NickNode.innerHTML = "&nbsp";
+					player4TagNode.innerHTML = "&nbsp";
 					player4Ready.classList.remove("ready-style");
 					player4Ready.classList.add("bg-secondary");
-					player4Node.querySelector(".card-img-top").src = "/src/img/default_profile.png";
+					player4Node.querySelector(".card-img-top").src = "/src/img/Room_null.png";
 					break;
 				default:
 					console.log("player number error\n");
@@ -319,21 +356,34 @@ export default class extends AbstractComponent {
 			const roomNameDiv = roomStatusDiv.querySelector("#room_name");
 			const roomDifficultyDiv = roomStatusDiv.querySelector("#room_difficulty");
 			const roomGametypeDiv = roomStatusDiv.querySelector("#room_gametype");
+
+			const player1Node = document.querySelector("#player1");
+			const player2Node = document.querySelector("#player2");
+			const player3Node = document.querySelector("#player3");
+			const player4Node = document.querySelector("#player4");
 			
 			if (rName)
-				roomNameDiv.innerHTML = rName;
+				roomNameDiv.innerText = rName;
 			if (gd === 1)
-				roomDifficultyDiv.innerHTML = "DIFFICULTY: EASY";
+				roomDifficultyDiv.innerText = "DIFFICULTY: EASY";
 			else if (gd === 2)
-				roomDifficultyDiv.innerHTML = "DIFFICULTY: NORMAL";
+				roomDifficultyDiv.innerText = "DIFFICULTY: NORMAL";
 			else if (gd === 3)
-				roomDifficultyDiv.innerHTML = "DIFFICULTY: HARD";
-			if (gt === 1)
-				roomGametypeDiv.innerHTML = "MODE: 1 VS 1 (2p)";
-			else if (gt === 2)
-				roomGametypeDiv.innerHTML = "MODE: 2 VS 2 (4p)";
+				roomDifficultyDiv.innerText = "DIFFICULTY: HARD";
+			if (gt === 1) {
+				roomGametypeDiv.innerText = "MODE: 1 VS 1";
+				player3Node.querySelector(".card-img-top").src = "/src/img/Room_block.png";
+				player4Node.querySelector(".card-img-top").src = "/src/img/Room_block.png";
+			}
+			else if (gt === 2) {
+				roomGametypeDiv.innerText = "MODE: 2 VS 2";
+				player1Node.querySelector(".card-body").classList.add("card-body-lteam");
+				player2Node.querySelector(".card-body").classList.add("card-body-lteam");
+				player3Node.querySelector(".card-body").classList.add("card-body-rteam");
+				player4Node.querySelector(".card-body").classList.add("card-body-rteam");
+			}
 			else if (gt === 3)
-				roomGametypeDiv.innerHTML = "MODE: Tournament (4p)";
+				roomGametypeDiv.innerText = "MODE: Tournament";
 		}
 
 		const startBtn = document.querySelector("#startBtn");
