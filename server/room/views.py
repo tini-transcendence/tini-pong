@@ -106,9 +106,9 @@ class JoinRoomView(APIView):
             )
         except Room.DoesNotExist:
             return JsonResponse(
-                {"error": "Room not found"}, status=status.HTTP_404_NOT_FOUND
+                {"error": "방이 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND
             )
         except User.DoesNotExist:
             return JsonResponse(
-                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+                {"error": "유저가 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND
             )

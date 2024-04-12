@@ -219,12 +219,14 @@ export default class extends AbstractComponent {
 							if (response.ok) {
 								navigateTo(`room/${roomuuid[1]}`);
 							}
-							else if (response.status === 404)
-								throw new Error(response.error);
+							else if (response.status === 404) {
+								const data = await response.json();
+								throw new Error(data.error);
+							}
 							else
 								throw new Error(response.statusText);
 						} catch (error) {
-							console.log(error.message);
+							alert(error);
 						}
 					})();
 				}
@@ -251,7 +253,6 @@ export default class extends AbstractComponent {
 					}));
 					if (response.ok) {
 						const data = await response.json();
-						// callback(data.room_uuid);
 						navigateTo(`room/` + data.room_uuid);
 					}
 					else if (response.status === 404)
@@ -270,28 +271,4 @@ export default class extends AbstractComponent {
 		document.removeEventListener('keydown', onlineContainerEventKeyDownT);
 		document.removeEventListener('keyup', onlineContainerEventKeyUpT);
 	}
-
-	// connectToWebSocket(roomUuid) {
-	// 	console.log(roomUuid);
-
-	// 	const token = document.cookie.split('; ').find(row => row.startsWith('access_token')).split('=')[1];
-	// 	const webSocket = new WebSocket(`ws://localhost:8000/ws/room/${roomUuid}/?access_token=${token}`);
-
-	// 	webSocket.onopen = function (event) {
-	// 		console.log('WebSocket is connected.');
-	// 	};
-
-	// 	webSocket.onmessage = function (event) {
-	// 		const data = JSON.parse(event.data);
-	// 		console.log('Message from server ', data);
-	// 	};
-
-	// 	webSocket.onclose = function (event) {
-	// 		console.log('WebSocket is closed now.');
-	// 	};
-
-	// 	webSocket.onerror = function (event) {
-	// 		console.error('WebSocket error observed:', event);
-	// 	};
-	// }
 }
