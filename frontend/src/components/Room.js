@@ -156,6 +156,15 @@ export default class extends AbstractComponent {
 					if (data["user_avatar"]) {
 						player1Node.querySelector(".card-img-top").src = data["user_avatar"];
 					}
+					const player1ReadyNode = player1Node.querySelector(".card-footer");
+					if (data["is_ready"]) {
+						player1ReadyNode.classList.remove("bg-secondary");
+						player1ReadyNode.classList.add("ready-style");
+					}
+					else {
+						player1ReadyNode.classList.remove("ready-style");
+						player1ReadyNode.classList.add("bg-secondary");
+					}
 					break;
 				case 2:
 					const player2Node = document.querySelector("#player2");
@@ -166,6 +175,15 @@ export default class extends AbstractComponent {
 					p2 = data["user_nickname"];
 					if (data["user_avatar"]) {
 						player2Node.querySelector(".card-img-top").src = data["user_avatar"];
+					}
+					const player2ReadyNode = player2Node.querySelector(".card-footer");
+					if (data["is_ready"]) {
+						player2ReadyNode.classList.remove("bg-secondary");
+						player2ReadyNode.classList.add("ready-style");
+					}
+					else {
+						player2ReadyNode.classList.remove("ready-style");
+						player2ReadyNode.classList.add("bg-secondary");
 					}
 					break;
 				case 3:
@@ -178,6 +196,15 @@ export default class extends AbstractComponent {
 					if (data["user_avatar"]) {
 						player3Node.querySelector(".card-img-top").src = data["user_avatar"];
 					}
+					const player3ReadyNode = player3Node.querySelector(".card-footer");
+					if (data["is_ready"]) {
+						player3ReadyNode.classList.remove("bg-secondary");
+						player3ReadyNode.classList.add("ready-style");
+					}
+					else {
+						player3ReadyNode.classList.remove("ready-style");
+						player3ReadyNode.classList.add("bg-secondary");
+					}
 					break;
 				case 4:
 					const player4Node = document.querySelector("#player4");
@@ -188,6 +215,15 @@ export default class extends AbstractComponent {
 					p4 = data["user_nickname"];
 					if (data["user_avatar"]) {
 						player4Node.querySelector(".card-img-top").src = data["user_avatar"];
+					}
+					const player4ReadyNode = player4Node.querySelector(".card-footer");
+					if (data["is_ready"]) {
+						player4ReadyNode.classList.remove("bg-secondary");
+						player4ReadyNode.classList.add("ready-style");
+					}
+					else {
+						player4ReadyNode.classList.remove("ready-style");
+						player4ReadyNode.classList.add("bg-secondary");
 					}
 					break;
 				default:
