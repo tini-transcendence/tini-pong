@@ -105,6 +105,10 @@ score = {
   player2: 0
 };
 
+let tournamentResults = [];
+let tournamentGamesPlayed = 0;
+const totalTournamentGames = 3;
+
 function init(d, pn1, pn2, pn3, pn4)
 {
   if (num)
@@ -650,32 +654,35 @@ function scoreBy(playerName)
 function updateScoreBoard(playerName)
 {
   end = true;
-  if (score.player1 === 5)
-  {
-    const dataToSend = {
-      "action": "win",
-      "msg": {
-        "date": start_date,
-        "round": round,
-        "winner": player1,
-        "loser": player2,
-        "winner_number": player1_num,
-        "score_p1": score.player1,
-        "score_p2": score.player2,
-      },
+  if (score.player1 === 5 || score.player2 === 5) {
+    const winner = score.player1 === 5 ? player1 : player2;
+    const loser = score.player1 === 5 ? player2 : player1;
+    const winner_number = score.player1 === 5 ? player1 : player2;
+    tournamentGamesPlayed++;
+    const gameResult = {
+      "date": start_date,
+      "round": round,
+      "winner": winner,
+      "loser": loser,
+      "index": tournamentGamesPlayed,
+      "score_p1": score.player1,
+      "score_p2": score.player2,
+    };
+    tournamentResults.push(gameResult);
+
+    if (checkTournamentEnd()) {
+      const dataToSend = {
+        "action": "tournament_end",
+        "tournamentResults": tournamentResults,
+      };
+      window.websocket.send(JSON.stringify(dataToSend));
     }
-    window.websocket.send(JSON.stringify(dataToSend));
-  }
-  else if (score.player2 === 5)
-  {
+
     const dataToSend = {
       "action": "win",
       "msg": {
-        "date": start_date,
-        "round": round,
-        "winner": player2,
-        "loser": player1,
-        "winner_number": player2_num,
+        "winner": winner,
+        "winner_number": winner_number,
         "score_p1": score.player1,
         "score_p2": score.player2,
       },
@@ -695,6 +702,10 @@ function updateScoreBoard(playerName)
     window.websocket.send(JSON.stringify(dataToSend));
     end = false;
   }
+}
+
+function checkTournamentEnd() {
+  return tournamentGamesPlayed === totalTournamentGames;
 }
 
 function stopBall()
