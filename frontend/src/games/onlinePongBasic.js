@@ -92,12 +92,15 @@ score = {
   player2: 0
 };
 
-function init(d, pn1, pn2)
+let openModal;
+
+function init(d, pn1, pn2, openModalFunc)
 {
+  openModal = openModalFunc;
   if (num)
     cancelAnimationFrame(num);
   setGameStatus(d, pn1, pn2);
-  setScoreBoard()
+  setScoreBoard();
   setGame();
   setDifficulty();
   setEvent();
@@ -269,6 +272,7 @@ function setEvent()
       scoreBoard.innerHTML = win + ' Win! ' + player_1 + ':' + score.player1 + ", " + player_2 + ' : ' + score.player2;
       stopBall();
       end = true;
+      openModal();
     }
 
     if (data["type"] === "scored")
@@ -498,7 +502,7 @@ function startOneGame()
   let direction = 1;
   if (last_winner === null)
     direction = Math.random() > 0.5 ? -1 : 1;
-  else if (last_winner === 'player1')
+  else if (last_winner === 1)
     direction = -1;
   else
     direction = 1;
@@ -556,7 +560,7 @@ function isPastPaddle2()
 
 function scoreBy(playerNum)
 {
-  let playerName = playerNum == 1 ? "player1" : "player2";
+  let playerName = playerNum == 1 ? 'player1' : 'player2';
   addPoint(playerName);
   last_winner = playerNum;
   stopBall();
@@ -576,7 +580,7 @@ function updateScoreBoard(playerNum)
         "score_p1": score.player1,
         "score_p2": score.player2,
       },
-    }
+    };
     window.websocket.send(JSON.stringify(dataToSend));
   }
   else if (score.player2 === 5)
@@ -589,7 +593,7 @@ function updateScoreBoard(playerNum)
         "score_p1": score.player1,
         "score_p2": score.player2,
       },
-    }
+    };
     window.websocket.send(JSON.stringify(dataToSend));
   }
   else
@@ -601,7 +605,7 @@ function updateScoreBoard(playerNum)
         "score_p1": score.player1,
         "score_p2": score.player2,
       },
-    }
+    };
     window.websocket.send(JSON.stringify(dataToSend));
     end = false;
   }

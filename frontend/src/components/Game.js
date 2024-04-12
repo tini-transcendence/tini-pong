@@ -34,7 +34,7 @@ export default class extends AbstractComponent {
 						<div class="result"></div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-primary common-radio-btn" id="closeResultModalBtn">나가기</button>
+						<button type="button" class="btn btn-primary common-radio-btn" id="leftModalBtn">나가기</button>
 					</div>
 				</div>
 			</div>
@@ -48,17 +48,12 @@ export default class extends AbstractComponent {
 					<div class="col text-right" id="p2nickBoard"></div>
 				</div>
 			</div>
-			<div class="container-lg" id="container"></div>
-			<div id="tournament_result" style="display: none;"></div>
-			<button type="button" class="btn btn-primary" id="goBackButton">돌아가기</button>
 		</div>
 		`;
 	}
 
 	handleRoute() {
 		animateGame.setAnimateOff();
-
-		const goBackButton = document.querySelector("#goBackButton");
 
 		let resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
 
@@ -72,8 +67,14 @@ export default class extends AbstractComponent {
 		}
 		
 		// 모달 닫기 버튼 클릭 시
-		document.getElementById('closeResultModalBtn').addEventListener('click', function() {
+		document.getElementById('leftModalBtn').addEventListener('click', function() {
 			closeResultModal();
+			if (window.websocket !== undefined && window.websocket.readyState === WebSocket.OPEN)
+			{
+				window.websocket.close();
+				window.websocket = undefined;
+			}
+			navigateTo("/lobby");
 		});
 
 		// WebSocket이 존재하는가?
@@ -86,16 +87,13 @@ export default class extends AbstractComponent {
 			{
 				// 경우 1 : 1 vs 1
 				if (gt === 1)
-					basicPong(gd, p1, p2);
-				//	basicPong(3, "nick1", "nick2");
+					basicPong(gd, p1, p2, openResultModal);
 				// 경우 2 : 2 vs 2
 				else if (gt === 2)
-					multiplePong(gd, p1, p2, p3, p4);
-				//	multiplePong(3, "nick1", "nick2", "nick3", "nick4");
+					multiplePong(gd, p1, p2, p3, p4, openResultModal);
 				// 경우 3 : tournament
 				else if (gt === 3)
-					tournamentPong(gd, p1, p2, p3, p4);
-				//	tournamentPong(3, "nick1", "nick2", "nick3", "nick4");
+					tournamentPong(gd, p1, p2, p3, p4, openResultModal);
 				console.log("Web socket이 살아있어요!");
 				console.log(gt,gd,p1,p2,p3,p4);
 			}
@@ -106,14 +104,6 @@ export default class extends AbstractComponent {
 				console.log("Web socket이 죽어있어요!");
 			}
 		}
-		goBackButton.addEventListener("click", event => {
-			if (window.websocket !== undefined && window.websocket.readyState === WebSocket.OPEN)
-			{
-				window.websocket.close();
-				window.websocket = undefined;
-			}
-			navigateTo("/lobby");
-		});
 	}
 }
 

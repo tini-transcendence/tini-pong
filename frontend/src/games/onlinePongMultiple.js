@@ -98,12 +98,15 @@ score = {
   player_right: 0
 };
 
-function init(d, pn1, pn2, pn3, pn4)
+let openModal;
+
+function init(d, pn1, pn2, pn3, pn4, openModalFunc)
 {
+  openModal = openModalFunc;
   if (num)
     cancelAnimationFrame(num);
   setGameStatus(d, pn1, pn2, pn3, pn4);
-  setScoreBoard()
+  setScoreBoard();
   setGame();
   setDifficulty();
   setEvent();
@@ -289,6 +292,7 @@ function setEvent()
       scoreBoard.innerHTML = win + ' Win! ' + 'Team L (' + player_1 + ', ' + player_2 + ')' + ':' + score.player_left + ", " + 'Team R (' + player_3 + ', ' + player_4 + ')' + ' : ' + score.player_right;
       stopBall();
       end = true;
+      openModal();
     }
 
     if (data["type"] === "scored")

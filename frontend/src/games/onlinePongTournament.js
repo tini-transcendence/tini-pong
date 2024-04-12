@@ -96,6 +96,7 @@ round2Winner_num,
 
 player_number = null,
 
+
 p1nickBoard,
 scoreBoard,
 p2nickBoard,
@@ -109,8 +110,11 @@ let tournamentResults = [];
 let tournamentGamesPlayed = 0;
 const totalTournamentGames = 3;
 
-function init(d, pn1, pn2, pn3, pn4)
+let openModal;
+
+function init(d, pn1, pn2, pn3, pn4, openModalFunc)
 {
+  openModal = openModalFunc;
   if (num)
     cancelAnimationFrame(num);
   setGameStatus(d, pn1, pn2, pn3, pn4);
@@ -327,13 +331,14 @@ function setEvent()
         document.removeEventListener('keydown', onlineonlineContainerEventKeyDown);
         document.removeEventListener('keyup', onlineonlineContainerEventKeyUp);
         // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
+        openModal();
       }
       end = true;
     }
 
     if (data["type"] === "scored")
     {
-      last_winner = data["msg"]["scored_p"]
+      last_scored_player = data["msg"]["scored_p"]
       score.player1 = data["msg"]["score_p1"]
       score.player2 = data["msg"]["score_p2"]
       p1nickBoard.innerHTML = player1;
@@ -657,7 +662,7 @@ function updateScoreBoard(playerName)
   if (score.player1 === 5 || score.player2 === 5) {
     const winner = score.player1 === 5 ? player1 : player2;
     const loser = score.player1 === 5 ? player2 : player1;
-    const winner_number = score.player1 === 5 ? player1 : player2;
+    const winner_number = score.player1 === 5 ? player1_num : player2_num;
     tournamentGamesPlayed++;
     const gameResult = {
       "date": start_date,
