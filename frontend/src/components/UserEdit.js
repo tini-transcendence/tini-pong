@@ -160,7 +160,7 @@ export default class extends AbstractComponent {
 				else
 					throw new Error(response.statusText);
 			} catch (error) {
-				console.log(error.message);
+				alert("정상적으로 저장되지 않았습니다.");
 			}
 		})
 
