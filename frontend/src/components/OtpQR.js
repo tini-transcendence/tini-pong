@@ -38,7 +38,7 @@ export default class extends AbstractComponent {
 				else
 					throw new Error(response.statusText);
 			} catch (error) {
-				console.log(error.message);
+				alert(error.message);
 			}
 		}
 		
