@@ -47,3 +47,4 @@ class GameResult(models.Model):
     difficulty = models.IntegerField()
     score = models.CharField()
     win = models.IntegerField(default=0)
+    completed = models.BooleanField(default=False)
