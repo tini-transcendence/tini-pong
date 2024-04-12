@@ -23,6 +23,7 @@ export default class extends AbstractComponent {
 					<div class="row row-cols-1 row-cols-md-2 g-4">
 						<div class="col">
 							<div class="card h-100 w-75 m-auto" id="player1" style="max-width: 18rem;">
+								<img src="/src/img/Room_crown.png" class="z-1 position-absolute m-2" style="width: 25%">
 								<img src="/src/img/default_profile.png" class="card-img-top" alt="profile">
 								<div class="card-body">
 									<span class="card-title" style="font-weight: 700; color: black; font-size: 1.5rem;">Nickname</span>
