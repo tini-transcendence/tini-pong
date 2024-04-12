@@ -556,7 +556,8 @@ function isPastPaddle2()
 
 function scoreBy(playerNum)
 {
-  addPoint(playerNum);
+  let playerName = playerNum == 1 ? "player1" : "player2";
+  addPoint(playerName);
   last_winner = playerNum;
   stopBall();
   updateScoreBoard(playerNum);
