@@ -542,9 +542,6 @@ function setResult()
   resultDiv.style.display = 'block';
   resultDiv.style.margin = '10px';
   resultDiv.innerHTML = `
-        <h2>Game result</h2>
-        <p>local game does not save a result in server</p>
-        <h3><b>left</b> vs <b>right</b></h3>
         <div id="resultT"></div>`
 }
 
