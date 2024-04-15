@@ -144,13 +144,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     async def handle_round_end(self, msg):
         await self.channel_layer.group_send(
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "round_end",
-                    "msg": msg,
-                },
-            )
+            self.room_group_name,
+            {
+                "type": "round_end",
+                "msg": msg,
+            },
         )
 
     async def round_end(self, obj):
