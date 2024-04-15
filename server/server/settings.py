@@ -179,6 +179,6 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_BEAT_SCHEDULE = {
     "delete-tokens": {
         "task": "auth.tasks.delete_expired_token",
-        "schedule": crontab(minute="*"),
+        "schedule": crontab(minute=0),
     },
 }
