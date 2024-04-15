@@ -192,10 +192,10 @@ function setScoreBoard()
   scoreBoard = document.querySelector('#scoreBoard');
   p1nickBoard = document.querySelector('#p1nickBoard');
   p2nickBoard = document.querySelector('#p2nickBoard');
-  p1nickBoard.innerHTML = player_1;
+  p1nickBoard.innerHTML = player1;
   p1nickBoard.style.display = 'block';
   p1nickBoard.style.textAlign = 'left';
-  p2nickBoard.innerHTML = player_2;
+  p2nickBoard.innerHTML = player2;
   p2nickBoard.style.display = 'block';
   p2nickBoard.style.textAlign = 'right';
   scoreBoard.innerHTML = '';
