@@ -396,6 +396,7 @@ function setEvent()
       p2nickBoard.innerHTML = player2;
       p2nickBoard.style.display = "block";
       stopBall();
+      game = true;
     }
 
     if (player_number !== player1_num && data["type"] === "sync")
