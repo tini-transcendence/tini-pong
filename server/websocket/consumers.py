@@ -140,7 +140,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             await self.handle_sync(text_data_json["obj"])
 
         elif action == "round_end":
-            await self.handle_round_end()
+            await self.handle_round_end(text_data_json["msg"])
 
     async def handle_round_end(self, msg):
         await self.channel_layer.group_send(
