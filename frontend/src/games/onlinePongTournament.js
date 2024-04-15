@@ -399,7 +399,7 @@ function setEvent()
       game = true;
     }
 
-    if (player_number !== player1_num && data["type"] === "sync")
+    if (player_number !== 1 && data["type"] === "sync")
     {
       // 공 위치, 속도 동기화
       ball.position.x = data["obj"]["ball_loc"].x;
@@ -557,7 +557,7 @@ function addResult(res)
 function loop()
 {
   num = requestAnimationFrame(loop);
-  if (player_number === player1_num)
+  if (player_number === 1)
   {
     if (game === true && end === false)
       simulation_ball();
@@ -571,7 +571,7 @@ function loop()
     cancelAnimationFrame(num);
     num = null;
   }
-  if (player_number === player1_num)
+  if (player_number === 1)
   {
     const dataToSend = {
       "action": "sync",
@@ -704,6 +704,17 @@ function updateScoreBoard(playerName)
       "score_p2": score.player2,
     };
     tournamentResults.push(gameResult);
+	
+	const dataToSend = {
+	  "action": "round_end",
+	  "msg": {
+		"winner": winner,
+		"winner_number": winner_number,
+		"score_p1": score.player1,
+		"score_p2": score.player2,
+	  },
+	}
+	window.websocket.send(JSON.stringify(dataToSend));
 
     if (checkTournamentEnd()) {
       const dataToSend = {
@@ -714,17 +725,6 @@ function updateScoreBoard(playerName)
       };
       window.websocket.send(JSON.stringify(dataToSend));
     }
-
-    const dataToSend = {
-      "action": "round_end",
-      "msg": {
-        "winner": winner,
-        "winner_number": winner_number,
-        "score_p1": score.player1,
-        "score_p2": score.player2,
-      },
-    }
-    window.websocket.send(JSON.stringify(dataToSend));
   }
   else
   {
