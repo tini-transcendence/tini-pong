@@ -166,7 +166,7 @@ function setScoreBoard()
   scoreBoard = document.querySelector('#scoreBoard');
   p1nickBoard = document.querySelector('#p1nickBoard');
   p2nickBoard = document.querySelector('#p2nickBoard');
-  result - document.querySelector("#result");
+  result = document.querySelector("#result");
   p1nickBoard.innerHTML = player_1;
   p1nickBoard.style.display = 'block';
   p1nickBoard.style.textAlign = 'left';

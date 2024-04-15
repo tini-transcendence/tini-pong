@@ -362,8 +362,8 @@ function setEvent()
       {
         round = 0;
         // 이벤트 제거
-        document.removeEventListener('keydown', onlineonlineContainerEventKeyDown);
-        document.removeEventListener('keyup', onlineonlineContainerEventKeyUp);
+        document.removeEventListener('keydown', onlineContainerEventKeyDown);
+        document.removeEventListener('keyup', onlineContainerEventKeyUp);
         // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
         openModal();
       }
