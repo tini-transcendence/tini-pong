@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from celery.schedules import crontab
 
 load_dotenv()
 
@@ -53,6 +54,7 @@ INSTALLED_APPS = [
     "websocket",
     "friend",
     "auth",
+    "django_celery_results",
 ]
 
 ASGI_APPLICATION = "server.asgi.application"
@@ -168,3 +170,15 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 AUTH_WHITELIST = os.environ.get("AUTH_WHITELIST").split(",")
+
+# Celery Settings
+CELERY_BROKER_URL = "redis://broker"
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+CELERY_BEAT_SCHEDULE = {
+    "delete-tokens": {
+        "task": "auth.tasks.delete_expired_token",
+        "schedule": crontab(minute=0),
+    },
+}
