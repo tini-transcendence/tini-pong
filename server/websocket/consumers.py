@@ -412,11 +412,17 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 t = Tournament()
                 t.add_timestamp()
                 for game_result in msg["tournamentResults"]:
+                    if game_result["score_p1"] == 5:
+                        playera = game_result["winner"]
+                        playerb = game_result["loser"]
+                    else:
+                        playera = game_result["loser"]
+                        playerb = game_result["winner"]
                     playerA = Tournament.make_player(
-                        game_result["winner"], game_result["score_p1"]
+                        playera, game_result["score_p1"]
                     )
                     playerB = Tournament.make_player(
-                        game_result["loser"], game_result["score_p2"]
+                        playerb, game_result["score_p2"]
                     )
                     index = game_result["index"]
                     t.add_game_log(playerA, playerB, index)
