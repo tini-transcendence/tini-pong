@@ -136,6 +136,7 @@ function startLoop()
 {
   animateGame.setAnimateOn();
   renderer.render(scene, camera);
+  game = true;
   time_3();
   setTimeout(time_2, 1000);
   setTimeout(time_1, 2000);
@@ -326,18 +327,14 @@ function setEvent()
       let win_player_number = data["msg"]["winner_number"]
       score.player1 = data["msg"]["score_p1"]
       score.player2 = data["msg"]["score_p2"]
-      p1nickBoard.innerHTML = '';
-      p1nickBoard.style.display = "none";
-      p2nickBoard.innerHTML = '';
-      p2nickBoard.style.display = "none";
-      scoreBoard.innerHTML = win_player + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + ' : ' + score.player2;
       stopBall();
+      cancelAnimationFrame(num);
+      end = true;
       let roundText = 'Round 1';
       if (round === 2)
         roundText = 'Round 2';
       if (round === 3)
         roundText = 'Final round';
-      scoreBoard.innerHTML = win_player + ' Win! [n] to next round';
       addResult(roundText + ' : ' + win_player + ' Win! ' + player1 + ':' + score.player1 + ", " + player2 + ' : ' + score.player2);
       if (round === 1)
       {
@@ -363,13 +360,28 @@ function setEvent()
       }
       else if (round === 3)
       {
+        round = 0;
         // 이벤트 제거
         document.removeEventListener('keydown', onlineonlineContainerEventKeyDown);
         document.removeEventListener('keyup', onlineonlineContainerEventKeyUp);
         // 결과를 잘 정리해서 socket을 통해 JSON으로 전송
         openModal();
       }
-      end = true;
+      if (round !== 0)
+      {
+        p1nickBoard.innerHTML = player1;
+        p2nickBoard.innerHTML = player2;
+        score = {
+          player1: 0,
+          player2: 0
+        };
+        paddle1.position.x = 0;
+        paddle2.position.x = 0;
+        paddle1_spead = 0;
+        paddle2_spead = 0;
+        end = false;
+        startLoop();
+      }
     }
 
     if (data["type"] === "scored")
@@ -395,25 +407,7 @@ function setEvent()
       paddle2.position.x = (data["obj"]).paddle2_loc;
     }
 
-    if (end == true)
-    {
-      let roundText;
-      if (round === 2)
-        roundText = 'Round 2!';
-      if (round === 3)
-        roundText = 'Final round!';
-      score = {
-        player1: 0,
-        player2: 0
-      };
-      paddle1.position.x = 0;
-      paddle2.position.x = 0;
-      paddle1_spead = 0;
-      paddle2_spead = 0;
-      end = false;
-      startLoop();
-    }
-    else if (data["type"] === "key_press")
+    if (data["type"] === "key_press")
     {
       if (data["player_number"] === player1_num)
       {
@@ -471,10 +465,6 @@ function setEvent()
       }
       else
         return;
-      if (end === false)
-      {
-        game = true;
-      }
     }
   };
 }

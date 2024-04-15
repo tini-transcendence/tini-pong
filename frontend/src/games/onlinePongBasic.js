@@ -117,6 +117,7 @@ function startLoop()
 {
   animateGame.setAnimateOn();
   renderer.render(scene, camera);
+  game = true;
   time_3();
   setTimeout(time_2, 1000);
   setTimeout(time_1, 2000);
@@ -387,10 +388,6 @@ function setEvent()
     }
     else
       return;
-    if (end === false)
-    {
-      game = true;
-    }
   };
 }
 
