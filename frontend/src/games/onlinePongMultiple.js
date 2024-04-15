@@ -178,10 +178,10 @@ function setScoreBoard()
   p1nickBoard = document.querySelector('#p1nickBoard');
   p2nickBoard = document.querySelector('#p2nickBoard');
   result - document.querySelector("#result");
-  p1nickBoard.innerHTML = player_1 + '<br>' + player_3;
+  p1nickBoard.innerHTML = player_1 + '<br>' + player_2;
   p1nickBoard.style.display = 'block';
   p1nickBoard.style.textAlign = 'left';
-  p2nickBoard.innerHTML = player_2 + '<br>' + player_4;
+  p2nickBoard.innerHTML = player_3 + '<br>' + player_4;
   p2nickBoard.style.display = 'block';
   p2nickBoard.style.textAlign = 'right';
   scoreBoard.innerHTML = '';
