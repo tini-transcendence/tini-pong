@@ -6,7 +6,7 @@ from user.models import User, GameResult
 from django.db import transaction
 from util.timestamp import get_django_timestamp
 from dashboard.views import Tournament
-from blockchain.executeFunction import store_transaction
+from .tasks import store_tournament_data
 
 
 class RoomConsumer(AsyncWebsocketConsumer):
@@ -426,7 +426,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     )
                     index = game_result["index"]
                     t.add_game_log(playerA, playerB, index)
-                store_transaction(t.tournament)
+                store_tournament_data.delay(t.tournament)
                 # await loop.run_in_executor(none, store_transaction, json.dumps(t.tournament))
         except RoomUser.DoesNotExist:
             pass
