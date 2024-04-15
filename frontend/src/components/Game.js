@@ -31,7 +31,7 @@ export default class extends AbstractComponent {
 						<h1 class="modal-title fs-5" id="staticBackdropLabel">Game Result</h1>
 					</div>
 					<div class="modal-body">
-						<div class="result"></div>
+						<div id="result"></div>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-primary common-radio-btn" id="leftModalBtn">나가기</button>
