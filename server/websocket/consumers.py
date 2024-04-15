@@ -153,7 +153,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             )
         )
 
-    async def handle_round_end(self, obj):
+    async def round_end(self, obj):
         await self.send(text_data=json.dumps(obj))
 
     async def handle_sync(self, obj):
