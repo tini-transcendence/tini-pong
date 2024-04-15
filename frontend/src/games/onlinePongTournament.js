@@ -720,7 +720,9 @@ function updateScoreBoard(playerName)
     if (checkTournamentEnd()) {
       const dataToSend = {
         "action": "win",
-        "tournamentResults": tournamentResults,
+		"msg": {
+       		"tournamentResults": tournamentResults,
+		}
       };
       window.websocket.send(JSON.stringify(dataToSend));
     }
