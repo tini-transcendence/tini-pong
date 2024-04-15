@@ -335,6 +335,7 @@ function setEvent()
       score.player_right = data["msg"]["score_p2"]
       scoreBoard.innerHTML = score.player_left + ' : ' + score.player_right;
       stopBall();
+      game = true;
     }
 
     if (player_number !== 1 && data["type"] === "sync")
