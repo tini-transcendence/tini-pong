@@ -86,6 +86,7 @@ player_number = null,
 p1nickBoard,
 scoreBoard,
 p2nickBoard,
+result,
 
 score = {
   player1: 0,
@@ -109,8 +110,38 @@ function init(d, pn1, pn2, openModalFunc)
   }
   window.websocket.send(JSON.stringify(dataToSend));
   start_date = Date();
+  startLoop();
+}
+
+function startLoop()
+{
   animateGame.setAnimateOn();
-  loop();
+  renderer.render(scene, camera);
+  time_3();
+  setTimeout(time_2, 1000);
+  setTimeout(time_1, 2000);
+  setTimeout(time_0, 3000);
+  setTimeout(loop, 3000);
+}
+
+function time_3()
+{
+  scoreBoard.innerHTML = '3';
+}
+
+function time_2()
+{
+  scoreBoard.innerHTML = '2';
+}
+
+function time_1()
+{
+  scoreBoard.innerHTML = '1';
+}
+
+function time_0()
+{
+  scoreBoard.innerHTML = '0:0';
 }
 
 function setGameStatus(d, pn1, pn2)
@@ -134,11 +165,15 @@ function setScoreBoard()
   scoreBoard = document.querySelector('#scoreBoard');
   p1nickBoard = document.querySelector('#p1nickBoard');
   p2nickBoard = document.querySelector('#p2nickBoard');
-  p1nickBoard.style.display = 'none';
+  result - document.querySelector("#result");
+  p1nickBoard.innerHTML = player_1;
+  p1nickBoard.style.display = 'block';
   p1nickBoard.style.textAlign = 'left';
-  p2nickBoard.style.display = 'none';
+  p2nickBoard.innerHTML = player_2;
+  p2nickBoard.style.display = 'block';
   p2nickBoard.style.textAlign = 'right';
-  scoreBoard.innerHTML = 'Welcome! '+ player_1 + ' vs ' + player_2 + '! [key:up,down]';
+  scoreBoard.innerHTML = '';
+  scoreBoard.style.fontWeight = "bold";
 }
 
 function setGame()
@@ -265,12 +300,8 @@ function setEvent()
       let win = data["msg"]["winner"]
       score.player1 = data["msg"]["score_p1"]
       score.player2 = data["msg"]["score_p2"]
-      p1nickBoard.innerHTML = '';
-      p1nickBoard.style.display = "none";
-      p2nickBoard.innerHTML = '';
-      p2nickBoard.style.display = "none";
-      scoreBoard.innerHTML = win + ' Win! ' + player_1 + ':' + score.player1 + ", " + player_2 + ' : ' + score.player2;
       stopBall();
+      result.innerHTML = win + ' Win!<br>' + player_1 + ':' + score.player1+ ' ' + player_2 + ':' + score.player2
       end = true;
       openModal();
     }
@@ -280,12 +311,7 @@ function setEvent()
       last_winner = data["msg"]["scored_p"]
       score.player1 = data["msg"]["score_p1"]
       score.player2 = data["msg"]["score_p2"]
-      p1nickBoard.innerHTML = 'Player 1';
-      p1nickBoard.style.display = "block";
       scoreBoard.innerHTML = score.player1 + ' : ' + score.player2;
-      scoreBoard.style.fontWeight = "bold";
-      p2nickBoard.innerHTML = 'Player 2';
-      p2nickBoard.style.display = "block";
       stopBall();
     }
 

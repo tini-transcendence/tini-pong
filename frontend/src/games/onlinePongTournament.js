@@ -100,6 +100,7 @@ player_number = null,
 p1nickBoard,
 scoreBoard,
 p2nickBoard,
+result,
 
 score = {
   player1: 0,
@@ -119,6 +120,7 @@ function init(d, pn1, pn2, pn3, pn4, openModalFunc)
     cancelAnimationFrame(num);
   setGameStatus(d, pn1, pn2, pn3, pn4);
   setScoreBoard();
+  setResult();
   setGame();
   setDifficulty()
   setEvent();
@@ -127,9 +129,40 @@ function init(d, pn1, pn2, pn3, pn4, openModalFunc)
   }
   window.websocket.send(JSON.stringify(dataToSend));
   start_date = Date();
-  animateGame.setAnimateOn();
-  loop();
+  startLoop();
 }
+
+function startLoop()
+{
+  animateGame.setAnimateOn();
+  renderer.render(scene, camera);
+  time_3();
+  setTimeout(time_2, 1000);
+  setTimeout(time_1, 2000);
+  setTimeout(time_0, 3000);
+  setTimeout(loop, 3000);
+}
+
+function time_3()
+{
+  scoreBoard.innerHTML = '3';
+}
+
+function time_2()
+{
+  scoreBoard.innerHTML = '2';
+}
+
+function time_1()
+{
+  scoreBoard.innerHTML = '1';
+}
+
+function time_0()
+{
+  scoreBoard.innerHTML = '0:0';
+}
+
 
 function setGameStatus(d, pn1, pn2, pn3, pn4)
 {
@@ -159,11 +192,14 @@ function setScoreBoard()
   scoreBoard = document.querySelector('#scoreBoard');
   p1nickBoard = document.querySelector('#p1nickBoard');
   p2nickBoard = document.querySelector('#p2nickBoard');
-  p1nickBoard.style.display = 'none';
+  p1nickBoard.innerHTML = player_1;
+  p1nickBoard.style.display = 'block';
   p1nickBoard.style.textAlign = 'left';
-  p2nickBoard.style.display = 'none';
+  p2nickBoard.innerHTML = player_2;
+  p2nickBoard.style.display = 'block';
   p2nickBoard.style.textAlign = 'right';
-  scoreBoard.innerHTML = 'Round 1! Press the key to start! ' + player1 + ' vs ' + player2 + '(up,down)';
+  scoreBoard.innerHTML = '';
+  scoreBoard.style.fontWeight = "bold";
 }
 
 function setGame()
@@ -284,7 +320,7 @@ function setEvent()
     if (data["type"] === "init")
       player_number = data["player_number"];
 
-    if (data["type"] === "win")
+    if (data["type"] === "round_end")
     {
       let win_player = data["msg"]["winner"]
       let win_player_number = data["msg"]["winner_number"]
@@ -366,7 +402,6 @@ function setEvent()
         roundText = 'Round 2!';
       if (round === 3)
         roundText = 'Final round!';
-      scoreBoard.innerHTML = roundText + ' Press the key to start! ' + player1 + ' ' + player2 + '(up,down)';
       score = {
         player1: 0,
         player2: 0
@@ -376,7 +411,7 @@ function setEvent()
       paddle1_spead = 0;
       paddle2_spead = 0;
       end = false;
-      loop();
+      startLoop();
     }
     else if (data["type"] === "key_press")
     {
@@ -510,7 +545,7 @@ function onlineContainerEventKeyUp(e)
   }
 }
 
-function addResult(res)
+function setResult()
 {
   const resultDiv = document.querySelector("#result");
   resultDiv.style.display = 'block';
@@ -520,6 +555,11 @@ function addResult(res)
         <p>local game does not save a result in server</p>
         <h3><b>left</b> vs <b>right</b></h3>
         <div id="resultT"></div>`
+}
+
+function addResult(res)
+{
+  const resultDiv = document.querySelector("#result");
   const resultBoard = resultDiv.querySelector('#resultT');
   const result = document.createElement('div');
   result.textContent = res;
