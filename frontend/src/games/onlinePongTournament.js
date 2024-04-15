@@ -280,7 +280,7 @@ function setEvent()
 
   window.websocket.onmessage = function (event) {
     const data = JSON.parse(event.data);
-    
+
     if (data["type"] === "init")
       player_number = data["player_number"];
 
@@ -564,25 +564,25 @@ function simulation_ball()
     if(ball.$velocity == null) {
       startOneGame();
     }
-    
+
     updateBallPosition();
-    
+
     if(isSideCollision()) {
-      ball.$velocity.x *= -1; 
+      ball.$velocity.x *= -1;
     }
-    
+
     if(isPaddle1Collision()) {
       hitBallBack(paddle1);
     }
-    
+
     if(isPaddle2Collision()) {
       hitBallBack(paddle2);
     }
-    
+
     if(isPastPaddle1()) {
       scoreBy('player2');
     }
-    
+
     if(isPastPaddle2()) {
       scoreBy('player1');
     }
@@ -636,7 +636,7 @@ function isBallAlignedWithPaddle(paddle)
 
 function hitBallBack(paddle)
 {
-  ball.$velocity.x = (ball.position.x - paddle.position.x) / 5; 
+  ball.$velocity.x = (ball.position.x - paddle.position.x) / 5;
   ball.$velocity.z *= -1;
 }
 
@@ -679,14 +679,14 @@ function updateScoreBoard(playerName)
 
     if (checkTournamentEnd()) {
       const dataToSend = {
-        "action": "tournament_end",
+        "action": "win",
         "tournamentResults": tournamentResults,
       };
       window.websocket.send(JSON.stringify(dataToSend));
     }
 
     const dataToSend = {
-      "action": "win",
+      "action": "round_end",
       "msg": {
         "winner": winner,
         "winner_number": winner_number,
