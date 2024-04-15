@@ -412,6 +412,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     game_result.save()
             elif current_room.type == 3:
                 t = Tournament()
+                t.add_timestamp()
                 for game_result in msg["tournamentResults"]:
                     playerA = Tournament.make_player(
                         game_result["winner"], game_result["score_p1"]
@@ -421,8 +422,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     )
                     index = game_result["index"]
                     t.add_game_log(playerA, playerB, index)
-                t.add_timestamp()
-                store_transaction(json.dumps(t.tournament))
+                store_transaction(t.tournament)
                 # await loop.run_in_executor(none, store_transaction, json.dumps(t.tournament))
         except RoomUser.DoesNotExist:
             pass
