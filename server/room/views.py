@@ -22,9 +22,6 @@ class RoomListView(APIView):
 class CreateRoomView(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            print("")
-            print("create 들어옴 !!")
-            print("")
             room = Room.objects.create(
                 name=sanitize(request.data.get("name")),
                 type=request.data.get("type"),
@@ -67,9 +64,6 @@ class DeleteRoomView(APIView):
 
 class JoinRoomView(APIView):
     def post(self, request, *args, **kwargs):
-        print("")
-        print("join 들어옴 !!")
-        print("")
         room_uuid = request.data.get("room_uuid")
         user_uuid_id = request.user_uuid
         try:
