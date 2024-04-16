@@ -80,7 +80,7 @@ export default class extends AbstractComponent {
 
 					userProfileNode.querySelector("#userpage-profile-nickname").innerText = data.nickname;
 					userProfileNode.querySelector("#userpage-profile-idtag").innerText = "#" + data.id_tag;
-					userProfileNode.querySelector("#userpage-profile-message").innerText = data.message;
+					userProfileNode.querySelector("#userpage-profile-message").innerHTML = data.message;
 					if (data.avatar)
 						userProfileNode.querySelector("#userpage-profile-avatar").src = data.avatar;
 					LogSetting(data.game_history, data.uuid);

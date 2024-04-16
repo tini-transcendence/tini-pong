@@ -246,7 +246,7 @@ export default class extends AbstractComponent {
 							"Content-Type": "application/json",
 						},
 						body: JSON.stringify({
-							name: defenseXss.replaceSpecial(openGameRoomModalBody.querySelector("#title-name").value),
+							name: openGameRoomModalBody.querySelector("#title-name").value,
 							type: openGameRoomModalBody.querySelector("input[name='flexRadioMode']:checked").value,
 							difficulty: openGameRoomModalBody.querySelector("input[name='flexRadioHC']:checked").value,
 						}),
