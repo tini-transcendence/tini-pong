@@ -101,7 +101,7 @@ export default class extends AbstractComponent {
 		// WebSocket 객체 생성
 		const websocket = new WebSocket(websocketURL);
 		window.websocket = websocket;
-		console.log('웹 소켓 URL :', websocket);
+		// console.log('웹 소켓 URL :', websocket);
 
 		websocket.onerror = function () {
 			if (websocket !== undefined && websocket.readyState === WebSocket.OPEN) {
@@ -124,8 +124,8 @@ export default class extends AbstractComponent {
 
 		// WebSocket 연결이 열렸을 때 실행되는 이벤트 핸들러
 		websocket.onopen = function (event) {
-			console.log('WebSocket 연결이 열렸습니다.');
-			console.log('player 님이 방에 입장하셨습니다.');
+			// console.log('WebSocket 연결이 열렸습니다.');
+			// console.log('player 님이 방에 입장하셨습니다.');
 			const dataToSend = {
 				"action": "join"
 			}
@@ -135,7 +135,8 @@ export default class extends AbstractComponent {
 		// WebSocket 연결이 닫혔을 때 실행되는 이벤트 핸들러
 		websocket.onclose = function (event) {
 			window.websocket = undefined;
-			console.log('WebSocket 연결이 닫혔습니다.');
+			// console.log('WebSocket 연결이 닫혔습니다.');
+			alert("연결이 끊어져 로비로 이동합니다.");
 			navigateTo("/lobby");
 			// window.location.href = document.referrer;
 		};
@@ -144,8 +145,8 @@ export default class extends AbstractComponent {
 
 		// Player 입장 시 Room 정보 업데이트
 		function dataUpdate(data) {
-			console.log(data["player_number"]);
-			console.log(typeof (data["player_number"]));
+			// console.log(data["player_number"]);
+			// console.log(typeof (data["player_number"]));
 			switch (data["player_number"]) {
 				case 1:
 					const player1Node = document.querySelector("#player1");
@@ -249,7 +250,8 @@ export default class extends AbstractComponent {
 			if (data["status"] === "ok") {
 				navigateTo("/game");
 			} else {
-				console.log("not all players are ready yet!")
+				// console.log("not all players are ready yet!")
+				alert("not all players are ready yet!")
 			}
 		};
 
@@ -300,24 +302,25 @@ export default class extends AbstractComponent {
 					player4Node.querySelector(".card-img-top").src = "/src/img/Room_null.png";
 					break;
 				default:
-					console.log("player number error\n");
+					// console.log("player number error\n");
+					alert("player  number error\n");
 			}
 		};
 
 		websocket.onmessage = function (event) {
 			const data = JSON.parse(event.data);
-			console.log('받은 메시지의 action : ', data["action"]);
-			console.log(data);
+			// console.log('받은 메시지의 action : ', data["action"]);
+			// console.log(data);
 
 
 			if (data["action"] === "player_joined") {
-				console.log("룸 데이터 : ", data["room_data"]);
+				// console.log("룸 데이터 : ", data["room_data"]);
 				const room_data = data["room_data"];
 				rName = room_data[0]["room_name"];
 				gt = room_data[0]["room_type"];
 				gd = room_data[0]["room_difficulty"];
 				changeRightDisplay();
-				console.log("플레이어 아바타 : ", data["user_avatar"]);
+				// console.log("플레이어 아바타 : ", data["user_avatar"]);
 				if (playerNo === 0)
 					playerNo = data["player_number"];
 				dataUpdate(data);
@@ -332,20 +335,20 @@ export default class extends AbstractComponent {
 			} else if (data["action"] === "start") {
 				startUpdate(data);
 			} else if (data["action"] === "terminate") {
-				console.log('방장이 방을 종료했습니다.');
+				// console.log('방장이 방을 종료했습니다.');
 				alert("방이 종료되어 로비로 이동합니다.");
 				websocket.close();
 			} else if (data["action"] === "player_left") {
 				const userUuid = data["user_uuid"];
 				const playerNum = data["player_number"];
-				console.log(`플레이어 ${userUuid}가 방에서 나갔습니다.`);
+				// console.log(`플레이어 ${userUuid}가 방에서 나갔습니다.`);
 				if (playerNo === playerNum) {
-					console.log('You have left the room. Closing WebSocket connection.');
+					// console.log('You have left the room. Closing WebSocket connection.');
 					alert("당신은 방에서 나갔습니다. 로비로 이동합니다.");
 					playerNo = 0;
 					websocket.close();
 				} else {
-					console.log(`Removing player ${userUuid} from the UI.`);
+					// console.log(`Removing player ${userUuid} from the UI.`);
 					leaveUpdate(playerNum);
 				}
 			}
@@ -391,7 +394,7 @@ export default class extends AbstractComponent {
 			const dataToSend = {
 				"action": "start"
 			}
-			console.log("start message send");
+			// console.log("start message send");
 			websocket.send(JSON.stringify(dataToSend));
 		});
 
@@ -402,7 +405,7 @@ export default class extends AbstractComponent {
 				"action": "ready",
 				"is_ready": is_ready
 			}
-			console.log("ready message send");
+			// console.log("ready message send");
 			websocket.send(JSON.stringify(dataToSend));
 		});
 
@@ -411,7 +414,7 @@ export default class extends AbstractComponent {
 			const dataToSend = {
 				"action": "leave",
 			}
-			console.log("leave room message send");
+			// console.log("leave room message send");
 			websocket.send(JSON.stringify(dataToSend));
 		});
 	}
