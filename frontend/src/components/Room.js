@@ -136,7 +136,6 @@ export default class extends AbstractComponent {
 		websocket.onclose = function (event) {
 			window.websocket = undefined;
 			// console.log('WebSocket 연결이 닫혔습니다.');
-			alert("연결이 끊어져 로비로 이동합니다.");
 			navigateTo("/lobby");
 			// window.location.href = document.referrer;
 		};
