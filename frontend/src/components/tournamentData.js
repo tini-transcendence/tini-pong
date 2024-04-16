@@ -102,8 +102,6 @@ export default class extends AbstractComponent {
     }
 
     handleRoute() {
-        const queryString = location.search;
-
         (async function (callback) {
             try {
                 const fetchModule = new FetchModule();
