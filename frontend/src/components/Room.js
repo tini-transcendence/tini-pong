@@ -363,7 +363,7 @@ export default class extends AbstractComponent {
 			const player4Node = document.querySelector("#player4");
 			
 			if (rName)
-				roomNameDiv.innerText = rName;
+				roomNameDiv.innerHTML = rName;
 			if (gd === 1)
 				roomDifficultyDiv.innerText = "DIFFICULTY: EASY";
 			else if (gd === 2)

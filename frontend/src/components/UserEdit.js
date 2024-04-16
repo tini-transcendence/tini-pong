@@ -150,7 +150,7 @@ export default class extends AbstractComponent {
 					body: JSON.stringify({
 						nickname: nicknameForm.value,
 						avatar: avatarPreview.src,
-						message: defenseXss.replaceSpecial(messageForm.value),
+						message: messageForm.value,
 					}),
 				}))
 				if (response.ok) {
