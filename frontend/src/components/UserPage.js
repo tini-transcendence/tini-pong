@@ -20,7 +20,7 @@ export default class extends AbstractComponent {
 						<h3 id="userpage-profile-nickname">Nickname</h3>
 						<h4 class="text-secondary" id="userpage-profile-idtag">Tag</h3>
 					</div>
-					<div class="mx-2 border p-2" id="userpage-profile-message"></div>
+					<div class="mx-2 border p-2" id="userpage-profile-message" style="word-break: break-all"></div>
 					<div id="userpage-edit"></div>
 				</div>
 				<div class="col col-md-8 p-2">
