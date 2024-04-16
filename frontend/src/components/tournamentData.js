@@ -1,6 +1,6 @@
 import AbstractComponent from "./AbstractComponent.js";
 import FetchModule from "../utils/fetchmodule.js";
-import {BACKEND_URL} from "../index.js";
+import {BACKEND_URL, navigateTo} from "../index.js";
 
 export default class extends AbstractComponent {
     constructor() {
@@ -12,7 +12,6 @@ export default class extends AbstractComponent {
         return `
 
         <body>
-        
         <div class="container">
             <div class="b">
                 <div class="text-center" id="spinner">
@@ -36,10 +35,11 @@ export default class extends AbstractComponent {
     }
 
     populateFunction(data) {
-        console.log(typeof(data));
+        // console.log(typeof(data));
         document.getElementById('spinner').style.display = 'none';
 
         let tbody = document.querySelector('.b');
+        tbody.innerHTML = "";
 
         data.tournamentLog.forEach(function(tournamentData) {
             let ul = document.createElement('ul');
@@ -67,7 +67,6 @@ export default class extends AbstractComponent {
             
             
             tournamentData.tournament.forEach(function(matchData) {
-                
                 if (matchData.hasOwnProperty('timestamp')) {
                 } else {
                     let game = document.createElement('div');
@@ -102,12 +101,7 @@ export default class extends AbstractComponent {
         });
     }
 
-    goBack() {
-        window.history.back();
-    }
-
     handleRoute() {
-
         const queryString = location.search;
 
         (async function (callback) {
@@ -130,7 +124,7 @@ export default class extends AbstractComponent {
 
         const goBackBtn = document.querySelector("#goBackButton");
         goBackBtn.addEventListener("click", event => {
-            this.goBack();
+            navigateTo("/");
         });
     }
 }
