@@ -13,12 +13,12 @@ export default class extends AbstractComponent {
 
         <body>
         <div class="container">
-            <div class="b">
-                <div class="text-center" id="spinner">
-                    <div class="spinner-border" style="margin-top: 40px; width: 5rem; height: 5rem; border-width: 10px;" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
+            <div class="text-center" id="spinner">
+                <div class="spinner-border" style="margin-top: 40px; width: 5rem; height: 5rem; border-width: 10px;" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
+            </div>
+            <div class="b">
             <!-- 토너먼트 데이터가 입력되는 곳 -->
             </div>
         </div>
