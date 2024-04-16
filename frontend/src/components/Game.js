@@ -95,14 +95,14 @@ export default class extends AbstractComponent {
 				// 경우 3 : tournament
 				else if (gt === 3)
 					tournamentPong(gd, p1, p2, p3, p4, openResultModal);
-				console.log("Web socket이 살아있어요!");
-				console.log(gt,gd,p1,p2,p3,p4);
+				// console.log("Web socket이 살아있어요!");
+				// console.log(gt,gd,p1,p2,p3,p4);
 			}
 			else
 			{
 				// 강제로 main이나 lobby로 보내기
 				// window.history.back();
-				console.log("Web socket이 죽어있어요!");
+				// console.log("Web socket이 죽어있어요!");
 			}
 		}
 	}

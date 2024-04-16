@@ -595,7 +595,7 @@ function stopBall()
 function addPoint(playerName)
 {
   score[playerName]++;
-  console.log(score);
+  // console.log(score);
 }
 
 function simulation_paddle()

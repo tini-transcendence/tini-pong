@@ -280,18 +280,18 @@ function setEvent()
 
   window.websocket.onclose = function (event) {
     window.websocket = undefined;
-    if (game === true)
-      console.log('게임 진행 도중 WebSocket 연결이 닫혔습니다.');
-    else if (end === true)
-      console.log('게임 종료 이후 WebSocket 연결이 닫혔습니다.');
-    else
-      console.log('게임 시작 직전 WebSocket 연결이 닫혔습니다.');
+    // if (game === true)
+    //   console.log('게임 진행 도중 WebSocket 연결이 닫혔습니다.');
+    // else if (end === true)
+    //   console.log('게임 종료 이후 WebSocket 연결이 닫혔습니다.');
+    // else
+    //   console.log('게임 시작 직전 WebSocket 연결이 닫혔습니다.');
     end = true;
   };
 
   window.websocket.onmessage = function (event) {
     const data = JSON.parse(event.data);
-    console.log(data);
+    // console.log(data);
 
     if (data["type"] === "init")
       player_number = data["player_number"];
@@ -651,7 +651,7 @@ function stopBall()
 function addPoint(playerName)
 {
   score[playerName]++;
-  console.log(score);
+  // console.log(score);
 }
 
 function simulation_paddle()
