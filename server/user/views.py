@@ -8,6 +8,7 @@ from django.db.models import Q
 from .models import User, GameResult
 from util.sanitize import sanitize, sanitize_tag
 from django.core.exceptions import ObjectDoesNotExist
+import pytz
 
 
 class UserProfileView(View):
@@ -40,7 +41,7 @@ class UserProfileView(View):
                     "difficulty": game_result.difficulty,
                     "score": game_result.score,
                     "win": game_result.win,
-                    "start_time": game_result.start_time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "start_time": game_result.start_time.astimezone(pytz.timezone("Asia/Seoul")).strftime("%Y-%m-%d %H:%M:%S"),
                     "players": players,
                 }
             )
