@@ -236,11 +236,11 @@ export default class extends AbstractComponent {
 				}
 
 				// 받은 정보 출력하기
-				console.log("선택한 옵션: " + difficulty);
-				console.log("닉네임1: " + player1);
-				console.log("닉네임2: " + player2);
-				console.log("닉네임3: " + player3);
-				console.log("닉네임4: " + player4);
+				// console.log("선택한 옵션: " + difficulty);
+				// console.log("닉네임1: " + player1);
+				// console.log("닉네임2: " + player2);
+				// console.log("닉네임3: " + player3);
+				// console.log("닉네임4: " + player4);
 				
 				// 토너먼트 게임
 				if (player1 && player2 && player3 && player4)
