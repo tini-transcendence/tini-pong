@@ -21,4 +21,8 @@ jobs:
       - name: Test
         run: docker-compose run --rm server sh -c "python manage.py wait_for_db && python manage.py test"
       - name: Lint
-        run: docker-compose run --rm server sh -c "flake8"
+        run: echo "exclude = .git,__pycache__,venv,migrations,manage.py,settings.py" > .flake8 && \
+             docker-compose run --rm server sh -c "flake8"
+
+
+

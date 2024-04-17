@@ -1,0 +1,28 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+psycopg2 = "*"
+drf-spectacular = "*"
+djangorestframework = "*"
+flake8 = "*"
+python-dotenv = "*"
+django-cors-headers = "*"
+web3 = "*"
+py-solc-x = "*"
+solc = "*"
+channels = "*"
+daphne = "*"
+pyotp = "*"
+aiohttp = "*"
+pytz = "*"
+celery = {extras = ["redis"], version = "*"}
+django-celery-results = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"

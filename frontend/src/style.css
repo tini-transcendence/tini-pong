@@ -1,0 +1,168 @@
+@import "../node_modules/bootstrap/dist/css/bootstrap.css";
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox  */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.noto-sans {
+  font-family: "Noto Sans KR", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.white-blue {
+	color: #EFECFF;
+}
+
+.lobby-title {
+	font-size: calc(1.625rem + 5vw);
+	font-weight: 900;
+	line-height: 100%;
+}
+
+.lobby-btn {
+	--bs-btn-font-size: calc(0.5rem + 1.5vw);
+	--bs-btn-border-width: 5px;
+	font-weight: 900;
+}
+
+.main-link {
+	color: #4D37C6;
+	font-weight: 700;
+	font-size: 5rem;
+}
+
+.navbar {
+	--bs-navbar-brand-font-size: 1.8rem;
+	--bs-navbar-toggler-border-color: white;
+}
+
+.nav-link {
+	font-size: 1.8rem;
+	font-weight: 700;
+	color: white;
+}
+
+.common-btn {
+	--bs-btn-font-weight: 700;
+	--bs-btn-font-size: 1.2rem;
+	--bs-btn-color: #4D37C6;
+	--bs-btn-border-color: #4D37C6;
+	--bs-btn-border-width: 5px;
+	--bs-btn-hover-color: #A193EF;
+	--bs-btn-hover-border-color: #A193EF;
+	--bs-btn-active-color: var(--bs-btn-hover-color);
+	--bs-btn-active-border-color: #A193EF;
+}
+
+.common-radio-btn {
+	--bs-btn-font-weight: 700;
+	--bs-btn-font-size: 1rem;
+	--bs-btn-color: #4D37C6;
+	--bs-btn-bg: white;
+	--bs-btn-border-color: #4D37C6;
+	--bs-btn-hover-color: white;
+	--bs-btn-hover-bg: #4D37C6;
+	--bs-btn-hover-border-color: #4D37C6;
+	--bs-btn-active-color: var(--bs-btn-hover-color);
+	--bs-btn-active-bg: #4D37C6;
+	--bs-btn-active-border-color: #4D37C6;
+}
+
+@media (min-width: 1400px) {
+	.lobby-title {
+		font-size: 6rem;
+	}
+	.lobby-btn {
+		--bs-btn-font-size: 2rem;
+	}
+}
+
+/* -----------------------------   Room 관련 CSS    -----------------------------*/
+
+.ready-style {
+	background-color: #4D37C6;
+}
+
+.card-img-top {
+	height: 100%;
+}
+
+.card-body-lteam {
+	background-image: linear-gradient(to right, #D30D5C 5%, white 5%);
+}
+
+.card-body-rteam {
+	background-image: linear-gradient(to right, #4D37C6 5%, white 5%);
+}
+
+/* -----------------------------   Tdata 관련 CSS    -----------------------------*/
+
+.b {
+	max-width: 800px;
+	margin: 0 auto;
+	margin-bottom: 30px;
+}
+
+.timestemp {
+	margin-top: 30px;
+	text-align: center;
+	max-width: 200px;
+	font-weight:900;
+}
+
+.tdataBox{
+	border: 2px solid #4D37C6;
+	border-radius: 1rem;
+	margin: 20px;
+	border-width: 3px;
+}
+
+.gameLine {
+	margin: 5px;
+	height: 30px;
+}
+
+.textAlign {
+	font-size: large;
+	text-align:center;
+	font-weight: 600;
+}
+.winner {
+	color: brown;
+}
+.game-rank {
+	border: 2px solid brown;
+	border-radius: 1rem;
+	width:80px;
+}
+.game-score {
+	font-size: larger;
+	font-weight: 900;
+	background: linear-gradient(to right, white, white, #FFC85D, white, white);
+}
+
+.texte {
+	display: flex;
+	justify-content: center;
+}
+
+
+/* ---------------------- */
+/* Modal CSS from jijeong */
+/* ---------------------- */
+
+.modal-header-background-color {
+    background-color: #4D37C6;
+	width: 100%;
+	color: white;
+}
